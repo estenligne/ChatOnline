@@ -8,7 +8,7 @@ namespace WebAPI
     {
         public MappingProfile()
         {
-            CreateMap<TodoItem, TodoItemDTO>().ReverseMap();
+            CreateMap<ApplicationUser, ApplicationUserDTO>().ReverseMap();
         }
     }
 }
