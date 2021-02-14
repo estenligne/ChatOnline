@@ -12,9 +12,6 @@ namespace WebAPI.Models
         /// <param name="logger"></param>
         public static void Seed(ApplicationDbContext context, ILogger logger)
         {
-            if (context.Database.EnsureCreated())
-                logger.LogWarning("Database Created");
-
             context.Database.Migrate();
         }
     }
