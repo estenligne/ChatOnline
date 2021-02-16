@@ -86,6 +86,8 @@ namespace WebAPI
             });
 
             services.AddAutoMapper(c => c.AddProfile<MappingProfile>(), typeof(Startup));
+
+            services.AddSingleton<Services.EmailService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

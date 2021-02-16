@@ -18,16 +18,19 @@ namespace WebAPI.Controllers
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly Services.EmailService _emailService;
 
         public UserController(
             SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager,
+            Services.EmailService emailService,
             ApplicationDbContext context,
             ILogger<UserController> logger,
             IMapper mapper) : base(context, logger, mapper)
         {
             _signInManager = signInManager;
             _userManager = userManager;
+            _emailService = emailService;
         }
 
         /// <summary>
@@ -92,8 +95,8 @@ namespace WebAPI.Controllers
             var email = System.Web.HttpUtility.UrlEncode(user.Email);
             token = System.Web.HttpUtility.UrlEncode(token);
             var href = $"{path}?email={email}&token={token}";
-            var body = $"Please confirm your account by <a href='{href}'>clicking here</a>.";
-            //await _emailSender.SendEmailAsync(user.Email, "Confirm your email", body);
+            var body = $"<p>Please confirm your account by <a href='{href}'>clicking here</a>.</p>";
+            await _emailService.SendEmailAsync(user.Email, "Confirm your email", body);
             _logger.LogDebug(body);
         }
 
