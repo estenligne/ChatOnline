@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using MySql.EntityFrameworkCore.Metadata;
 
 namespace WebAPI.Migrations
 {
@@ -12,10 +13,11 @@ namespace WebAPI.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -27,19 +29,20 @@ namespace WebAPI.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PasswordHash = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    SecurityStamp = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
                     TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: DataType.Timestamp, nullable: true),
                     LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
                     AccessFailedCount = table.Column<int>(type: "int", nullable: false)
                 },
@@ -53,10 +56,11 @@ namespace WebAPI.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     RoleId = table.Column<long>(type: "bigint", nullable: false),
-                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    ClaimType = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -74,10 +78,11 @@ namespace WebAPI.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<long>(type: "bigint", nullable: false),
-                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    ClaimType = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -96,7 +101,7 @@ namespace WebAPI.Migrations
                 {
                     LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProviderDisplayName = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     UserId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
@@ -141,7 +146,7 @@ namespace WebAPI.Migrations
                     UserId = table.Column<long>(type: "bigint", nullable: false),
                     LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Value = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -159,24 +164,24 @@ namespace WebAPI.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     Size = table.Column<int>(type: "int", nullable: false),
                     Purpose = table.Column<int>(type: "int", nullable: false),
-                    UploaderId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UploaderId1 = table.Column<long>(type: "bigint", nullable: true),
-                    DateUploaded = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DateDeleted = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    UploaderId = table.Column<long>(type: "bigint", nullable: false),
+                    DateUploaded = table.Column<DateTime>(type: DataType.DateTime, nullable: false),
+                    DateDeleted = table.Column<DateTime>(type: DataType.DateTime, nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Files", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Files_AspNetUsers_UploaderId1",
-                        column: x => x.UploaderId1,
+                        name: "FK_Files_AspNetUsers_UploaderId",
+                        column: x => x.UploaderId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -184,25 +189,25 @@ namespace WebAPI.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserId1 = table.Column<long>(type: "bigint", nullable: true),
+                    UserId = table.Column<long>(type: "bigint", nullable: false),
                     Username = table.Column<string>(type: "nvarchar(63)", maxLength: 63, nullable: true),
                     Availability = table.Column<string>(type: "nvarchar(63)", maxLength: 63, nullable: true),
-                    About = table.Column<string>(type: "nvarchar(max)", maxLength: 4095, nullable: true),
+                    About = table.Column<string>(type: DataType.NVarCharMax, maxLength: 4095, nullable: true),
                     PhotoFileId = table.Column<long>(type: "bigint", nullable: true),
                     WallpaperFileId = table.Column<long>(type: "bigint", nullable: true),
-                    DateDeleted = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    DateDeleted = table.Column<DateTime>(type: DataType.DateTime, nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserProfiles", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserProfiles_AspNetUsers_UserId1",
-                        column: x => x.UserId1,
+                        name: "FK_UserProfiles_AspNetUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_UserProfiles_Files_PhotoFileId",
                         column: x => x.PhotoFileId,
@@ -222,13 +227,14 @@ namespace WebAPI.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CreatorId = table.Column<long>(type: "bigint", nullable: false),
                     Groupname = table.Column<string>(type: "nvarchar(63)", maxLength: 63, nullable: true),
-                    About = table.Column<string>(type: "nvarchar(max)", maxLength: 4095, nullable: true),
+                    About = table.Column<string>(type: DataType.NVarCharMax, maxLength: 4095, nullable: true),
                     PhotoFileId = table.Column<long>(type: "bigint", nullable: true),
                     WallpaperFileId = table.Column<long>(type: "bigint", nullable: true),
-                    DateDeleted = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    DateDeleted = table.Column<DateTime>(type: DataType.DateTime, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -258,10 +264,11 @@ namespace WebAPI.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Type = table.Column<int>(type: "int", nullable: false),
                     GroupProfileId = table.Column<long>(type: "bigint", nullable: true),
-                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    DateCreated = table.Column<DateTime>(type: DataType.DateTime, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -279,10 +286,11 @@ namespace WebAPI.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ChatRoomId = table.Column<long>(type: "bigint", nullable: false),
                     CreatorId = table.Column<long>(type: "bigint", nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: DataType.DateTime, nullable: false),
                     IsPrivate = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -307,16 +315,17 @@ namespace WebAPI.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserProfileId = table.Column<long>(type: "bigint", nullable: false),
                     ChatRoomId = table.Column<long>(type: "bigint", nullable: false),
                     UserRole = table.Column<int>(type: "int", nullable: false),
                     AdderId = table.Column<long>(type: "bigint", nullable: true),
                     BlockerId = table.Column<long>(type: "bigint", nullable: true),
-                    DateAdded = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DateBlocked = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DateExited = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DateMuted = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DateAdded = table.Column<DateTime>(type: DataType.DateTime, nullable: false),
+                    DateBlocked = table.Column<DateTime>(type: DataType.DateTime, nullable: true),
+                    DateExited = table.Column<DateTime>(type: DataType.DateTime, nullable: true),
+                    DateMuted = table.Column<DateTime>(type: DataType.DateTime, nullable: true),
                     MuteDuration = table.Column<TimeSpan>(type: "time", nullable: true)
                 },
                 constraints: table =>
@@ -353,17 +362,18 @@ namespace WebAPI.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SenderId = table.Column<long>(type: "bigint", nullable: false),
                     MessageTagId = table.Column<long>(type: "bigint", nullable: false),
                     MessageType = table.Column<int>(type: "int", nullable: false),
                     LinkedId = table.Column<long>(type: "bigint", nullable: true),
                     AuthorId = table.Column<long>(type: "bigint", nullable: true),
-                    Body = table.Column<string>(type: "nvarchar(max)", maxLength: 16383, nullable: true),
-                    DateSent = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DateReceicedByServer = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DateDeleted = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DateStarred = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    Body = table.Column<string>(type: DataType.NVarCharMax, maxLength: 16383, nullable: true),
+                    DateSent = table.Column<DateTime>(type: DataType.DateTime, nullable: false),
+                    DateReceicedByServer = table.Column<DateTime>(type: DataType.DateTime, nullable: false),
+                    DateDeleted = table.Column<DateTime>(type: DataType.DateTime, nullable: true),
+                    DateStarred = table.Column<DateTime>(type: DataType.DateTime, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -399,13 +409,14 @@ namespace WebAPI.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ReceiverId = table.Column<long>(type: "bigint", nullable: false),
                     MessageSentId = table.Column<long>(type: "bigint", nullable: false),
-                    DateReceived = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DateRead = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DateDeleted = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DateStarred = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DateReceived = table.Column<DateTime>(type: DataType.DateTime, nullable: false),
+                    DateRead = table.Column<DateTime>(type: DataType.DateTime, nullable: true),
+                    DateDeleted = table.Column<DateTime>(type: DataType.DateTime, nullable: true),
+                    DateStarred = table.Column<DateTime>(type: DataType.DateTime, nullable: true),
                     Reaction = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -470,9 +481,9 @@ namespace WebAPI.Migrations
                 column: "GroupProfileId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Files_UploaderId1",
+                name: "IX_Files_UploaderId",
                 table: "Files",
-                column: "UploaderId1");
+                column: "UploaderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_GroupProfiles_CreatorId",
@@ -555,9 +566,9 @@ namespace WebAPI.Migrations
                 column: "PhotoFileId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserProfiles_UserId1",
+                name: "IX_UserProfiles_UserId",
                 table: "UserProfiles",
-                column: "UserId1");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserProfiles_WallpaperFileId",

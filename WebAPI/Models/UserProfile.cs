@@ -9,7 +9,7 @@ namespace WebAPI.Models
     {
         public long Id { get; set; }
 
-        public string UserId { get; set; }
+        public long UserId { get; set; }
         public virtual ApplicationUser User { get; set; }
 
         [MaxLength(63)]

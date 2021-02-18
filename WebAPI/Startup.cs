@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
+using MySql.EntityFrameworkCore.Extensions;
 using WebAPI.Models;
 using System;
 
@@ -26,8 +27,17 @@ namespace WebAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(
-                Configuration.GetConnectionString("DefaultConnection")));
+            if (Migrations.DataType.UseMySQL)
+            {
+                services.AddDbContext<ApplicationDbContext>(options => options
+                    //.UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()))
+                    .UseMySQL(Configuration.GetConnectionString("MySQLConnection")));
+            }
+            else
+            {
+                services.AddDbContext<ApplicationDbContext>(options => options
+                    .UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            }
 
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()

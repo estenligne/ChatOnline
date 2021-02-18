@@ -17,7 +17,7 @@ namespace WebAPI.Models
 
         public FilePurposeEnum Purpose { get; set; }
 
-        public string UploaderId { get; set; }
+        public long UploaderId { get; set; }
         public virtual ApplicationUser Uploader { get; set; }
 
         public DateTime DateUploaded { get; set; }
