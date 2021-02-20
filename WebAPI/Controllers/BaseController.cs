@@ -2,6 +2,8 @@
 using System.Net;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
@@ -47,6 +49,22 @@ namespace WebAPI.Controllers
                 message = ex.Message;
             }
             return StatusCode((int)HttpStatusCode.InternalServerError, message);
+        }
+
+        /// <summary>
+        /// Apply the Data Annotations Attributes set on the properties/fields of the given model.
+        /// </summary>
+        /// <typeparam name="TObj"></typeparam>
+        /// <param name="obj"></param>
+        /// <returns>The list of validation results, or null if there is no validation error.</returns>
+        protected List<ValidationResult> ValidateObject<TObj>(TObj obj)
+        {
+            var results = new List<ValidationResult>();
+            var context = new System.ComponentModel.DataAnnotations.ValidationContext(obj, serviceProvider: null, items: null);
+            var isValid = Validator.TryValidateObject(obj, context, results);
+            if (isValid)
+                return null;
+            else return results;
         }
     }
 }
