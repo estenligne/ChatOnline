@@ -24,6 +24,7 @@ namespace WebAPI.Models
         public long? WallpaperFileId { get; set; }
         public virtual File WallpaperFile { get; set; }
 
+        public DateTime DateCreated { get; set; }
         public DateTime? DateDeleted { get; set; }
     }
 }

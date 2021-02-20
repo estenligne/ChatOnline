@@ -291,6 +291,9 @@ namespace WebAPI.Migrations
                 b.Property<long>("CreatorId")
                     .HasColumnType("bigint");
 
+                b.Property<DateTime>("DateCreated")
+                    .HasColumnType(DataType.DateTime);
+
                 b.Property<DateTime?>("DateDeleted")
                     .HasColumnType(DataType.DateTime);
 
@@ -495,6 +498,9 @@ namespace WebAPI.Migrations
                 b.Property<string>("Availability")
                     .HasMaxLength(63)
                     .HasColumnType("nvarchar(63)");
+
+                b.Property<DateTime>("DateCreated")
+                    .HasColumnType(DataType.DateTime);
 
                 b.Property<DateTime?>("DateDeleted")
                     .HasColumnType(DataType.DateTime);

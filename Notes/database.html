@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset="utf-8" />
@@ -18,9 +18,9 @@
 			padding: 8px;
 		}
 
-		td > a {
-			text-decoration: none;
-		}
+			td > a {
+				text-decoration: none;
+			}
 
 		.table_name {
 			color: red;
@@ -31,15 +31,15 @@
 		}
 
 		h3 .inside {
-			font-fize: 1em;
+			font-size: 1em;
 			font-weight: normal;
 		}
-		
+
 		hr {
 			margin-top: 2em;
 			margin-bottom: 2em;
 		}
-		
+
 		ul.comments {
 			padding-left: 1em;
 		}
@@ -47,296 +47,310 @@
 </head>
 <body>
 
-<h2><u>Some notes</u></h2>
-<ul class="separate">
-	<li><b>PK</b> means <b>Primary Key</b>, which is the primary identifier of a database table.</li>
-	<li><b>FK</b> means <a target="_blank" href="https://en.wikipedia.org/wiki/Foreign_key">Foreign Key</a>, which is a value equals to the primary key of a table.</li>
-	<li><b>Enum</b> means <a target="_blank" href="https://en.wikipedia.org/wiki/Enumerated_type">Enumeration</a>, which is an <b>integer</b> value mapped to a given name.</li>
-	<li>The <b>?</b> in front of a data type means it is <b>nullable</b>. For example <b>int?</b> means a <a target="_blank" href="https://en.wikipedia.org/wiki/Nullable_type">nullable integer</a>.</li>
-	<li>The <b>string[n]</b> where n is a positive integer means a string with length at most n characters.</li>
-	<li><b>OTP</b> means <a target="_blank" href="https://fr.wikipedia.org/wiki/Mot_de_passe_%C3%A0_usage_unique">One Time PIN</a></li>
-	<li>The value of a <a target="_blank" href="https://dev.mysql.com/doc/refman/8.0/en/datetime.html">DateTime</a> must always be set to the UTC time, <b>never</b> to a local time.</li>
-</ul>
+	<h2><u>Some notes</u></h2>
+	<ul class="separate">
+		<li><b>PK</b> means <b>Primary Key</b>, which is the primary identifier of a database table.</li>
+		<li><b>FK</b> means <a target="_blank" href="https://en.wikipedia.org/wiki/Foreign_key">Foreign Key</a>, which is a value equals to the primary key of a table.</li>
+		<li><b>Enum</b> means <a target="_blank" href="https://en.wikipedia.org/wiki/Enumerated_type">Enumeration</a>, which is an <b>integer</b> value mapped to a given name.</li>
+		<li>The <b>?</b> in front of a data type means it is <b>nullable</b>. For example <b>int?</b> means a <a target="_blank" href="https://en.wikipedia.org/wiki/Nullable_type">nullable integer</a>.</li>
+		<li>The <b>string[n]</b> where n is a positive integer means a string with length at most n characters.</li>
+		<li><b>OTP</b> means <a target="_blank" href="https://fr.wikipedia.org/wiki/Mot_de_passe_%C3%A0_usage_unique">One Time PIN</a></li>
+		<li>The value of a <a target="_blank" href="https://dev.mysql.com/doc/refman/8.0/en/datetime.html">DateTime</a> must always be set to the UTC time, <b>never</b> to a local time.</li>
+	</ul>
 
-<hr/>
-<h2><u>Database Tables</u></h2>
+	<hr />
+	<h2><u>Database Tables</u></h2>
 
-<table border="1" id="table-Users">
-	<thead>
-		<tr><th colspan="3"><div class="table_name">Users</div></th></tr>
-		<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
-	</thead>
-	<tbody>
-		<tr><td>&nbsp;</td><td></td><td></td></tr>
-	</tbody>
-</table>
+	<table border="1" id="table-Users">
+		<thead>
+			<tr><th colspan="3"><div class="table_name">Users</div></th></tr>
+			<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
+		</thead>
+		<tbody>
+			<tr><td>&nbsp;</td><td></td><td></td></tr>
+		</tbody>
+	</table>
 
-<table border="1" id="table-LoginDetails">
-	<thead>
-		<tr><th colspan="3"><div class="table_name">LoginDetails</div></th></tr>
-		<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
-	</thead>
-	<tbody>
-		<tr><td>FK</td><td>UserId</td><td><a href="#table-Users">Users</a></td></tr>
-		<tr><td>enum</td><td>Type</td><td><a href="#enum-LoginDetailType">LoginDetailType</a></td></tr>
-		<tr><td>string[63]</td><td>Value</td><td></td></tr>
-		<tr><td>FK?</td><td>LoginSuccessId</td><td><a href="#table-LoginAttempts">LoginAttempts</a></td></tr>
-		<tr><td>DateTime?</td><td>DateDeleted</td><td></td></tr>
-	</tbody>
-</table>
+	<table border="1" id="table-LoginDetails">
+		<thead>
+			<tr><th colspan="3"><div class="table_name">LoginDetails</div></th></tr>
+			<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
+		</thead>
+		<tbody>
+			<tr><td>FK</td><td>UserId</td><td><a href="#table-Users">Users</a></td></tr>
+			<tr><td>enum</td><td>Type</td><td><a href="#enum-LoginDetailType">LoginDetailType</a></td></tr>
+			<tr><td>string[63]</td><td>Value</td><td></td></tr>
+			<tr><td>FK?</td><td>LoginSuccessId</td><td><a href="#table-LoginAttempts">LoginAttempts</a></td></tr>
+			<tr><td>DateTime?</td><td>DateDeleted</td><td></td></tr>
+		</tbody>
+	</table>
 
-<ul>
-	<li>Note: LoginDetail.LoginSuccess.Outcome <b>must</b> be equal to LoginOutcomeEnum.OTPCorrect</li>
-</ul>
+	<ul>
+		<li>Note: LoginDetail.LoginSuccess.Outcome <b>must</b> be equal to LoginOutcomeEnum.OTPCorrect</li>
+	</ul>
 
-<table border="1" id="table-LoginAttempts">
-	<thead>
-		<tr><th colspan="3"><div class="table_name">LoginAttempts</div></th></tr>
-		<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
-	</thead>
-	<tbody>
-		<tr><td>FK</td><td>LoginDetailId</td><td><a href="#table-LoginDetails">LoginDetails</a></td></tr>
-		<tr><td>enum</td><td>Outcome</td><td><a href="#enum-LoginOutcomeEnum">LoginOutcomeEnum</a></td></tr>
-		<tr><td>string[15]</td><td>OTP</td><td></td></tr>
-		<tr><td>DateTime</td><td>DateRequested</td><td></td></tr>
-		<tr><td>DateTime?</td><td>DateProvided</td><td></td></tr>
-		<tr><td>string[255]</td><td>DeviceUsed</td><td></td></tr>
-	</tbody>
-</table>
+	<table border="1" id="table-LoginAttempts">
+		<thead>
+			<tr><th colspan="3"><div class="table_name">LoginAttempts</div></th></tr>
+			<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
+		</thead>
+		<tbody>
+			<tr><td>FK</td><td>LoginDetailId</td><td><a href="#table-LoginDetails">LoginDetails</a></td></tr>
+			<tr><td>enum</td><td>Outcome</td><td><a href="#enum-LoginOutcomeEnum">LoginOutcomeEnum</a></td></tr>
+			<tr><td>string[15]</td><td>OTP</td><td></td></tr>
+			<tr><td>DateTime</td><td>DateRequested</td><td></td></tr>
+			<tr><td>DateTime?</td><td>DateProvided</td><td></td></tr>
+			<tr><td>string[255]</td><td>DeviceUsed</td><td></td></tr>
+		</tbody>
+	</table>
 
-<table border="1" id="table-Files">
-	<thead>
-		<tr><th colspan="3"><div class="table_name">Files</div></th></tr>
-		<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
-	</thead>
-	<tbody>
-		<tr><td>string[255]</td><td>Name</td><td></td></tr>
-		<tr><td>int</td><td>Size</td><td></td></tr>
-		<tr><td>enum</td><td>Purpose</td><td><a href="#enum-FilePurposeEnum">FilePurposeEnum</a></td></tr>
-		<tr><td>FK</td><td>UploaderId</td><td><a href="#table-Users">Users</a></td></tr>
-		<tr><td>DateTime</td><td>DateUploaded</td><td></td></tr>
-		<tr><td>DateTime?</td><td>DateDeleted</td><td></td></tr>
-	</tbody>
-</table>
+	<table border="1" id="table-Files">
+		<thead>
+			<tr><th colspan="3"><div class="table_name">Files</div></th></tr>
+			<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
+		</thead>
+		<tbody>
+			<tr><td>string[255]</td><td>Name</td><td></td></tr>
+			<tr><td>int</td><td>Size</td><td></td></tr>
+			<tr><td>enum</td><td>Purpose</td><td><a href="#enum-FilePurposeEnum">FilePurposeEnum</a></td></tr>
+			<tr><td>FK</td><td>UploaderId</td><td><a href="#table-Users">Users</a></td></tr>
+			<tr><td>DateTime</td><td>DateUploaded</td><td></td></tr>
+			<tr><td>DateTime?</td><td>DateDeleted</td><td></td></tr>
+		</tbody>
+	</table>
 
-<ul class="comments">
-	<li>Note: the file type must be obtained <b>only</b> from the file extension</li>
-</ul>
+	<ul class="comments">
+		<li>Note: the file type must be obtained <b>only</b> from the file extension</li>
+	</ul>
 
-<table border="1" id="table-UserProfiles">
-	<thead>
-		<tr><th colspan="3"><div class="table_name">UserProfiles</div></th></tr>
-		<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
-	</thead>
-	<tbody>
-		<tr><td>FK</td><td>UserId</td><td><a href="#table-Users">Users</a></td></tr>
-		<tr><td>string[63]</td><td>Username</td><td></td></tr>
-		<tr><td>string[63]</td><td>Availability</td><td></td></tr>
-		<tr><td>string[4095]</td><td>About</td><td></td></tr>
-		<tr><td>FK?</td><td>PhotoFileId</td><td><a href="#table-Files">Files</a></td></tr>
-		<tr><td>FK?</td><td>WallpaperFileId</td><td><a href="#table-Files">Files</a></td></tr>
-		<tr><td>DateTime?</td><td>DateDeleted</td><td></td></tr>
-	</tbody>
-</table>
+	<table border="1" id="table-UserProfiles">
+		<thead>
+			<tr><th colspan="3"><div class="table_name">UserProfiles</div></th></tr>
+			<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
+		</thead>
+		<tbody>
+			<tr><td>FK</td><td>UserId</td><td><a href="#table-Users">Users</a></td></tr>
+			<tr><td>string[63]</td><td>Username</td><td></td></tr>
+			<tr><td>string[63]</td><td>Availability</td><td><a href="#enum-AvailabilityEnum">AvailabilityEnum</a></td></tr>
+			<tr><td>string[4095]</td><td>About</td><td></td></tr>
+			<tr><td>FK?</td><td>PhotoFileId</td><td><a href="#table-Files">Files</a></td></tr>
+			<tr><td>FK?</td><td>WallpaperFileId</td><td><a href="#table-Files">Files</a></td></tr>
+			<tr><td>DateTime</td><td>DateCreated</td><td></td></tr>
+			<tr><td>DateTime?</td><td>DateDeleted</td><td></td></tr>
+		</tbody>
+	</table>
 
-<ul class="comments">
-	<li>Constraint in UserProfiles: <b>unique UserId</b>, meaning a user can only have 1 profile. This constraint will be removed in future.</li>
-</ul>
+	<ul class="comments">
+		<li>Constraint in UserProfiles: <b>unique UserId</b>, meaning a user can only have 1 profile. This constraint will be removed in future.</li>
+	</ul>
 
-<table border="1" id="table-GroupProfiles">
-	<thead>
-		<tr><th colspan="3"><div class="table_name">GroupProfiles</div></th></tr>
-		<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
-	</thead>
-	<tbody>
-		<tr><td>FK</td><td>CreatorId</td><td><a href="#table-UserProfiles">UserProfiles</a></td></tr>
-		<tr><td>string[63]</td><td>Groupname</td><td></td></tr>
-		<tr><td>string[4095]</td><td>About</td><td></td></tr>
-		<tr><td>FK?</td><td>PhotoFileId</td><td><a href="#table-Files">Files</a></td></tr>
-		<tr><td>FK?</td><td>WallpaperFileId</td><td><a href="#table-Files">Files</a></td></tr>
-		<tr><td>DateTime?</td><td>DateDeleted</td><td></td></tr>
-	</tbody>
-</table>
+	<table border="1" id="table-GroupProfiles">
+		<thead>
+			<tr><th colspan="3"><div class="table_name">GroupProfiles</div></th></tr>
+			<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
+		</thead>
+		<tbody>
+			<tr><td>FK</td><td>CreatorId</td><td><a href="#table-UserProfiles">UserProfiles</a></td></tr>
+			<tr><td>string[63]</td><td>Groupname</td><td></td></tr>
+			<tr><td>string[4095]</td><td>About</td><td></td></tr>
+			<tr><td>FK?</td><td>PhotoFileId</td><td><a href="#table-Files">Files</a></td></tr>
+			<tr><td>FK?</td><td>WallpaperFileId</td><td><a href="#table-Files">Files</a></td></tr>
+			<tr><td>DateTime</td><td>DateCreated</td><td></td></tr>
+			<tr><td>DateTime?</td><td>DateDeleted</td><td></td></tr>
+		</tbody>
+	</table>
 
-<table border="1" id="table-ChatRooms">
-	<thead>
-		<tr><th colspan="3"><div class="table_name">ChatRooms</div></th></tr>
-		<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
-	</thead>
-	<tbody>
-		<tr><td>enum</td><td>Type</td><td><a href="#enum-ChatRoomTypeEnum">ChatRoomTypeEnum</a></td></tr>
-		<tr><td>FK?</td><td>GroupProfileId</td><td><a href="#table-GroupProfiles">GroupProfiles</a></td></tr>
-		<tr><td>DateTime</td><td>DateCreated</td><td></td></tr>
-	</tbody>
-</table>
+	<table border="1" id="table-ChatRooms">
+		<thead>
+			<tr><th colspan="3"><div class="table_name">ChatRooms</div></th></tr>
+			<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
+		</thead>
+		<tbody>
+			<tr><td>enum</td><td>Type</td><td><a href="#enum-ChatRoomTypeEnum">ChatRoomTypeEnum</a></td></tr>
+			<tr><td>FK?</td><td>GroupProfileId</td><td><a href="#table-GroupProfiles">GroupProfiles</a></td></tr>
+			<tr><td>DateTime</td><td>DateCreated</td><td></td></tr>
+		</tbody>
+	</table>
 
-<ul class="comments">
-	<li>Constraint in ChatRooms: <b>unique</b> GroupProfileId, meaning a Group can have only 1 ChatRoom.</li>
-</ul>
+	<ul class="comments">
+		<li>Constraint in ChatRooms: <b>unique</b> GroupProfileId, meaning a Group can have only 1 ChatRoom.</li>
+	</ul>
 
-<table border="1" id="table-UserChatRooms">
-	<thead>
-		<tr><th colspan="3"><div class="table_name">UserChatRooms</div></th></tr>
-		<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
-	</thead>
-	<tbody>
-		<tr><td>FK</td><td>UserProfileId</td><td><a href="#table-UserProfiles">UserProfiles</a></td></tr>
-		<tr><td>FK</td><td>ChatRoomId</td><td><a href="#table-ChatRooms">ChatRooms</a></td></tr>
-		<tr><td>enum</td><td>UserRole</td><td><a href="#enum-UserRoleEnum">UserRoleEnum</a></td></tr>
-		<tr><td>FK?</td><td>AdderId</td><td><a href="#table-UserChatRooms">UserChatRooms</a></td></tr>
-		<tr><td>FK?</td><td>BlockerId</td><td><a href="#table-UserChatRooms">UserChatRooms</a></td></tr>
-		<tr><td>DateTime</td><td>DateAdded</td><td></td></tr>
-		<tr><td>DateTime?</td><td>DateBlocked</td><td></td></tr>
-		<tr><td>DateTime?</td><td>DateExited</td><td></td></tr>
-		<tr><td>DateTime?</td><td>DateMuted</td><td></td></tr>
-		<tr><td>TimeSpan?</td><td>MuteDuration</td><td></td></tr>
-	</tbody>
-</table>
+	<table border="1" id="table-UserChatRooms">
+		<thead>
+			<tr><th colspan="3"><div class="table_name">UserChatRooms</div></th></tr>
+			<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
+		</thead>
+		<tbody>
+			<tr><td>FK</td><td>UserProfileId</td><td><a href="#table-UserProfiles">UserProfiles</a></td></tr>
+			<tr><td>FK</td><td>ChatRoomId</td><td><a href="#table-ChatRooms">ChatRooms</a></td></tr>
+			<tr><td>enum</td><td>UserRole</td><td><a href="#enum-UserRoleEnum">UserRoleEnum</a></td></tr>
+			<tr><td>FK?</td><td>AdderId</td><td><a href="#table-UserChatRooms">UserChatRooms</a></td></tr>
+			<tr><td>FK?</td><td>BlockerId</td><td><a href="#table-UserChatRooms">UserChatRooms</a></td></tr>
+			<tr><td>DateTime</td><td>DateAdded</td><td></td></tr>
+			<tr><td>DateTime?</td><td>DateBlocked</td><td></td></tr>
+			<tr><td>DateTime?</td><td>DateExited</td><td></td></tr>
+			<tr><td>DateTime?</td><td>DateMuted</td><td></td></tr>
+			<tr><td>TimeSpan?</td><td>MuteDuration</td><td></td></tr>
+		</tbody>
+	</table>
 
-<ul class="comments">
-	<li>Constraint in UserChatRooms: <b>unique</b> pair (UserProfileId, ChatRoomId)</li>
-</ul>
+	<ul class="comments">
+		<li>Constraint in UserChatRooms: <b>unique</b> pair (UserProfileId, ChatRoomId)</li>
+	</ul>
 
-<table border="1" id="table-MessageTags">
-	<thead>
-		<tr><th colspan="3"><div class="table_name">MessageTags</div></th></tr>
-		<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
-	</thead>
-	<tbody>
-		<tr><td>string[63]</td><td>TagName</td><td></td></tr>
-		<tr><td>FK</td><td>ChatRoomId</td><td><a href="#table-ChatRooms">ChatRooms</a></td></tr>
-		<tr><td>FK</td><td>CreatorId</td><td><a href="#table-UserProfiles">UserProfiles</a></td></tr>
-		<tr><td>DateTime</td><td>DateCreated</td><td></td></tr>
-		<tr><td>bool</td><td>IsPrivate</td><td></td></tr>
-	</tbody>
-</table>
+	<table border="1" id="table-MessageTags">
+		<thead>
+			<tr><th colspan="3"><div class="table_name">MessageTags</div></th></tr>
+			<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
+		</thead>
+		<tbody>
+			<tr><td>string[63]</td><td>TagName</td><td></td></tr>
+			<tr><td>FK</td><td>ChatRoomId</td><td><a href="#table-ChatRooms">ChatRooms</a></td></tr>
+			<tr><td>FK</td><td>CreatorId</td><td><a href="#table-UserProfiles">UserProfiles</a></td></tr>
+			<tr><td>DateTime</td><td>DateCreated</td><td></td></tr>
+			<tr><td>bool</td><td>IsPrivate</td><td></td></tr>
+		</tbody>
+	</table>
 
-<ul class="comments">
-	<li>Constraint in MessageTags: <b>unique</b> pair (TagName, ChatRoomId)</li>
-	<li>Note: the default TagName for every ChatRoom is simply <b>null</b></li>
-	<li>Note: IsPrivate means the tag is only visible by the owner of the linked message.<br/>That is, if you reply to a message and change the tag of your message as well as mark it as private, then the sender (of the message you are replying to) will be the only one to see your message.</li>
-</ul>
+	<ul class="comments">
+		<li>Constraint in MessageTags: <b>unique</b> pair (TagName, ChatRoomId)</li>
+		<li>Note: the default TagName for every ChatRoom is simply <b>null</b></li>
+		<li>Note: IsPrivate means the tag is only visible by the owner of the linked message.<br />
+		That is, if you reply to a message and change the tag of your message as well as mark it as private, then the sender (of the message you are replying to) will be the only one to see your message.</li>
+	</ul>
 
-<table border="1" id="table-MessagesSent">
-	<thead>
-		<tr><th colspan="3"><div class="table_name">MessagesSent</div></th></tr>
-		<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
-	</thead>
-	<tbody>
-		<tr><td>FK</td><td>SenderId</td><td><a href="#table-UserChatRooms">UserChatRooms</a></td></tr>
-		<tr><td>FK</td><td>MessageTagId</td><td><a href="#table-MessageTags">MessageTags</a></td></tr>
-		<tr><td>enum</td><td>Type</td><td><a href="#enum-MessageTypeEnum">MessageTypeEnum</a></td></tr>
-		<tr><td>FK?</td><td>LinkedId</td><td><a href="#table-MessagesSent">MessagesSent</a></td></tr>
-		<tr><td>FK?</td><td>AuthorId</td><td><a href="#table-UserProfiles">UserProfiles</a></td></tr>
-		<tr><td>FK?</td><td>FileId</td><td><a href="#table-Files">Files</a></td></tr>
-		<tr><td>string[16383]</td><td>Body</td><td></td></tr>
-		<tr><td>DateTime</td><td>DateSent</td><td></td></tr>
-		<tr><td>DateTime</td><td>DateReceicedByServer</td><td></td></tr>
-		<tr><td>DateTime?</td><td>DateDeleted</td><td></td></tr>
-		<tr><td>DateTime?</td><td>DateStarred</td><td></td></tr>
-	</tbody>
-</table>
+	<table border="1" id="table-MessagesSent">
+		<thead>
+			<tr><th colspan="3"><div class="table_name">MessagesSent</div></th></tr>
+			<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
+		</thead>
+		<tbody>
+			<tr><td>FK</td><td>SenderId</td><td><a href="#table-UserChatRooms">UserChatRooms</a></td></tr>
+			<tr><td>FK</td><td>MessageTagId</td><td><a href="#table-MessageTags">MessageTags</a></td></tr>
+			<tr><td>enum</td><td>Type</td><td><a href="#enum-MessageTypeEnum">MessageTypeEnum</a></td></tr>
+			<tr><td>FK?</td><td>LinkedId</td><td><a href="#table-MessagesSent">MessagesSent</a></td></tr>
+			<tr><td>FK?</td><td>AuthorId</td><td><a href="#table-UserProfiles">UserProfiles</a></td></tr>
+			<tr><td>FK?</td><td>FileId</td><td><a href="#table-Files">Files</a></td></tr>
+			<tr><td>string[16383]</td><td>Body</td><td></td></tr>
+			<tr><td>DateTime</td><td>DateSent</td><td></td></tr>
+			<tr><td>DateTime</td><td>DateReceicedByServer</td><td></td></tr>
+			<tr><td>DateTime?</td><td>DateDeleted</td><td></td></tr>
+			<tr><td>DateTime?</td><td>DateStarred</td><td></td></tr>
+		</tbody>
+	</table>
 
-<ul class="comments">
-	<li>Note: if AuthorId != null then message is a <b>forwarded</b> message specified by LinkedId.</li>
-</ul>
+	<ul class="comments">
+		<li>Note: if AuthorId != null then message is a <b>forwarded</b> message specified by LinkedId.</li>
+	</ul>
 
-<table border="1" id="table-MessagesReceived">
-	<thead>
-		<tr><th colspan="3"><div class="table_name">MessagesReceived</div></th></tr>
-		<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
-	</thead>
-	<tbody>
-		<tr><td>FK</td><td>ReceiverId</td><td><a href="#table-UserChatRooms">UserChatRooms</a></td></tr>
-		<tr><td>FK</td><td>MessageSentId</td><td><a href="#table-MessagesSent">MessagesSent</a></td></tr>
-		<tr><td>DateTime</td><td>DateReceived</td><td></td></tr>
-		<tr><td>DateTime?</td><td>DateRead</td><td></td></tr>
-		<tr><td>DateTime?</td><td>DateDeleted</td><td></td></tr>
-		<tr><td>DateTime?</td><td>DateStarred</td><td></td></tr>
-		<tr><td>enum</td><td>Reaction</td><td><a href="#enum-MessageReactionEnum">MessageReactionEnum</a></td></tr>
-	</tbody>
-</table>
+	<table border="1" id="table-MessagesReceived">
+		<thead>
+			<tr><th colspan="3"><div class="table_name">MessagesReceived</div></th></tr>
+			<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
+		</thead>
+		<tbody>
+			<tr><td>FK</td><td>ReceiverId</td><td><a href="#table-UserChatRooms">UserChatRooms</a></td></tr>
+			<tr><td>FK</td><td>MessageSentId</td><td><a href="#table-MessagesSent">MessagesSent</a></td></tr>
+			<tr><td>DateTime</td><td>DateReceived</td><td></td></tr>
+			<tr><td>DateTime?</td><td>DateRead</td><td></td></tr>
+			<tr><td>DateTime?</td><td>DateDeleted</td><td></td></tr>
+			<tr><td>DateTime?</td><td>DateStarred</td><td></td></tr>
+			<tr><td>enum</td><td>Reaction</td><td><a href="#enum-MessageReactionEnum">MessageReactionEnum</a></td></tr>
+		</tbody>
+	</table>
 
-<ul class="comments">
-	<li>Constraint in MessagesReceived: <b>unique</b> pair (ReceiverId, MessageSentId)</li>
-</ul>
+	<ul class="comments">
+		<li>Constraint in MessagesReceived: <b>unique</b> pair (ReceiverId, MessageSentId)</li>
+	</ul>
 
-<hr/>
-<h2><u>Enums</u></h2>
+	<hr />
+	<h2><u>Enums</u></h2>
 
-<h3 id="enum-LoginDetailType">LoginDetailType <span class="inside">(used by <a href="#table-LoginDetails">LoginDetails</a>)</span></h3>
-<ul>
-	<li>Unknown = 0</li>
-	<li>PhoneNumber = 1</li>
-	<li>EmailAddress = 2</li>
-</ul>
+	<h3 id="enum-LoginDetailType">LoginDetailType <span class="inside">(used by <a href="#table-LoginDetails">LoginDetails</a>)</span></h3>
+	<ul>
+		<li>Unknown = 0</li>
+		<li>PhoneNumber = 1</li>
+		<li>EmailAddress = 2</li>
+	</ul>
 
-<h3 id="enum-LoginOutcomeEnum">LoginOutcomeEnum <span class="inside">(used by <a href="#table-LoginAttempts">LoginAttempts</a>)</span></h3>
-<ul>
-	<li>OTPNotProvided = 0</li>
-	<li>OTPNotCorrect = 1</li>
-	<li>OTPCorrect = 2</li>
-</ul>
+	<h3 id="enum-LoginOutcomeEnum">LoginOutcomeEnum <span class="inside">(used by <a href="#table-LoginAttempts">LoginAttempts</a>)</span></h3>
+	<ul>
+		<li>OTPNotProvided = 0</li>
+		<li>OTPNotCorrect = 1</li>
+		<li>OTPCorrect = 2</li>
+	</ul>
 
-<h3 id="enum-ChatRoomTypeEnum">ChatRoomTypeEnum <span class="inside">(used by <a href="#table-ChatRooms">ChatRooms</a>)</span></h3>
-<ul>
-	<li>Unknown = 0</li>
-	<li>Private = 1</li>
-	<li>Group = 2</li>
-</ul>
+	<h3 id="enum-AvailabilityEnum">AvailabilityEnum <span class="inside">(used by <a href="#table-UserProfiles">UserProfiles</a>)</span></h3>
+	<ol>
+		<li>Unknown = 0</li>
+		<li>Other</li>
+		<li>Online</li>
+		<li>Offline</li>
+		<li>Away</li>
+		<li>BackSoon</li>
+		<li>Busy</li>
+		<li>DoNotDisturb</li>
+	</ol>
 
-<h3 id="enum-UserRoleEnum">UserRoleEnum <span class="inside">(used by <a href="#table-UserChatRooms">UserChatRooms</a>)</span></h3>
-<ul>
-	<li>None = 0</li>
-	<li>FullNode = 1 &lt;&lt; 0</li>
-	<li>Administrator = 1 &lt;&lt; 1</li>
-</ul>
-<ul style="list-style-type: circle;">
-	<li>The <i>FullNode</i> flag means the user must always contain <b>all</b> content of the ChatRoom.</li>
-</ul>
+	<h3 id="enum-ChatRoomTypeEnum">ChatRoomTypeEnum <span class="inside">(used by <a href="#table-ChatRooms">ChatRooms</a>)</span></h3>
+	<ul>
+		<li>Unknown = 0</li>
+		<li>Private = 1</li>
+		<li>Group = 2</li>
+	</ul>
 
-<h3 id="enum-MessageTypeEnum">MessageTypeEnum <span class="inside">(used by <a href="#table-MessagesSent">MessagesSent</a>)</span></h3>
-<ol>
-	<li>Unknown = 0</li>
-	<li>Text</li>
-	<li>Voice</li>
-	<li>Image</li>
-	<li>Audio</li>
-	<li>Video</li>
-	<li>Document</li>
-	<li>File</li>
-	<li>Contact <i>(special format inside body)</i></li>
-	<li>Location <i>(special format inside body)</i></li>
-	<li>Forwarded</li>
-</ol>
+	<h3 id="enum-UserRoleEnum">UserRoleEnum <span class="inside">(used by <a href="#table-UserChatRooms">UserChatRooms</a>)</span></h3>
+	<ul>
+		<li>None = 0</li>
+		<li>FullNode = 1 &lt;&lt; 0</li>
+		<li>Administrator = 1 &lt;&lt; 1</li>
+	</ul>
+	<ul style="list-style-type: circle;">
+		<li>The <i>FullNode</i> flag means the user must always contain <b>all</b> content of the ChatRoom.</li>
+	</ul>
 
-<h3 id="enum-MessageReactionEnum">MessageReactionEnum <span class="inside">(used by <a href="#table-MessagesReceived">MessagesReceived</a>)</span></h3>
-<ol>
-	<li>None = 0</li>
-	<li>Like</li>
-	<li>Love</li>
-	<li>Laugh</li>
-	<li>Surprised</li>
-	<li>Confused</li>
-	<li>Dislike</li>
-	<li>Angry</li>
-	<li>Sad</li>
-</ol>
+	<h3 id="enum-MessageTypeEnum">MessageTypeEnum <span class="inside">(used by <a href="#table-MessagesSent">MessagesSent</a>)</span></h3>
+	<ol>
+		<li>Unknown = 0</li>
+		<li>Text</li>
+		<li>Voice</li>
+		<li>Image</li>
+		<li>Audio</li>
+		<li>Video</li>
+		<li>Document</li>
+		<li>File</li>
+		<li>Contact <i>(special format inside body)</i></li>
+		<li>Location <i>(special format inside body)</i></li>
+		<li>Forwarded</li>
+	</ol>
 
-<h3 id="enum-FilePurposeEnum">FilePurposeEnum <span class="inside">(used by <a href="#table-Files">Files</a>) - <i style="color: red">to be reviewed</i></span></h3>
-<ul>
-	<li>UserProfilePhoto = 0x02</li>
-	<li>GroupProfilePhoto = 0x03</li>
-	<li>UserProfileWallpaper = 0x04</li>
-	<li>GroupProfileWallpaper = 0x05</li>
-	<br/>
-	<li>ChatRoomVoice = 0x10</li>
-	<li>ChatRoomImage = 0x11</li>
-	<li>ChatRoomAudio = 0x12</li>
-	<li>ChatRoomVideo = 0x13</li>
-	<li>ChatRoomDocument = 0x14</li>
-	<li>ChatRoomFile = 0x15</li>
-</ul>
+	<h3 id="enum-MessageReactionEnum">MessageReactionEnum <span class="inside">(used by <a href="#table-MessagesReceived">MessagesReceived</a>)</span></h3>
+	<ol>
+		<li>None = 0</li>
+		<li>Like</li>
+		<li>Love</li>
+		<li>Laugh</li>
+		<li>Surprised</li>
+		<li>Confused</li>
+		<li>Dislike</li>
+		<li>Angry</li>
+		<li>Sad</li>
+	</ol>
+
+	<h3 id="enum-FilePurposeEnum">FilePurposeEnum <span class="inside">(used by <a href="#table-Files">Files</a>) - <i style="color: red">to be reviewed</i></span></h3>
+	<ul>
+		<li>UserProfilePhoto = 0x02</li>
+		<li>GroupProfilePhoto = 0x03</li>
+		<li>UserProfileWallpaper = 0x04</li>
+		<li style="margin-bottom: 1em;">GroupProfileWallpaper = 0x05</li>
+		<li>ChatRoomVoice = 0x10</li>
+		<li>ChatRoomImage = 0x11</li>
+		<li>ChatRoomAudio = 0x12</li>
+		<li>ChatRoomVideo = 0x13</li>
+		<li>ChatRoomDocument = 0x14</li>
+		<li>ChatRoomFile = 0x15</li>
+	</ul>
 
 </body>
 </html>

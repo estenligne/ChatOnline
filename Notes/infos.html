@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 	<meta charset="utf-8" />
@@ -11,19 +11,19 @@
 			counter-reset: section; /* Set "section" */
 		}
 
-		.numbered h1, .appendix h1 {
-			counter-reset: subsection; /* Set "subsection" */
-		}
+			.numbered h1, .appendix h1 {
+				counter-reset: subsection; /* Set "subsection" */
+			}
 
-		.numbered h1::before {
-			counter-increment: section;
-			content: counter(section) " ";
-		}
+				.numbered h1::before {
+					counter-increment: section;
+					content: counter(section) " ";
+				}
 
-		.numbered h2::before {
-			counter-increment: subsection;
-			content: counter(section) "." counter(subsection) '\00A0' " ";
-		}
+			.numbered h2::before {
+				counter-increment: subsection;
+				content: counter(section) "." counter(subsection) '\00A0' " ";
+			}
 
 		.appendix h2::before {
 			counter-increment: subsection;
@@ -37,91 +37,95 @@
 </head>
 <body>
 
-<div class="numbered">
-	<h1>Structure du <a target="_blank" href="https://github.com/estenligne/ChatOnline">Répertoire</a> du Project</h1>
+	<div class="numbered">
+		<h1>Structure du <a target="_blank" href="https://github.com/estenligne/ChatOnline">Répertoire</a> du Project</h1>
 
-	<h2>Résumé</h2>
-	<p>Il y a 4 dossiers principaux :</p>
-	<ol class="separate">
-		<li>XamApp <i>(Xamarin App)</i></li>
-		<ul>
-			<li>XamApp</li>
-			<li>XamApp.Android</li>
-			<li>XamApp.iOS</li>
+		<h2>Résumé</h2>
+		<p>Il y a 4 dossiers principaux :</p>
+		<ol class="separate">
+			<li>
+				XamApp <i>(Xamarin App)</i>
+				<ul>
+					<li>XamApp</li>
+					<li>XamApp.Android</li>
+					<li>XamApp.iOS</li>
+				</ul>
+			</li>
+			<li>
+				WebAPI
+				<ul>
+					<li>Controllers</li>
+					<li>Helpers</li>
+					<li>Models</li>
+					<li>Services</li>
+					<li>...</li>
+				</ul>
+			</li>
+			<li>
+				Global
+				<ul>
+					<li>Enums</li>
+					<li>Helpers</li>
+					<li>Models</li>
+				</ul>
+			</li>
+			<li>
+				Notes
+				<ul>
+					<li>infos.html</li>
+					<li>database.html</li>
+					<li>...</li>
+				</ul>
+			</li>
+		</ol>
+
+		<h2>XamarinApp</h2>
+		<p>Ce dossier contient 3 sous-dossiers :</p>
+		<ul class="separate">
+			<li><b>XamApp</b> : contient tout ce qui est partagé par le développement pour Android et iOS. Ceci contient je dirais au moins 75 % du code de l’app.</li>
+			<li><b>XamApp.Android</b> : contient tout ce qui est spécifique à Androïde.</li>
+			<li><b>XamApp.iOS</b> : contient tout ce qui est spécifique à iOS. Le développement requit d’avoir un MacBook, ou plus précisément un ordi avec Xcode démarré sur ça.</li>
 		</ul>
-		<li>WebAPI</li>
-		<ul>
-			<li>Controllers</li>
-			<li>Helpers</li>
-			<li>Models</li>
-			<li>Services</li>
-			<li>...</li>
+		<p>Ceux qui veulent participer au développement de l'application mobile, veuillez d'abord suivre <a target="_blank" href="https://docs.microsoft.com/en-us/xamarin/get-started/first-app/?pivots=windows">ce petit cours</a>.</p>
+
+		<h2>WebAPI</h2>
+		<p>Ce dossier contient le code source du serveur. Le déploiement du serveur mettra la version compiler sur Azure Portal. Là-bas les Azure Resources suivantes seront utilisées :</p>
+		<ul class="separate">
+			<li><b>App Service</b> : pour loger le déploiement du WebAPI</li>
+			<li><b>SQL Server / Serveur SQL</b> : pour loger la base des données</li>
+			<li><b>Blob Storage / Compte de Stockage</b> : pour loger les fichiers (envoyés par les utilisateurs de l’app)</li>
+			<li><b>Notification Hub</b> : pour faire le transfert des Push Notifications (que l’app utilise pour informer l’utilisateur qu’un message vient d’arriver)</li>
 		</ul>
-		<li>Global</li>
+		<p>Le développement en local, c'est-a-dire sur son ordinateur sans connexion Internet, utilise un serveur SQL local et un émulateur de compte de stockage local. Il n’y a pas de local pour le Notification Hub, mais l'on peut se connecter sur Internet juste pour utiliser le Notification Hub sur Azure.</p>
+		<p>Ceux qui veulent participer au développement du serveur, veuillez d'abord suivre <a target="_blank" href="https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-web-api?view=aspnetcore-5.0&tabs=visual-studio">ce long cours</a>.</p>
+
+		<h2>Global</h2>
+		<p>Ce dossier contient un simple Visual Studio Library-Project qui sert à synchroniser l’app avec le serveur.</p>
+		<p>Par exemple le sous-dossier <i>Models</i> contient les <a target="_blank" href="https://en.wikipedia.org/wiki/Data_transfer_object">Data Transfer Objects</a> (DTOs) dont leurs données sont converties en textes (c’est-a-dire JSON serialized) par le serveur puis envoyées à l’app comme réponse à une requête HTTP fait par l’app. L’app va recevoir le texte et le convertir au même DTO (c’est-a-dire JSON deserialize) puis utiliser les données obtenues.</p>
+
+		<h2>Notes</h2>
+		<p>Ce dossier contient 2 fichiers principaux :</p>
+		<ol class="separate">
+			<li><a href="infos.html"><b>infos.html</b></a> qui contient toutes les informations générales</li>
+			<li><a href="database.html"><b>database.html</b></a> qui contient la description complète du design et de la structure de la base des données</li>
+		</ol>
+
+		<h1>L’Utilisation de Git / GitHub</h1>
+		<p>Pour tout travail important où l'on saisie du texte, il est toujours important d'utiliser un <a target="_blank" href="https://fr.wikipedia.org/wiki/Logiciel_de_gestion_de_versions">logiciel de gestion de versions</a>. <a target="_blank" href="https://fr.wikipedia.org/wiki/Git">Git</a> est présentement le plus populaire. Vous devez connaître à propos de Git pour comprendre la suite!</p>
+		<h2>La branche principale</h2>
+		<p>Sur Git il y a bien sûr la branche <b><i>master</i></b> qui est la branche principale du répertoire. Cette branche est renommée <b><i>main</i></b> car le nom <i>main</i> est beaucoup plus descriptive. Je ne suis pas du tout d'accord avec <a target="_blank" href="https://www.zdnet.fr/actualites/github-remplacera-master-par-main-a-partir-du-mois-prochain-39909927.htm">la raison de GitHub</a> pour ce changement de nom. Toutefois, je trouve que <i>main</i> est plus descriptif que <i>master</i>.</p>
+		<p>La branche principale contient la version à-jour de tous les travaux développés dans le répertoire du projet. Puisque nous travaillons en équipe, il ne faut jamais faire un <i>git commit</i> dans la branche principale. Il faut plutôt créer une nouvelle branche (copie de <i>main</i>), ou utiliser une ancienne après l'avoir mis à-jour avec <i>main</i>. Quand vous aurez terminé le développement que vous vouliez faire là-bas, il faut <a target="_blank" href="https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request">créer un <i>Pull Request</i></a> avec pour destination la branche <i>main</i>.</p>
+		<p>Aussi, il faut m’ajouter dans le <i>Pull Request</i> comme l’un des gens qui vont examiner le travail fait. Ceci me permet de m’assurer que la branche principale aura toujours du contenu que je suis okay avec. S’il y a des aspects que je ne suis pas okay avec alors je vais vous demander de faire des corrections. Après que j’aie approuvé le <i>Pull Request</i> vous pouvez la compléter, c’est-a-dire valider l’envoie des modifications faites sur la nouvelle branche dans la branche <i>main</i>.</p>
+
+		<h1>Contribuer</h1>
+		<p>Vous pouvez contribuer sur :</p>
 		<ul>
-			<li>Enums</li>
-			<li>Helpers</li>
-			<li>Models</li>
+			<li>Des idées</li>
+			<li>Tester l'app</li>
+			<li>Développement côté serveur (dans <i>WebAPI</i>)</li>
+			<li>Développement côté application mobile (dans <i>XamApp</i>)</li>
 		</ul>
-		<li>Notes</li>
-		<ul>
-			<li>infos.html</li>
-			<li>ideas.html</li>
-			<li>database.html</li>
-			<li>database.sql</li>
-			<li>...</li>
-		</ul>
-	</ol>
-
-	<h2>XamarinApp</h2>
-	<p>Ce dossier contient 3 sous-dossiers :</p>
-	<ul class="separate">
-		<li><b>XamApp</b> : contient tout ce qui est partagé par le développement pour Android et iOS. Ceci contient je dirais au moins 75 % du code de l’app.</li>
-		<li><b>XamApp.Android</b> : contient tout ce qui est spécifique à Androïde.</li>
-		<li><b>XamApp.iOS</b> : contient tout ce qui est spécifique à iOS. Le développement requit d’avoir un MacBook, ou plus précisément un ordi avec Xcode démarré sur ça.</li>
-	</ul>
-	<p>Ceux qui veulent participer au développement de l'application mobile, veuillez d'abord suivre <a target="_blank" href="https://docs.microsoft.com/en-us/xamarin/get-started/first-app/?pivots=windows">ce petit cours</a>.</p>
-
-	<h2>WebAPI</h2>
-	<p>Ce dossier contient le code source du serveur. Le déploiement du serveur mettra la version compiler sur Azure Portal. Là-bas les Azure Resources suivantes seront utilisées :</p>
-	<ul class="separate">
-		<li><b>App Service</b> : pour loger le déploiement du WebAPI</li>
-		<li><b>SQL Server / Serveur SQL</b> : pour loger la base des données</li>
-		<li><b>Blob Storage / Compte de Stockage</b> : pour loger les fichiers (envoyés par les utilisateurs de l’app)</li>
-		<li><b>Notification Hub</b> : pour faire le transfert des Push Notifications (que l’app utilise pour informer l’utilisateur qu’un message vient d’arriver)</li>
-	</ul>
-	<p>Le développement en local, c'est-a-dire sur son ordinateur sans connexion Internet, utilise un serveur SQL local et un émulateur de compte de stockage local. Il n’y a pas de local pour le Notification Hub, mais l'on peut se connecter sur Internet juste pour utiliser le Notification Hub sur Azure.</p>
-	<p>Ceux qui veulent participer au développement du serveur, veuillez d'abord suivre <a target="_blank" href="https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-web-api?view=aspnetcore-5.0&tabs=visual-studio">ce long cours</a>.</p>
-
-	<h2>Global</h2>
-	<p>Ce dossier contient un simple Visual Studio Library-Project qui sert à synchroniser l’app avec le serveur.</p>
-	<p>Par exemple le sous-dossier <i>Models</i> contient ce qu’on appelle les <i>Communication Models</i>, dont leurs données sont converties en textes (c’est-a-dire JSON serialized) par le serveur puis envoyées à l’app comme réponse à une requête HTTP fait par l’app. L’app va recevoir le texte et le convertir au même <i>Communication Model</i> (c’est-a-dire JSON deserialize) puis utiliser les données obtenues.</p>
-
-	<h2>Notes</h2>
-	<p>Ce dossier contient 4 fichiers principaux :</p>
-	<ol class="separate">
-		<li><a href="infos.html"><b>infos.html</b></a> qui contient toutes les informations générales</li>
-		<li><a target="_blank" href="ideas.html"><b>ideas.html</b></a> qui contient, de façon un peu plus organisée, les diverses idées mentionnées dans le groupe</li>
-		<li><a target="_blank" href="database.html"><b>database.html</b></a> qui contient la description complète du design et de la structure de la base des données</li>
-		<li><a target="_blank" href="database.sql"><b>database.sql</b></a> qui contient la définition du schéma de la base des données écrit dans le <a target="_blank" href="https://fr.wikipedia.org/wiki/Structured_Query_Language">langage SQL</a></li>
-	</ol>
-
-	<h1>L’Utilisation de Git / GitHub</h1>
-	<p>Pour tout travail important où l'on saisie du texte, il est toujours important d'utiliser un <a target="_blank" href="https://fr.wikipedia.org/wiki/Logiciel_de_gestion_de_versions">logiciel de gestion de versions</a>. <a target="_blank" href="https://fr.wikipedia.org/wiki/Git">Git</a> est présentement le plus populaire. Vous devez connaître à propos de Git pour comprendre la suite!</p>
-	<h2>La branche principale</h2>
-	<p>Sur Git il y a bien sûr la branche <b><i>master</i></b> qui est la branche principale du répertoire. Cette branche est renommée <b><i>main</i></b> car le nom <i>main</i> est beaucoup plus descriptive. Je ne suis pas du tout d'accord avec <a target="_blank" href="https://www.zdnet.fr/actualites/github-remplacera-master-par-main-a-partir-du-mois-prochain-39909927.htm">la raison de GitHub</a> pour ce changement de nom. Toutefois, je trouve que <i>main</i> est plus descriptif que <i>master</i>.</p>
-	<p>La branche principale contient la version à-jour de tous les travaux développés dans le répertoire du projet. Puisque nous travaillons en équipe, il ne faut jamais faire un <i>git commit</i> dans la branche principale. Il faut plutôt créer une nouvelle branche (copie de <i>main</i>), ou utiliser une ancienne après l'avoir mis à-jour avec <i>main</i>. Quand vous aurez terminé le développement que vous vouliez faire là-bas, il faut <a target="_blank" href="https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request">créer un <i>Pull Request</i></a> avec pour destination la branche <i>main</i>.</p>
-	<p>Aussi, il faut m’ajouter dans le <i>Pull Request</i> comme l’un des gens qui vont examiner le travail fait. Ceci me permet de m’assurer que la branche principale aura toujours du contenu que je suis okay avec. S’il y a des aspects que je ne suis pas okay avec alors je vais vous demander de faire des corrections. Après que j’aie approuvé le <i>Pull Request</i> vous pouvez la compléter, c’est-a-dire valider l’envoie des modifications faites sur la nouvelle branche dans la branche <i>main</i>.</p>
-
-	<h1>Contribuer</h1>
-	<p>Vous pouvez contribuer sur :</p>
-	<ul>
-		<li>Des idées</li>
-		<li>Tester l'app</li>
-		<li>Développement côté serveur (dans <i>WebAPI</i>)</li>
-		<li>Développement côté application mobile (dans <i>XamApp</i>)</li>
-	</ul>
-</div>
+	</div>
 
 </body>
 </html>

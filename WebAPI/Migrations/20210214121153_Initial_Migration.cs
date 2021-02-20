@@ -197,6 +197,7 @@ namespace WebAPI.Migrations
                     About = table.Column<string>(type: DataType.NVarCharMax, maxLength: 4095, nullable: true),
                     PhotoFileId = table.Column<long>(type: "bigint", nullable: true),
                     WallpaperFileId = table.Column<long>(type: "bigint", nullable: true),
+                    DateCreated = table.Column<DateTime>(type: DataType.DateTime, nullable: false),
                     DateDeleted = table.Column<DateTime>(type: DataType.DateTime, nullable: true)
                 },
                 constraints: table =>
@@ -234,6 +235,7 @@ namespace WebAPI.Migrations
                     About = table.Column<string>(type: DataType.NVarCharMax, maxLength: 4095, nullable: true),
                     PhotoFileId = table.Column<long>(type: "bigint", nullable: true),
                     WallpaperFileId = table.Column<long>(type: "bigint", nullable: true),
+                    DateCreated = table.Column<DateTime>(type: DataType.DateTime, nullable: false),
                     DateDeleted = table.Column<DateTime>(type: DataType.DateTime, nullable: true)
                 },
                 constraints: table =>
