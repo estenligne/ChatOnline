@@ -27,10 +27,10 @@ namespace WebAPI.Migrations
                     .UseIdentityColumn();
 
                 b.Property<string>("ClaimType")
-                    .HasColumnType("nvarchar(450)");
+                    .HasColumnType(DataType.String(-1));
 
                 b.Property<string>("ClaimValue")
-                    .HasColumnType("nvarchar(450)");
+                    .HasColumnType(DataType.String(-1));
 
                 b.Property<long>("RoleId")
                     .HasColumnType("bigint");
@@ -50,10 +50,10 @@ namespace WebAPI.Migrations
                     .UseIdentityColumn();
 
                 b.Property<string>("ClaimType")
-                    .HasColumnType("nvarchar(450)");
+                    .HasColumnType(DataType.String(-1));
 
                 b.Property<string>("ClaimValue")
-                    .HasColumnType("nvarchar(450)");
+                    .HasColumnType(DataType.String(-1));
 
                 b.Property<long>("UserId")
                     .HasColumnType("bigint");
@@ -68,13 +68,13 @@ namespace WebAPI.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<long>", b =>
             {
                 b.Property<string>("LoginProvider")
-                    .HasColumnType("nvarchar(450)");
+                    .HasColumnType(DataType.String(450));
 
                 b.Property<string>("ProviderKey")
-                    .HasColumnType("nvarchar(450)");
+                    .HasColumnType(DataType.String(450));
 
                 b.Property<string>("ProviderDisplayName")
-                    .HasColumnType("nvarchar(450)");
+                    .HasColumnType(DataType.String(-1));
 
                 b.Property<long>("UserId")
                     .HasColumnType("bigint");
@@ -107,13 +107,13 @@ namespace WebAPI.Migrations
                     .HasColumnType("bigint");
 
                 b.Property<string>("LoginProvider")
-                    .HasColumnType("nvarchar(450)");
+                    .HasColumnType(DataType.String(450));
 
                 b.Property<string>("Name")
-                    .HasColumnType("nvarchar(450)");
+                    .HasColumnType(DataType.String(450));
 
                 b.Property<string>("Value")
-                    .HasColumnType("nvarchar(450)");
+                    .HasColumnType(DataType.String(-1));
 
                 b.HasKey("UserId", "LoginProvider", "Name");
 
@@ -130,15 +130,15 @@ namespace WebAPI.Migrations
                 b.Property<string>("ConcurrencyStamp")
                     .IsConcurrencyToken()
                     .HasMaxLength(256)
-                    .HasColumnType("nvarchar(256)");
+                    .HasColumnType(DataType.String(256));
 
                 b.Property<string>("Name")
                     .HasMaxLength(256)
-                    .HasColumnType("nvarchar(256)");
+                    .HasColumnType(DataType.String(256));
 
                 b.Property<string>("NormalizedName")
                     .HasMaxLength(256)
-                    .HasColumnType("nvarchar(256)");
+                    .HasColumnType(DataType.String(256));
 
                 b.HasKey("Id");
 
@@ -163,50 +163,50 @@ namespace WebAPI.Migrations
                 b.Property<string>("ConcurrencyStamp")
                     .IsConcurrencyToken()
                     .HasMaxLength(256)
-                    .HasColumnType("nvarchar(256)");
+                    .HasColumnType(DataType.String(256));
 
                 b.Property<string>("Email")
                     .HasMaxLength(256)
-                    .HasColumnType("nvarchar(256)");
+                    .HasColumnType(DataType.String(256));
 
                 b.Property<bool>("EmailConfirmed")
-                    .HasColumnType("bit");
+                    .HasColumnType(DataType.Bool);
 
                 b.Property<bool>("LockoutEnabled")
-                    .HasColumnType("bit");
+                    .HasColumnType(DataType.Bool);
 
                 b.Property<DateTimeOffset?>("LockoutEnd")
                     .HasColumnType(DataType.Timestamp);
 
                 b.Property<string>("NormalizedEmail")
                     .HasMaxLength(256)
-                    .HasColumnType("nvarchar(256)");
+                    .HasColumnType(DataType.String(256));
 
                 b.Property<string>("NormalizedUserName")
                     .HasMaxLength(256)
-                    .HasColumnType("nvarchar(256)");
+                    .HasColumnType(DataType.String(256));
 
                 b.Property<string>("PasswordHash")
                     .HasMaxLength(256)
-                    .HasColumnType("nvarchar(256)");
+                    .HasColumnType(DataType.String(256));
 
                 b.Property<string>("PhoneNumber")
                     .HasMaxLength(256)
-                    .HasColumnType("nvarchar(256)");
+                    .HasColumnType(DataType.String(256));
 
                 b.Property<bool>("PhoneNumberConfirmed")
-                    .HasColumnType("bit");
+                    .HasColumnType(DataType.Bool);
 
                 b.Property<string>("SecurityStamp")
                     .HasMaxLength(256)
-                    .HasColumnType("nvarchar(256)");
+                    .HasColumnType(DataType.String(256));
 
                 b.Property<bool>("TwoFactorEnabled")
-                    .HasColumnType("bit");
+                    .HasColumnType(DataType.Bool);
 
                 b.Property<string>("UserName")
                     .HasMaxLength(256)
-                    .HasColumnType("nvarchar(256)");
+                    .HasColumnType(DataType.String(256));
 
                 b.HasKey("Id");
 
@@ -259,7 +259,7 @@ namespace WebAPI.Migrations
 
                 b.Property<string>("Name")
                     .HasMaxLength(255)
-                    .HasColumnType("nvarchar(255)");
+                    .HasColumnType(DataType.String(255));
 
                 b.Property<int>("Purpose")
                     .HasColumnType("int");
@@ -286,7 +286,7 @@ namespace WebAPI.Migrations
 
                 b.Property<string>("About")
                     .HasMaxLength(4095)
-                    .HasColumnType(DataType.NVarCharMax);
+                    .HasColumnType(DataType.String(-1));
 
                 b.Property<long>("CreatorId")
                     .HasColumnType("bigint");
@@ -299,7 +299,7 @@ namespace WebAPI.Migrations
 
                 b.Property<string>("Groupname")
                     .HasMaxLength(63)
-                    .HasColumnType("nvarchar(63)");
+                    .HasColumnType(DataType.String(63));
 
                 b.Property<long?>("PhotoFileId")
                     .HasColumnType("bigint");
@@ -367,7 +367,7 @@ namespace WebAPI.Migrations
 
                 b.Property<string>("Body")
                     .HasMaxLength(16383)
-                    .HasColumnType(DataType.NVarCharMax);
+                    .HasColumnType(DataType.String(-1));
 
                 b.Property<DateTime?>("DateDeleted")
                     .HasColumnType(DataType.DateTime);
@@ -423,7 +423,7 @@ namespace WebAPI.Migrations
                     .HasColumnType(DataType.DateTime);
 
                 b.Property<bool>("IsPrivate")
-                    .HasColumnType("bit");
+                    .HasColumnType(DataType.Bool);
 
                 b.HasKey("Id");
 
@@ -493,11 +493,11 @@ namespace WebAPI.Migrations
 
                 b.Property<string>("About")
                     .HasMaxLength(4095)
-                    .HasColumnType(DataType.NVarCharMax);
+                    .HasColumnType(DataType.String(-1));
 
                 b.Property<string>("Availability")
                     .HasMaxLength(63)
-                    .HasColumnType("nvarchar(63)");
+                    .HasColumnType(DataType.String(63));
 
                 b.Property<DateTime>("DateCreated")
                     .HasColumnType(DataType.DateTime);
@@ -513,7 +513,7 @@ namespace WebAPI.Migrations
 
                 b.Property<string>("Username")
                     .HasMaxLength(63)
-                    .HasColumnType("nvarchar(63)");
+                    .HasColumnType(DataType.String(63));
 
                 b.Property<long?>("WallpaperFileId")
                     .HasColumnType("bigint");

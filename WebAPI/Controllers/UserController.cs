@@ -60,7 +60,13 @@ namespace WebAPI.Controllers
                 if (user != null)
                     return Conflict($"User account {email} already exists.");
 
-                user = new ApplicationUser { UserName = email, Email = email };
+                user = new ApplicationUser
+                {
+                    UserName = email,
+                    Email = email,
+                    PhoneNumber = userDto.PhoneNumber,
+                };
+
                 var result = await _userManager.CreateAsync(user, userDto.Password);
                 if (result.Succeeded)
                 {

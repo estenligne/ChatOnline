@@ -15,9 +15,9 @@ namespace WebAPI.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true)
+                    Name = table.Column<string>(type: DataType.String(256), maxLength: 256, nullable: true),
+                    NormalizedName = table.Column<string>(type: DataType.String(256), maxLength: 256, nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: DataType.String(256), maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -31,19 +31,19 @@ namespace WebAPI.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    SecurityStamp = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    UserName = table.Column<string>(type: DataType.String(256), maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: DataType.String(256), maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: DataType.String(256), maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: DataType.String(256), maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: DataType.Bool, nullable: false),
+                    PasswordHash = table.Column<string>(type: DataType.String(256), maxLength: 256, nullable: true),
+                    SecurityStamp = table.Column<string>(type: DataType.String(256), maxLength: 256, nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: DataType.String(256), maxLength: 256, nullable: true),
+                    PhoneNumber = table.Column<string>(type: DataType.String(256), maxLength: 256, nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: DataType.Bool, nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: DataType.Bool, nullable: false),
                     LockoutEnd = table.Column<DateTimeOffset>(type: DataType.Timestamp, nullable: true),
-                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    LockoutEnabled = table.Column<bool>(type: DataType.Bool, nullable: false),
                     AccessFailedCount = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -59,8 +59,8 @@ namespace WebAPI.Migrations
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     RoleId = table.Column<long>(type: "bigint", nullable: false),
-                    ClaimType = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    ClaimValue = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    ClaimType = table.Column<string>(type: DataType.String(-1), nullable: true),
+                    ClaimValue = table.Column<string>(type: DataType.String(-1), nullable: true)
                 },
                 constraints: table =>
                 {
@@ -81,8 +81,8 @@ namespace WebAPI.Migrations
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<long>(type: "bigint", nullable: false),
-                    ClaimType = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    ClaimValue = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    ClaimType = table.Column<string>(type: DataType.String(-1), nullable: true),
+                    ClaimValue = table.Column<string>(type: DataType.String(-1), nullable: true)
                 },
                 constraints: table =>
                 {
@@ -99,9 +99,9 @@ namespace WebAPI.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ProviderDisplayName = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    LoginProvider = table.Column<string>(type: DataType.String(450), nullable: false),
+                    ProviderKey = table.Column<string>(type: DataType.String(450), nullable: false),
+                    ProviderDisplayName = table.Column<string>(type: DataType.String(-1), nullable: true),
                     UserId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
@@ -144,9 +144,9 @@ namespace WebAPI.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<long>(type: "bigint", nullable: false),
-                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Value = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    LoginProvider = table.Column<string>(type: DataType.String(450), nullable: false),
+                    Name = table.Column<string>(type: DataType.String(450), nullable: false),
+                    Value = table.Column<string>(type: DataType.String(-1), nullable: true)
                 },
                 constraints: table =>
                 {
@@ -166,7 +166,7 @@ namespace WebAPI.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    Name = table.Column<string>(type: DataType.String(255), maxLength: 255, nullable: true),
                     Size = table.Column<int>(type: "int", nullable: false),
                     Purpose = table.Column<int>(type: "int", nullable: false),
                     UploaderId = table.Column<long>(type: "bigint", nullable: false),
@@ -192,9 +192,9 @@ namespace WebAPI.Migrations
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<long>(type: "bigint", nullable: false),
-                    Username = table.Column<string>(type: "nvarchar(63)", maxLength: 63, nullable: true),
-                    Availability = table.Column<string>(type: "nvarchar(63)", maxLength: 63, nullable: true),
-                    About = table.Column<string>(type: DataType.NVarCharMax, maxLength: 4095, nullable: true),
+                    Username = table.Column<string>(type: DataType.String(63), maxLength: 63, nullable: true),
+                    Availability = table.Column<string>(type: DataType.String(63), maxLength: 63, nullable: true),
+                    About = table.Column<string>(type: DataType.String(-1), maxLength: 4095, nullable: true),
                     PhotoFileId = table.Column<long>(type: "bigint", nullable: true),
                     WallpaperFileId = table.Column<long>(type: "bigint", nullable: true),
                     DateCreated = table.Column<DateTime>(type: DataType.DateTime, nullable: false),
@@ -231,8 +231,8 @@ namespace WebAPI.Migrations
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CreatorId = table.Column<long>(type: "bigint", nullable: false),
-                    Groupname = table.Column<string>(type: "nvarchar(63)", maxLength: 63, nullable: true),
-                    About = table.Column<string>(type: DataType.NVarCharMax, maxLength: 4095, nullable: true),
+                    Groupname = table.Column<string>(type: DataType.String(63), maxLength: 63, nullable: true),
+                    About = table.Column<string>(type: DataType.String(-1), maxLength: 4095, nullable: true),
                     PhotoFileId = table.Column<long>(type: "bigint", nullable: true),
                     WallpaperFileId = table.Column<long>(type: "bigint", nullable: true),
                     DateCreated = table.Column<DateTime>(type: DataType.DateTime, nullable: false),
@@ -293,7 +293,7 @@ namespace WebAPI.Migrations
                     ChatRoomId = table.Column<long>(type: "bigint", nullable: false),
                     CreatorId = table.Column<long>(type: "bigint", nullable: false),
                     DateCreated = table.Column<DateTime>(type: DataType.DateTime, nullable: false),
-                    IsPrivate = table.Column<bool>(type: "bit", nullable: false)
+                    IsPrivate = table.Column<bool>(type: DataType.Bool, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -371,7 +371,7 @@ namespace WebAPI.Migrations
                     MessageType = table.Column<int>(type: "int", nullable: false),
                     LinkedId = table.Column<long>(type: "bigint", nullable: true),
                     AuthorId = table.Column<long>(type: "bigint", nullable: true),
-                    Body = table.Column<string>(type: DataType.NVarCharMax, maxLength: 16383, nullable: true),
+                    Body = table.Column<string>(type: DataType.String(-1), maxLength: 16383, nullable: true),
                     DateSent = table.Column<DateTime>(type: DataType.DateTime, nullable: false),
                     DateReceicedByServer = table.Column<DateTime>(type: DataType.DateTime, nullable: false),
                     DateDeleted = table.Column<DateTime>(type: DataType.DateTime, nullable: true),

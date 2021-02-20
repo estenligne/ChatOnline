@@ -15,6 +15,10 @@ sudo snap install dotnet-runtime-50 --classic
 # Install dotnet-ef:
 dotnet tool install --global dotnet-ef
 
+# Add .NET Core SDK tools
+cat >> ~/.bash_profile
+export PATH="$PATH:/home/yemelitc/.dotnet/tools"
+
 # Get GitHub repository:
 git clone https://github.com/estenligne/ChatOnline
 
