@@ -9,9 +9,11 @@ namespace WebAPI
         public MappingProfile()
         {
             CreateMap<ApplicationUser, ApplicationUserDTO>().ReverseMap();
-            CreateMap<File, FileDTO>().ReverseMap();
+            CreateMap<File, FileDTO>();
             CreateMap<UserProfile, UserProfileDTO>().ReverseMap();
             CreateMap<GroupProfile, GroupProfileDTO>().ReverseMap();
+            CreateMap<ChatRoom, ChatRoomDTO>();
+            CreateMap<UserChatRoom, UserChatRoomDTO>();
         }
     }
 }

@@ -26,9 +26,9 @@ namespace WebAPI.Controllers
             try
             {
                 var userProfile = await dbc.UserProfiles
-                                            .Include(x => x.User)
                                             .Include(x => x.PhotoFile)
-                                            .Where(x => x.User.UserName == this.User.Identity.Name)
+                                            .Include(x => x.WallpaperFile)
+                                            .Where(x => x.User.UserName == User.Identity.Name)
                                             .FirstOrDefaultAsync();
 
                 if (userProfile == null)
@@ -50,7 +50,7 @@ namespace WebAPI.Controllers
             try
             {
                 var userProfile = await dbc.UserProfiles
-                                            .Where(x => x.User.UserName == this.User.Identity.Name)
+                                            .Where(x => x.User.UserName == User.Identity.Name)
                                             .FirstOrDefaultAsync();
 
                 if (userProfile == null)
@@ -92,7 +92,10 @@ namespace WebAPI.Controllers
                 if (validationResults != null)
                     return BadRequest(validationResults);
 
-                var user = await dbc.Users.FirstAsync(u => u.UserName == this.User.Identity.Name);
+                if (userProfileDto.DateDeleted != null)
+                    return Unauthorized("Cannot delete user profile!");
+
+                var user = await dbc.Users.FirstAsync(u => u.UserName == User.Identity.Name);
                 if (user.Id != userProfileDto.UserId)
                     return Unauthorized("UserId does not match!");
 

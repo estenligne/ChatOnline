@@ -189,6 +189,7 @@
 			<tr><td>FK?</td><td>BlockerId</td><td><a href="#table-UserChatRooms">UserChatRooms</a></td></tr>
 			<tr><td>DateTime</td><td>DateAdded</td><td></td></tr>
 			<tr><td>DateTime?</td><td>DateBlocked</td><td></td></tr>
+			<tr><td>DateTime?</td><td>DateDeleted</td><td></td></tr>
 			<tr><td>DateTime?</td><td>DateExited</td><td></td></tr>
 			<tr><td>DateTime?</td><td>DateMuted</td><td></td></tr>
 			<tr><td>TimeSpan?</td><td>MuteDuration</td><td></td></tr>
@@ -205,7 +206,7 @@
 			<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
 		</thead>
 		<tbody>
-			<tr><td>string[63]</td><td>TagName</td><td></td></tr>
+			<tr><td>string[63]</td><td>Name</td><td></td></tr>
 			<tr><td>FK</td><td>ChatRoomId</td><td><a href="#table-ChatRooms">ChatRooms</a></td></tr>
 			<tr><td>FK</td><td>CreatorId</td><td><a href="#table-UserProfiles">UserProfiles</a></td></tr>
 			<tr><td>DateTime</td><td>DateCreated</td><td></td></tr>

@@ -425,6 +425,10 @@ namespace WebAPI.Migrations
                 b.Property<bool>("IsPrivate")
                     .HasColumnType(DataType.Bool);
 
+                b.Property<string>("Name")
+                    .HasMaxLength(63)
+                    .HasColumnType(DataType.String(63));
+
                 b.HasKey("Id");
 
                 b.HasIndex("ChatRoomId");
@@ -454,6 +458,9 @@ namespace WebAPI.Migrations
                     .HasColumnType(DataType.DateTime);
 
                 b.Property<DateTime?>("DateBlocked")
+                    .HasColumnType(DataType.DateTime);
+
+                b.Property<DateTime?>("DateDeleted")
                     .HasColumnType(DataType.DateTime);
 
                 b.Property<DateTime?>("DateExited")

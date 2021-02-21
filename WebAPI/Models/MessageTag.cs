@@ -9,6 +9,9 @@ namespace WebAPI.Models
     {
         public long Id { get; set; }
 
+        [MaxLength(63)]
+        public string Name { get; set; }
+
         public long ChatRoomId { get; set; }
         public virtual ChatRoom ChatRoom { get; set; }
 

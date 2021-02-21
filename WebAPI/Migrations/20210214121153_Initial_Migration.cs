@@ -290,6 +290,7 @@ namespace WebAPI.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: DataType.String(63), maxLength: 63, nullable: true),
                     ChatRoomId = table.Column<long>(type: "bigint", nullable: false),
                     CreatorId = table.Column<long>(type: "bigint", nullable: false),
                     DateCreated = table.Column<DateTime>(type: DataType.DateTime, nullable: false),
@@ -326,6 +327,7 @@ namespace WebAPI.Migrations
                     BlockerId = table.Column<long>(type: "bigint", nullable: true),
                     DateAdded = table.Column<DateTime>(type: DataType.DateTime, nullable: false),
                     DateBlocked = table.Column<DateTime>(type: DataType.DateTime, nullable: true),
+                    DateDeleted = table.Column<DateTime>(type: DataType.DateTime, nullable: true),
                     DateExited = table.Column<DateTime>(type: DataType.DateTime, nullable: true),
                     DateMuted = table.Column<DateTime>(type: DataType.DateTime, nullable: true),
                     MuteDuration = table.Column<TimeSpan>(type: "time", nullable: true)

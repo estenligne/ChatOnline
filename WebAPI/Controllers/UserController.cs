@@ -39,7 +39,7 @@ namespace WebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<ApplicationUserDTO>> GetUser()
         {
-            var user = await _userManager.FindByNameAsync(this.User.Identity.Name);
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
             var userDto = _mapper.Map<ApplicationUserDTO>(user);
             return userDto;
         }
@@ -193,7 +193,7 @@ namespace WebAPI.Controllers
             try
             {
                 await _signInManager.SignOutAsync();
-                _logger.LogInformation($"User {this.User.Identity.Name} logged out.");
+                _logger.LogInformation($"User {User.Identity.Name} logged out.");
                 return NoContent();
             }
             catch (Exception ex)
