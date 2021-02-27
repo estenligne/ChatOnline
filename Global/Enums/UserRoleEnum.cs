@@ -4,6 +4,6 @@
     {
         None = 0,
         FullNode = 1 << 0,
-        Administrator = 1 << 1,
+        GroupAdmin = 1 << 1,
     }
 }

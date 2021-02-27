@@ -231,7 +231,8 @@ namespace WebAPI.Migrations
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CreatorId = table.Column<long>(type: "bigint", nullable: false),
-                    Groupname = table.Column<string>(type: DataType.String(63), maxLength: 63, nullable: true),
+                    GroupName = table.Column<string>(type: DataType.String(63), maxLength: 63, nullable: true),
+                    JoinToken = table.Column<string>(type: DataType.String(63), maxLength: 63, nullable: true),
                     About = table.Column<string>(type: DataType.String(-1), maxLength: 4095, nullable: true),
                     PhotoFileId = table.Column<long>(type: "bigint", nullable: true),
                     WallpaperFileId = table.Column<long>(type: "bigint", nullable: true),

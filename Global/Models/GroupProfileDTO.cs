@@ -10,7 +10,10 @@ namespace Global.Models
         public long CreatorId { get; set; }
 
         [StringLength(63)]
-        public string Groupname { get; set; }
+        public string GroupName { get; set; }
+
+        [StringLength(63)]
+        public string JoinToken { get; set; }
 
         [StringLength(4095)]
         public string About { get; set; }

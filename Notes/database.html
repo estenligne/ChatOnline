@@ -151,7 +151,8 @@
 		</thead>
 		<tbody>
 			<tr><td>FK</td><td>CreatorId</td><td><a href="#table-UserProfiles">UserProfiles</a></td></tr>
-			<tr><td>string[63]</td><td>Groupname</td><td></td></tr>
+			<tr><td>string[63]</td><td>GroupName</td><td></td></tr>
+			<tr><td>string[63]</td><td>JoinToken</td><td></td></tr>
 			<tr><td>string[4095]</td><td>About</td><td></td></tr>
 			<tr><td>FK?</td><td>PhotoFileId</td><td><a href="#table-Files">Files</a></td></tr>
 			<tr><td>FK?</td><td>WallpaperFileId</td><td><a href="#table-Files">Files</a></td></tr>
@@ -305,7 +306,7 @@
 	<ul>
 		<li>None = 0</li>
 		<li>FullNode = 1 &lt;&lt; 0</li>
-		<li>Administrator = 1 &lt;&lt; 1</li>
+		<li>GroupAdmin = 1 &lt;&lt; 1</li>
 	</ul>
 	<ul style="list-style-type: circle;">
 		<li>The <i>FullNode</i> flag means the user must always contain <b>all</b> content of the ChatRoom.</li>

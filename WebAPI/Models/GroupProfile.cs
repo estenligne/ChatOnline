@@ -13,7 +13,10 @@ namespace WebAPI.Models
         public virtual UserProfile Creator { get; set; }
 
         [MaxLength(63)]
-        public string Groupname { get; set; }
+        public string GroupName { get; set; }
+
+        [MaxLength(63)]
+        public string JoinToken { get; set; }
 
         [MaxLength(4095)]
         public string About { get; set; }

@@ -299,7 +299,11 @@ namespace WebAPI.Migrations
                 b.Property<DateTime?>("DateDeleted")
                     .HasColumnType(DataType.DateTime);
 
-                b.Property<string>("Groupname")
+                b.Property<string>("GroupName")
+                    .HasMaxLength(63)
+                    .HasColumnType(DataType.String(63));
+
+                b.Property<string>("JoinToken")
                     .HasMaxLength(63)
                     .HasColumnType(DataType.String(63));
 
