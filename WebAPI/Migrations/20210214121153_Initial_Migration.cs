@@ -374,6 +374,7 @@ namespace WebAPI.Migrations
                     MessageType = table.Column<int>(type: "int", nullable: false),
                     LinkedId = table.Column<long>(type: "bigint", nullable: true),
                     AuthorId = table.Column<long>(type: "bigint", nullable: true),
+                    FileId = table.Column<long>(type: "bigint", nullable: true),
                     Body = table.Column<string>(type: DataType.String(-1), maxLength: 16383, nullable: true),
                     DateSent = table.Column<DateTime>(type: DataType.DateTime, nullable: false),
                     DateReceicedByServer = table.Column<DateTime>(type: DataType.DateTime, nullable: false),
@@ -405,6 +406,12 @@ namespace WebAPI.Migrations
                         name: "FK_MessagesSent_UserProfiles_AuthorId",
                         column: x => x.AuthorId,
                         principalTable: "UserProfiles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_MessagesSent_Files_FileId",
+                        column: x => x.FileId,
+                        principalTable: "Files",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -519,6 +526,11 @@ namespace WebAPI.Migrations
                 name: "IX_MessagesSent_AuthorId",
                 table: "MessagesSent",
                 column: "AuthorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MessagesSent_FileId",
+                table: "MessagesSent",
+                column: "FileId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MessagesSent_LinkedId",

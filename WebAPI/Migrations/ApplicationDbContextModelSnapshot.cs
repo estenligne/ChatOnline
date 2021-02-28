@@ -385,6 +385,9 @@ namespace WebAPI.Migrations
                 b.Property<DateTime?>("DateStarred")
                     .HasColumnType(DataType.DateTime);
 
+                b.Property<long?>("FileId")
+                    .HasColumnType("bigint");
+
                 b.Property<long?>("LinkedId")
                     .HasColumnType("bigint");
 
@@ -400,6 +403,8 @@ namespace WebAPI.Migrations
                 b.HasKey("Id");
 
                 b.HasIndex("AuthorId");
+
+                b.HasIndex("FileId");
 
                 b.HasIndex("LinkedId");
 
@@ -658,6 +663,10 @@ namespace WebAPI.Migrations
                 b.HasOne("WebAPI.Models.UserProfile", "Author")
                     .WithMany()
                     .HasForeignKey("AuthorId");
+
+                b.HasOne("WebAPI.Models.File", "File")
+                    .WithMany()
+                    .HasForeignKey("FileId");
 
                 b.HasOne("WebAPI.Models.MessageSent", "Linked")
                     .WithMany()

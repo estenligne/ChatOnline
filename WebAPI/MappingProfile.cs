@@ -14,6 +14,8 @@ namespace WebAPI
             CreateMap<GroupProfile, GroupProfileDTO>().ReverseMap();
             CreateMap<ChatRoom, ChatRoomDTO>();
             CreateMap<UserChatRoom, UserChatRoomDTO>();
+            CreateMap<MessageTag, MessageTagDTO>().ReverseMap();
+            CreateMap<MessageSent, MessageSentDTO>().ReverseMap();
         }
     }
 }
