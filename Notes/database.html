@@ -298,8 +298,9 @@
 	<h3 id="enum-ChatRoomTypeEnum">ChatRoomTypeEnum <span class="inside">(used by <a href="#table-ChatRooms">ChatRooms</a>)</span></h3>
 	<ul>
 		<li>Unknown = 0</li>
-		<li>Private = 1</li>
-		<li>Group = 2</li>
+		<li>Private = 1 &lt;&lt; 0</li>
+		<li>Group = 1 &lt;&lt; 1</li>
+		<li>Pinned = 1 &lt;&lt; 2</li>
 	</ul>
 
 	<h3 id="enum-UserRoleEnum">UserRoleEnum <span class="inside">(used by <a href="#table-UserChatRooms">UserChatRooms</a>)</span></h3>
