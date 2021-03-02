@@ -70,7 +70,7 @@ namespace WebAPI.Controllers
 
                 var groupProfile = dbc.GroupProfiles.Find(id);
                 if (groupProfile.CreatorId != userChatRoom.UserProfileId)
-                    return Unauthorized("Cannot delete group profile!");
+                    return Forbid("Cannot delete group profile!");
 
                 groupProfile.DateDeleted = DateTime.UtcNow;
                 await dbc.SaveChangesAsync();
@@ -97,22 +97,22 @@ namespace WebAPI.Controllers
                     return NotFound("Group profile not found.");
 
                 if ((userChatRoom.UserRole & UserRoleEnum.GroupAdmin) == 0)
-                    return Unauthorized("Cannot update group profile!");
+                    return Forbid("Cannot update group profile!");
 
                 if (groupProfileDto.DateDeleted != null)
-                    return Unauthorized("Cannot delete group profile!");
+                    return Forbid("Cannot delete group profile!");
 
                 var groupProfile = dbc.GroupProfiles.Find(groupProfileDto.Id);
 
                 if (groupProfileDto.CreatorId != groupProfile.CreatorId)
-                    return Unauthorized("Cannot update group creator!");
+                    return Forbid("Cannot update group creator!");
 
                 if (groupProfileDto.JoinToken != groupProfile.JoinToken &&
                     groupProfileDto.CreatorId != userChatRoom.UserProfileId)
-                    return Unauthorized("Cannot update group JoinToken!");
+                    return Forbid("Cannot update group JoinToken!");
 
                 if (groupProfileDto.DateCreated != groupProfile.DateCreated)
-                    return Unauthorized("Cannot update group DateCreated!");
+                    return Forbid("Cannot update group DateCreated!");
 
                 groupProfile = _mapper.Map(groupProfileDto, groupProfile);
                 await dbc.SaveChangesAsync();
@@ -136,17 +136,17 @@ namespace WebAPI.Controllers
                     return BadRequest(validationResults);
 
                 if (groupProfileDto.Id != 0)
-                    return Unauthorized("Id does not match!");
+                    return BadRequest("Id must be 0!");
 
                 if (groupProfileDto.DateDeleted != null)
-                    return Unauthorized("Cannot delete group profile!");
+                    return Forbid("Cannot delete group profile!");
 
                 var userProfile = await dbc.UserProfiles.FirstOrDefaultAsync(x => x.User.UserName == User.Identity.Name);
                 if (userProfile == null)
                     return NotFound("User profile not found.");
 
                 if (groupProfileDto.CreatorId != userProfile.Id)
-                    return Unauthorized("CreatorId does not match!");
+                    return Forbid("CreatorId does not match!");
 
                 var dateCreated = DateTime.UtcNow;
                 groupProfileDto.DateCreated = dateCreated;
@@ -194,7 +194,7 @@ namespace WebAPI.Controllers
                     return NotFound("Group's chat room not found.");
 
                 if (chatRoom.GroupProfile.JoinToken != token)
-                    return Unauthorized("Invalid token value!");
+                    return Forbid("Invalid token value!");
 
                 var userProfile = await dbc.UserProfiles.FirstOrDefaultAsync(x => x.User.UserName == User.Identity.Name);
                 if (userProfile == null)

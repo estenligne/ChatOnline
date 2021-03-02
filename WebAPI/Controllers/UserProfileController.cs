@@ -57,7 +57,7 @@ namespace WebAPI.Controllers
                     return NotFound("User profile not found.");
 
                 if (userProfile.Id != id)
-                    return Unauthorized("Id does not match!");
+                    return Forbid("This is not your user profile!");
 
                 userProfile.DateDeleted = DateTime.UtcNow;
                 await dbc.SaveChangesAsync();
@@ -93,11 +93,11 @@ namespace WebAPI.Controllers
                     return BadRequest(validationResults);
 
                 if (userProfileDto.DateDeleted != null)
-                    return Unauthorized("Cannot delete user profile!");
+                    return Forbid("Cannot delete user profile!");
 
                 var user = await dbc.Users.FirstAsync(u => u.UserName == User.Identity.Name);
                 if (user.Id != userProfileDto.UserId)
-                    return Unauthorized("UserId does not match!");
+                    return Forbid("UserId does not match!");
 
                 var userProfile = await dbc.UserProfiles.FirstOrDefaultAsync(x => x.User.Id == user.Id);
                 if (userProfile == null)
@@ -106,7 +106,7 @@ namespace WebAPI.Controllers
                         return NotFound("User profile not found.");
 
                     if (userProfileDto.Id != 0)
-                        return Unauthorized("Id does not match!");
+                        return BadRequest("Id must be 0!");
 
                     userProfileDto.DateCreated = DateTime.UtcNow;
                     userProfile = _mapper.Map<UserProfile>(userProfileDto);
@@ -123,10 +123,10 @@ namespace WebAPI.Controllers
                         return Conflict("User profile already exists.");
 
                     if (userProfileDto.Id != userProfile.Id)
-                        return Unauthorized("Id does not match!");
+                        return Forbid("Id does not match!");
 
                     if (userProfileDto.DateCreated != userProfile.DateCreated)
-                        return Unauthorized("Cannot update DateCreated!");
+                        return Forbid("Cannot update DateCreated!");
 
                     userProfile = _mapper.Map(userProfileDto, userProfile);
                     await dbc.SaveChangesAsync();

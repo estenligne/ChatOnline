@@ -107,10 +107,10 @@ namespace WebAPI.Controllers
                     return BadRequest(validationResults);
 
                 if (messageSentDto.Id != 0)
-                    return Unauthorized("Id does not match!");
+                    return BadRequest("Id must be 0!");
 
                 if (messageSentDto.DateDeleted != null)
-                    return Unauthorized("Cannot delete this message!");
+                    return Forbid("Cannot delete this message!");
 
                 if (messageSentDto.AuthorId != null && messageSentDto.LinkedId == null)
                     return BadRequest("No linked message provided for the forwarded message.");
@@ -137,21 +137,21 @@ namespace WebAPI.Controllers
                         var linkedSender = dbc.UserChatRooms.Find(linked.SenderId);
 
                         if (messageSentDto.AuthorId != null && messageSentDto.AuthorId != linkedSender.UserProfileId)
-                            return Unauthorized("The author of this forwarded message is incorrect!");
+                            return Forbid("The author of this forwarded message is incorrect!");
                     }
                     else
                     {
                         if (messageSentDto.AuthorId != null && messageSentDto.AuthorId != linked.AuthorId)
-                            return Unauthorized("Cannot change the author when forwarding a message!");
+                            return Forbid("Cannot change the author when forwarding a message!");
 
                         if (messageSentDto.MessageType != linked.MessageType)
-                            return Unauthorized("Cannot change the message type of a forwarded message!");
+                            return Forbid("Cannot change the message type of a forwarded message!");
 
                         if (messageSentDto.Body != linked.Body)
-                            return Unauthorized("Cannot change the message body of a forwarded message!");
+                            return Forbid("Cannot change the message body of a forwarded message!");
 
                         if (messageSentDto.FileId != linked.FileId)
-                            return Unauthorized("Cannot change the file associated to a forwarded message!");
+                            return Forbid("Cannot change the file associated to a forwarded message!");
                     }
                 }
 
@@ -169,7 +169,7 @@ namespace WebAPI.Controllers
                 if (messageTag == null)
                 {
                     if (tag.Id != 0)
-                        return Unauthorized("The MessageTag.Id must be 0!");
+                        return BadRequest("The MessageTag.Id must be 0!");
 
                     messageTag = new MessageTag()
                     {
@@ -183,7 +183,7 @@ namespace WebAPI.Controllers
                     await dbc.SaveChangesAsync(); // get messageTag.Id
                 }
                 else if (tag.Id != 0 && tag.Id != messageTag.Id)
-                    return Unauthorized("The MessageTag.Id is not valid!");
+                    return Forbid("The MessageTag.Id is not valid!");
 
                 tag.Id = messageTag.Id;
                 messageSentDto.MessageTagId = messageTag.Id; // prepare for mapper

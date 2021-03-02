@@ -37,7 +37,7 @@ namespace WebAPI.Controllers
                     return NotFound("User chat room not found.");
 
                 if (userChatRoom.UserProfile.User.UserName != User.Identity.Name)
-                    return Unauthorized("Not associated to this user chat room!");
+                    return Forbid("Not associated to this user chat room!");
 
                 var userChatRoomDto = _mapper.Map<UserChatRoomDTO>(userChatRoom);
                 return userChatRoomDto;
@@ -62,7 +62,7 @@ namespace WebAPI.Controllers
                     return NotFound("User chat room not found.");
 
                 if (userChatRoom.UserProfile.User.UserName != User.Identity.Name)
-                    return Unauthorized("Not associated to this user chat room!");
+                    return Forbid("Not associated to this user chat room!");
 
                 return await GetChatRoomInfo(userChatRoom);
             }

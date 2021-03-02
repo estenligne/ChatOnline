@@ -154,7 +154,7 @@ namespace WebAPI.Controllers
                 if (_userManager.Options.SignIn.RequireConfirmedAccount && !user.EmailConfirmed)
                 {
                     await SendConfirmationEmail(user);
-                    return StatusCode((int)HttpStatusCode.Unauthorized, "Please first confirm your account using the email sent.");
+                    return Unauthorized("Please first confirm your account using the email sent.");
                 }
 
                 var result = await _signInManager.PasswordSignInAsync(userDto.Email,
