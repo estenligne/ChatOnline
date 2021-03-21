@@ -1,7 +1,6 @@
 ﻿using System;
-using System.ComponentModel;
+using Xamarin.Essentials;
 using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
 
 namespace XamApp.Views
 {
@@ -10,6 +9,11 @@ namespace XamApp.Views
         public AboutPage()
         {
             InitializeComponent();
+        }
+
+        private async void LearnMoreClicked(object sender, EventArgs e)
+        {
+            await Browser.OpenAsync("https://aka.ms/xamarin-quickstart");
         }
     }
 }

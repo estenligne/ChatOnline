@@ -1,27 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-
 using Xamarin.Forms;
-
-using XamApp.Models;
-using XamApp.Services;
 
 namespace XamApp.ViewModels
 {
     public class BaseViewModel : INotifyPropertyChanged
     {
-        public IDataStore<Item> DataStore => DependencyService.Get<IDataStore<Item>>();
-
-        bool isBusy = false;
+        private bool isBusy = false;
         public bool IsBusy
         {
             get { return isBusy; }
             set { SetProperty(ref isBusy, value); }
         }
 
-        string title = string.Empty;
+        private string title = string.Empty;
         public string Title
         {
             get { return title; }
@@ -41,16 +36,16 @@ namespace XamApp.ViewModels
             return true;
         }
 
-        #region INotifyPropertyChanged
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
+        public event PropertyChangedEventHandler PropertyChanged; // see INotifyPropertyChanged
+        protected void OnPropertyChanged(string propertyName)
         {
-            var changed = PropertyChanged;
-            if (changed == null)
-                return;
-
-            changed.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            if (PropertyChanged != null && !string.IsNullOrEmpty(propertyName))
+                PropertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        #endregion
+
+        protected Task DisplayAlert(string title, string message, string cancel)
+        {
+            return Application.Current.MainPage.DisplayAlert(title, message, cancel);
+        }
     }
 }

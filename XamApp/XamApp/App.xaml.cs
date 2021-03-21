@@ -1,20 +1,24 @@
-﻿using System;
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
-using XamApp.Services;
+﻿using Xamarin.Forms;
+using XamApp.Models;
 using XamApp.Views;
 
 namespace XamApp
 {
     public partial class App : Application
     {
-
         public App()
         {
             InitializeComponent();
+            MainPage = GetMainPage();
+        }
 
-            DependencyService.Register<MockDataStore>();
-            MainPage = new AppShell();
+        private Page GetMainPage()
+        {
+            var user = DataStore.Instance.GetUserAsync().Result;
+            var page = user == null ? nameof(LoginPage) : nameof(RoomsPage);
+            var appShell = new AppShell();
+            appShell.GoToAsync("//" + page).Wait();
+            return appShell;
         }
 
         protected override void OnStart()

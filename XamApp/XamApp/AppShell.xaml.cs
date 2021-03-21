@@ -1,23 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xamarin.Forms;
-using XamApp.ViewModels;
+using XamApp.Models;
 using XamApp.Views;
+using XamApp.Services;
 
 namespace XamApp
 {
-    public partial class AppShell : Xamarin.Forms.Shell
+    public partial class AppShell : Shell
     {
         public AppShell()
         {
             InitializeComponent();
-            Routing.RegisterRoute(nameof(ItemDetailPage), typeof(ItemDetailPage));
-            Routing.RegisterRoute(nameof(NewItemPage), typeof(NewItemPage));
         }
 
-        private async void OnMenuItemClicked(object sender, EventArgs e)
+        private async void OnLogoutClicked(object sender, EventArgs e)
         {
-            await Shell.Current.GoToAsync("//LoginPage");
+            var response = await HTTPClient.PostAsync<string>(null, "/api/User/Logout", null);
+            if (response.IsSuccessStatusCode)
+            {
+                HTTPClient.Clear();
+                await DataStore.Instance.DeleteUserAsync();
+                await Shell.Current.GoToAsync("//" + nameof(LoginPage));
+            }
+            else
+            {
+                string message = await HTTPClient.GetResponseAsString(response);
+                await DisplayAlert("Logout Error", message,  "Ok");
+            }
         }
     }
 }

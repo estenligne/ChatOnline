@@ -8,7 +8,22 @@
              Shell.NavBarIsVisible="False">
     <ContentPage.Content>
         <StackLayout Padding="10,0,10,0" VerticalOptions="Center">
-            <Button VerticalOptions="Center" Text="Login" Command="{Binding LoginCommand}"/>
+
+            <Entry Text="{Binding EmailOrPhone, Mode=TwoWay}"
+                   Placeholder="email address or phone number"
+                   FontSize="Large" />
+
+            <Entry Text="{Binding Password, Mode=TwoWay}"
+                   Placeholder="password"
+                   IsPassword="True"
+                   FontSize="Large"
+                   Margin="0,20" />
+
+            <Button Text="Login"
+                    VerticalOptions="Center"
+                    Clicked="OnLoginClicked"
+                    IsEnabled="{Binding CanLogin}" />
+
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

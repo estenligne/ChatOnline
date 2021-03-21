@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="XamApp.Views.RoomsPage"
+             Title="{Binding Title}"
+             xmlns:local="clr-namespace:XamApp.ViewModels"  
+             xmlns:model="clr-namespace:XamApp.Models"  
+             x:Name="BrowseRoomsPage">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Add" Command="{Binding AddRoomCommand}" />
+    </ContentPage.ToolbarItems>
+    <!--
+      x:DataType enables compiled bindings for better performance and compile time validation of binding expressions.
+      https://docs.microsoft.com/xamarin/xamarin-forms/app-fundamentals/data-binding/compiled-bindings
+    -->
+    <RefreshView x:DataType="local:RoomsViewModel" Command="{Binding LoadRoomsCommand}" IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
+        <CollectionView x:Name="RoomsListView"
+                        HorizontalScrollBarVisibility="Always"
+                        ItemsSource="{Binding Rooms}"
+                        SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <StackLayout>
+                        <StackLayout
+                            x:DataType="local:RoomInfo"
+                            Orientation="Horizontal"
+                            Padding="10">
+
+                            <ImageButton
+                                Source="{Binding ProfilePhoto}"
+                                BackgroundColor="Yellow"
+                                WidthRequest="60"
+                                HeightRequest="60"
+                                Margin="0,0,10,0" />
+
+                            <StackLayout
+                                Orientation="Vertical"
+                                VerticalOptions="Center"
+                                HorizontalOptions="StartAndExpand">
+
+                                <Label Text="{Binding Name}"
+                                    TextColor="Black"
+                                    FontAttributes="Bold"
+                                    FontSize="Large"
+                                    LineBreakMode="NoWrap"
+                                    Style="{DynamicResource ListItemTextStyle}" />
+
+                                <Label Text="{Binding ShortBody}"
+                                    TextColor="Black"
+                                    TextType="Html"
+                                    FontSize="Medium"
+                                    LineBreakMode="NoWrap"
+                                    Style="{DynamicResource ListItemDetailTextStyle}" />
+                            </StackLayout>
+
+                            <StackLayout
+                                Orientation="Vertical"
+                                VerticalOptions="Center"
+                                HorizontalOptions="End">
+
+                                <Label Text="{Binding DateSent}"
+                                        LineBreakMode="NoWrap"
+                                        FontSize="Medium" />
+
+                                <Label Text=" Muted "
+                                        LineBreakMode="NoWrap"
+                                        TextColor="Red"
+                                        FontSize="Small"
+                                        IsVisible="{Binding UserOnMute}"/>
+                            </StackLayout>
+
+                            <StackLayout.GestureRecognizers>
+                                <TapGestureRecognizer 
+                                    NumberOfTapsRequired="1"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type local:RoomsViewModel}}, Path=RoomTapped}"		
+                                    CommandParameter="{Binding .}">
+                                </TapGestureRecognizer>
+                            </StackLayout.GestureRecognizers>
+
+                        </StackLayout>
+                        <BoxView HeightRequest="1" Color="#EEEEEE" />
+                    </StackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </RefreshView>
+</ContentPage>
