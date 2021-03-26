@@ -7,23 +7,59 @@
              x:Class="XamApp.Views.LoginPage"
              Shell.NavBarIsVisible="False">
     <ContentPage.Content>
-        <StackLayout Padding="10,0,10,0" VerticalOptions="Center">
+        <ScrollView>
+            <StackLayout Padding="10,0,10,0" VerticalOptions="Center">
 
-            <Entry Text="{Binding EmailOrPhone, Mode=TwoWay}"
-                   Placeholder="email address or phone number"
-                   FontSize="Large" />
+                <Entry Text="{Binding Email, Mode=TwoWay}"
+                   Placeholder="email address"
+                   FontSize="Large"
+                   TextColor="{Binding EmailColor}"
+                   Margin="0,20" />
 
-            <Entry Text="{Binding Password, Mode=TwoWay}"
+                <Entry Text="{Binding Password, Mode=TwoWay}"
                    Placeholder="password"
                    IsPassword="True"
                    FontSize="Large"
+                   TextColor="{Binding PasswordColor}"
                    Margin="0,20" />
 
-            <Button Text="Login"
+                <Button Text="Login"
                     VerticalOptions="Center"
                     Clicked="OnLoginClicked"
-                    IsEnabled="{Binding CanLogin}" />
+                    IsEnabled="{Binding CanLogin}"
+                    Margin="0,0,20,30" />
 
-        </StackLayout>
+                <Entry Text="{Binding PasswordConfirm, Mode=TwoWay}"
+                   Placeholder="password repeat"
+                   FontSize="Large"
+                   TextColor="{Binding PasswordConfirmColor}"
+                   Margin="0,20" />
+
+                <Button Text="Change Password"
+                    VerticalOptions="Center"
+                    Clicked="OnChangePasswordClicked"
+                    IsEnabled="{Binding CanChangePassword}"
+                    Margin="0,0,20,30" />
+
+                <Entry Text="{Binding PhoneNumber, Mode=TwoWay}"
+                   Placeholder="phone number"
+                   FontSize="Large"
+                   TextColor="{Binding PhoneNumberColor}"
+                   Margin="0,20" />
+
+                <Entry Text="{Binding ProfileName, Mode=TwoWay}"
+                   Placeholder="profile name"
+                   FontSize="Large"
+                   TextColor="{Binding ProfileNameColor}"
+                   Margin="0,20" />
+
+                <Button Text="Register"
+                    VerticalOptions="Center"
+                    Clicked="OnRegisterClicked"
+                    IsEnabled="{Binding CanRegister}"
+                    Margin="0,20" />
+
+            </StackLayout>
+        </ScrollView>
     </ContentPage.Content>
 </ContentPage>

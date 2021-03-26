@@ -25,7 +25,7 @@ namespace XamApp
             }
             else
             {
-                string message = await HTTPClient.GetResponseAsString(response);
+                string message = await HTTPClient.GetResponseError(response);
                 await DisplayAlert("Logout Error", message,  "Ok");
             }
         }

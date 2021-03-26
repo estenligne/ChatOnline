@@ -3,7 +3,7 @@ using System.Text;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Net.Http.Headers;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using Global.Models;
 
@@ -20,11 +20,11 @@ namespace XamApp.Services
             var client = new HttpClient();
             client.BaseAddress = new Uri(WebAPIBaseURL);
             client.Timeout = TimeSpan.FromSeconds(timeout);
-            if (doLogin) await LoginAsync(client);
+            if (doLogin) await LoginAsync(client, null);
             return client;
         }
 
-        private static async Task<HttpResponseMessage> LoginAsync(HttpClient client)
+        private static async Task<HttpResponseMessage> LoginAsync(HttpClient client, HttpResponseMessage oldResponse)
         {
             var user = await Models.DataStore.Instance.GetUserAsync();
             if (user != null && user.Password != null)
@@ -36,9 +36,19 @@ namespace XamApp.Services
                     Password = user.Password,
                     RememberMe = true
                 };
-                return await PostAsync(client, "/api/User/Login", userDto);
+                var response = await PostAsync(client, "/api/User/Login", userDto);
+                return response;
             }
-            else return new HttpResponseMessage(HttpStatusCode.BadRequest);
+            else if (oldResponse != null)
+            {
+                return oldResponse;
+            }
+            else
+            {
+                var response = new HttpResponseMessage(HttpStatusCode.BadRequest);
+                response.Content = new StringContent("There is no prior login done on this app.");
+                return response;
+            }
         }
 
         public static void Clear()
@@ -76,7 +86,7 @@ namespace XamApp.Services
 
                 if (response.StatusCode == HttpStatusCode.Unauthorized)
                 {
-                    response = await LoginAsync(client);
+                    response = await LoginAsync(client, response);
                     if (response.IsSuccessStatusCode)
                     {
                         response = await client.GetAsync(requestUri);
@@ -102,7 +112,7 @@ namespace XamApp.Services
 
                 if (response.StatusCode == HttpStatusCode.Unauthorized)
                 {
-                    response = await LoginAsync(client);
+                    response = await LoginAsync(client, response);
                     if (response.IsSuccessStatusCode)
                     {
                         response = await client.PostAsync(requestUri, content);
@@ -129,15 +139,24 @@ namespace XamApp.Services
             return JsonConvert.DeserializeObject<T>(content);
         }
 
+        private class HttpBadRequest
+        {
+            public string Code { get; set; }
+            public string Description { get; set; }
+        }
+
         private class HttpError // is normally from System.Web.Http.HttpError
         {
             public string Message { get; set; }
             public string ExceptionMessage { get; set; }
         }
 
-        public static async Task<string> GetResponseAsString(HttpResponseMessage response)
+        public static async Task<string> GetResponseError(HttpResponseMessage response)
         {
             if (response.StatusCode == HttpStatusCode.GatewayTimeout)
+                return response.ReasonPhrase;
+
+            if (response.Content == null)
                 return response.ReasonPhrase;
 
             var content = await response.Content.ReadAsStringAsync();
@@ -145,18 +164,23 @@ namespace XamApp.Services
 
             if (contentType == "application/json")
             {
-                if (response.IsSuccessStatusCode)
+                try
                 {
-                    content = JsonConvert.DeserializeObject<string>(content);
+                    if (response.StatusCode == HttpStatusCode.BadRequest)
+                    {
+                        var errors = JsonConvert.DeserializeObject<List<HttpBadRequest>>(content);
+                        content = "";
+                        foreach (var error in errors)
+                            content += $"* {error.Description}\n";
+                    }
+                    else
+                    {
+                        var error = JsonConvert.DeserializeObject<HttpError>(content);
+                        content = error.ExceptionMessage ?? error.Message;
+                    }
                 }
-                else
-                {
-                    var error = JsonConvert.DeserializeObject<HttpError>(content);
-                    content = error.ExceptionMessage ?? error.Message;
-                }
+                catch (Exception) { }
             }
-            else if (!response.IsSuccessStatusCode && content.Length > 255)
-                content = $"Error {(int)response.StatusCode}: {response.ReasonPhrase}";
 
             return content;
         }

@@ -70,13 +70,23 @@ namespace WebAPI.Controllers
                 var result = await _userManager.CreateAsync(user, userDto.Password);
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation($"User account {email} created successfully.");
-                    userDto = _mapper.Map<ApplicationUserDTO>(user);
-
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
                         await SendConfirmationEmail(user);
                     }
+
+                    if (!string.IsNullOrWhiteSpace(userDto.ProfileName))
+                    {
+                        var userProfile = new UserProfile();
+                        userProfile.UserId = user.Id;
+                        userProfile.Username = userDto.ProfileName;
+                        dbc.UserProfiles.Add(userProfile);
+                        dbc.SaveChanges();
+                    }
+
+                    _logger.LogInformation($"User account {email} created successfully.");
+                    userDto = _mapper.Map<ApplicationUserDTO>(user);
+
                     return CreatedAtAction(nameof(Login), null, userDto);
                 }
                 else
@@ -102,8 +112,8 @@ namespace WebAPI.Controllers
             token = System.Web.HttpUtility.UrlEncode(token);
             var href = $"{path}?email={email}&token={token}";
             var body = $"<p>Please confirm your account by <a href='{href}'>clicking here</a>.</p>";
-            await _emailService.SendEmailAsync(user.Email, "Confirm your email", body);
             _logger.LogDebug(body);
+            await _emailService.SendEmailAsync(user.Email, "Confirm Your Account", body);
         }
 
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
@@ -122,7 +132,7 @@ namespace WebAPI.Controllers
                 if (result.Succeeded)
                 {
                     _logger.LogInformation($"User account {email} confirmed.");
-                    return NoContent();
+                    return Ok("Succeeded!");
                 }
                 else
                 {

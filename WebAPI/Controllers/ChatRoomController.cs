@@ -167,12 +167,13 @@ namespace WebAPI.Controllers
         /// <summary>
         /// Create a private chat room between the logged-in user and the given user.
         /// </summary>
-        /// <param name="userDto"></param>
+        /// <param name="emailAddress"></param>
+        /// <param name="phoneNumber"></param>
         /// <returns></returns>
         [ProducesResponseType((int)HttpStatusCode.Created)]
         [HttpPost]
         [Route(nameof(CreatePrivate))]
-        public async Task<ActionResult<UserChatRoomDTO>> CreatePrivate(ApplicationUserDTO userDto)
+        public async Task<ActionResult<UserChatRoomDTO>> CreatePrivate(string emailAddress, string phoneNumber)
         {
             try
             {
@@ -182,8 +183,8 @@ namespace WebAPI.Controllers
 
                 UserProfile user2 = await dbc.UserProfiles
                     .Where(x =>
-                        (!string.IsNullOrEmpty(userDto.Email) && x.User.Email == userDto.Email) ||
-                        (!string.IsNullOrEmpty(userDto.PhoneNumber) && x.User.PhoneNumber == userDto.PhoneNumber))
+                        (!string.IsNullOrEmpty(emailAddress) && x.User.Email == emailAddress) ||
+                        (!string.IsNullOrEmpty(phoneNumber) && x.User.PhoneNumber == phoneNumber))
                     .FirstOrDefaultAsync();
 
                 if (user2 == null)

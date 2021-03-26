@@ -42,7 +42,7 @@ namespace XamApp.ViewModels
             }
             else
             {
-                var message = await HTTPClient.GetResponseAsString(response);
+                var message = await HTTPClient.GetResponseError(response);
                 await DisplayAlert("Request Error", message, "Ok");
             }
             IsBusy = false;

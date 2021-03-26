@@ -1,38 +1,51 @@
 ﻿using System;
+using System.Net;
+using System.Threading.Tasks;
+using Global.Models;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using XamApp.ViewModels;
 using XamApp.Models;
 using XamApp.Services;
-using Global.Models;
 
 namespace XamApp.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class LoginPage : ContentPage
     {
+        private readonly LoginViewModel vm;
+
         public LoginPage()
         {
             InitializeComponent();
-            BindingContext = new LoginViewModel();
+            vm = new LoginViewModel();
+            BindingContext = vm;
+        }
+
+        protected override void OnAppearing()
+        {
+            vm.Password = null;
+            SetBusy(false);
+        }
+
+        private void SetBusy(bool busy)
+        {
+            IsBusy = busy;
+            vm.IsBusy = busy;
+            vm.UpdateButtons();
         }
 
         private async void OnLoginClicked(object sender, EventArgs e)
         {
-            var vm = (LoginViewModel)BindingContext; // get the view model
             if (vm.CanLogin)
             {
-                IsBusy = true;
-                vm.IsBusy = true;
-                vm.UpdateCanLogin();
+                SetBusy(true);
 
                 var userDto = new ApplicationUserDTO();
+                userDto.Email = vm.Email;
                 userDto.Password = vm.Password;
+                userDto.PhoneNumber = vm.PhoneNumber;
                 userDto.RememberMe = true;
-
-                if (vm.EmailOrPhone[0] == '+')
-                    userDto.PhoneNumber = vm.EmailOrPhone;
-                else userDto.Email = vm.EmailOrPhone;
 
                 var response = await HTTPClient.PostAsync(null, "/api/User/Login", userDto);
                 if (response.IsSuccessStatusCode)
@@ -40,8 +53,8 @@ namespace XamApp.Views
                     var user = new User()
                     {
                         Email = userDto.Email,
-                        PhoneNumber = userDto.PhoneNumber,
                         Password = userDto.Password,
+                        PhoneNumber = userDto.PhoneNumber,
                     };
                     await DataStore.Instance.InsertUserAsync(user);
 
@@ -51,13 +64,45 @@ namespace XamApp.Views
                 }
                 else
                 {
-                    string message = await HTTPClient.GetResponseAsString(response);
+                    string message = await HTTPClient.GetResponseError(response);
                     await DisplayAlert("Login Error", message, "Ok");
                 }
 
-                IsBusy = false;
-                vm.IsBusy = false;
-                vm.UpdateCanLogin();
+                SetBusy(false);
+            }
+        }
+
+        private async void OnChangePasswordClicked(object sender, EventArgs e)
+        {
+            if (vm.CanChangePassword)
+            {
+                await DisplayAlert("Not Available", "The feature to change password is not yet available!", "Ok");
+            }
+        }
+
+        private async void OnRegisterClicked(object sender, EventArgs e)
+        {
+            if (vm.CanRegister)
+            {
+                SetBusy(true);
+
+                var userDto = new ApplicationUserDTO();
+                userDto.Email = vm.Email;
+                userDto.Password = vm.Password;
+                userDto.PhoneNumber = vm.PhoneNumber;
+                userDto.ProfileName = vm.ProfileName;
+
+                var response = await HTTPClient.PostAsync(null, "/api/User/Register", userDto);
+                if (response.IsSuccessStatusCode)
+                {
+                    await DisplayAlert("Confirm Your Account", $"A registration confirmation email has been sent to {vm.Email}. Please click on the link provided to confirm your account.", "Ok");
+                }
+                else
+                {
+                    string message = await HTTPClient.GetResponseError(response);
+                    await DisplayAlert("Failed to Register", message, "Ok");
+                }
+                SetBusy(false);
             }
         }
     }
