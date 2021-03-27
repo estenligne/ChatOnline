@@ -43,9 +43,14 @@ namespace Global.Models
         public bool UserExited { get; set; }
 
         /// <summary>
-        /// True if UserChatRoom.DateMuted + UserChatRoom.MuteDuration > DateTime.UtcNow
+        /// True if UserChatRoom.DateMuted != null
         /// </summary>
-        public bool UserOnMute { get; set; }
+        public bool UserMuted { get; set; }
+
+        /// <summary>
+        /// True if UserChatRoom.DatePinned != null
+        /// </summary>
+        public bool UserPinned { get; set; }
 
         /// <summary>
         /// Information about the latest message sent in the chat room.

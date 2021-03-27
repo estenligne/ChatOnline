@@ -478,8 +478,8 @@ namespace WebAPI.Migrations
                 b.Property<DateTime?>("DateMuted")
                     .HasColumnType(DataType.DateTime);
 
-                b.Property<TimeSpan?>("MuteDuration")
-                    .HasColumnType("time");
+                b.Property<TimeSpan?>("DatePinned")
+                    .HasColumnType(DataType.DateTime);
 
                 b.Property<long>("UserProfileId")
                     .HasColumnType("bigint");

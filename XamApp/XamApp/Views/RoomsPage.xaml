@@ -21,65 +21,76 @@
                         SelectionMode="None">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <StackLayout>
+                    <StackLayout
+                        x:DataType="local:RoomInfo"
+                        Orientation="Horizontal"
+                        Padding="10">
+
+                        <ImageButton
+                            Source="{Binding ProfilePhoto}"
+                            BackgroundColor="Yellow"
+                            WidthRequest="60"
+                            HeightRequest="60"
+                            Margin="0,0,8,0" />
+
                         <StackLayout
-                            x:DataType="local:RoomInfo"
-                            Orientation="Horizontal"
-                            Padding="10">
+                            Orientation="Vertical"
+                            VerticalOptions="CenterAndExpand"
+                            HorizontalOptions="FillAndExpand">
 
-                            <ImageButton
-                                Source="{Binding ProfilePhoto}"
-                                BackgroundColor="Yellow"
-                                WidthRequest="60"
-                                HeightRequest="60"
-                                Margin="0,0,10,0" />
-
-                            <StackLayout
-                                Orientation="Vertical"
-                                VerticalOptions="Center"
-                                HorizontalOptions="StartAndExpand">
+                            <StackLayout Orientation="Horizontal">
 
                                 <Label Text="{Binding Name}"
                                     TextColor="Black"
                                     FontAttributes="Bold"
                                     FontSize="Large"
                                     LineBreakMode="NoWrap"
-                                    Style="{DynamicResource ListItemTextStyle}" />
+                                    HorizontalOptions="StartAndExpand" />
 
+                                <StackLayout
+                                    Orientation="Horizontal"
+                                    Padding="0,4,0,0">
+
+                                    <Label Text="Pinned"
+                                        TextColor="Green"
+                                        FontSize="12"
+                                        IsVisible="{Binding UserPinned}" />
+
+                                    <Label Text="Muted"
+                                        TextColor="Red"
+                                        FontSize="12"
+                                        IsVisible="{Binding UserMuted}" />
+
+                                    <Label Text="{Binding DateSent}"
+                                        LineBreakMode="NoWrap"
+                                        FontSize="12" />
+                                </StackLayout>
+                            </StackLayout>
+
+                            <StackLayout Orientation="Horizontal">
                                 <Label Text="{Binding ShortBody}"
-                                    TextColor="Black"
                                     TextType="Html"
                                     FontSize="Medium"
                                     LineBreakMode="NoWrap"
-                                    Style="{DynamicResource ListItemDetailTextStyle}" />
+                                    HorizontalOptions="StartAndExpand" />
+
+                                <Label Text="{Binding MsgReadTick}"
+                                    TextType="Html"
+                                    LineBreakMode="NoWrap"
+                                    FontSize="12" />
                             </StackLayout>
 
-                            <StackLayout
-                                Orientation="Vertical"
-                                VerticalOptions="Center"
-                                HorizontalOptions="End">
-
-                                <Label Text="{Binding DateSent}"
-                                        LineBreakMode="NoWrap"
-                                        FontSize="Medium" />
-
-                                <Label Text=" Muted "
-                                        LineBreakMode="NoWrap"
-                                        TextColor="Red"
-                                        FontSize="Small"
-                                        IsVisible="{Binding UserOnMute}"/>
-                            </StackLayout>
-
-                            <StackLayout.GestureRecognizers>
-                                <TapGestureRecognizer 
-                                    NumberOfTapsRequired="1"
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type local:RoomsViewModel}}, Path=RoomTapped}"		
-                                    CommandParameter="{Binding .}">
-                                </TapGestureRecognizer>
-                            </StackLayout.GestureRecognizers>
-
+                            <BoxView HeightRequest="1" Color="#EEEEEE" />
                         </StackLayout>
-                        <BoxView HeightRequest="1" Color="#EEEEEE" />
+
+                        <StackLayout.GestureRecognizers>
+                            <TapGestureRecognizer 
+                                NumberOfTapsRequired="1"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type local:RoomsViewModel}}, Path=RoomTapped}"		
+                                CommandParameter="{Binding .}">
+                            </TapGestureRecognizer>
+                        </StackLayout.GestureRecognizers>
+
                     </StackLayout>
                 </DataTemplate>
             </CollectionView.ItemTemplate>

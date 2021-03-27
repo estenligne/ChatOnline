@@ -80,6 +80,7 @@ namespace WebAPI.Controllers
                         var userProfile = new UserProfile();
                         userProfile.UserId = user.Id;
                         userProfile.Username = userDto.ProfileName;
+                        userProfile.DateCreated = DateTime.UtcNow;
                         dbc.UserProfiles.Add(userProfile);
                         dbc.SaveChanges();
                     }
@@ -164,7 +165,7 @@ namespace WebAPI.Controllers
                 if (_userManager.Options.SignIn.RequireConfirmedAccount && !user.EmailConfirmed)
                 {
                     await SendConfirmationEmail(user);
-                    return Unauthorized("Please first confirm your account using the email sent.");
+                    return Unauthorized("Please first confirm your account using the email sent. Check your Spam/Junk folder.");
                 }
 
                 var result = await _signInManager.PasswordSignInAsync(userDto.Email,

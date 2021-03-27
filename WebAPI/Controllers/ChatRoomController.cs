@@ -80,8 +80,8 @@ namespace WebAPI.Controllers
             chatRoomInfo.UserChatRoomId = userChatRoom.Id;
             chatRoomInfo.UserBlocked = userChatRoom.DateBlocked != null;
             chatRoomInfo.UserExited = userChatRoom.DateExited != null;
-            chatRoomInfo.UserOnMute = userChatRoom.DateMuted != null &&
-                (userChatRoom.DateMuted + userChatRoom.MuteDuration > DateTime.UtcNow);
+            chatRoomInfo.UserMuted = userChatRoom.DateMuted != null;
+            chatRoomInfo.UserPinned = userChatRoom.DatePinned != null;
 
             if (userChatRoom.ChatRoom.GroupProfile == null)
             {

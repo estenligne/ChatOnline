@@ -27,7 +27,7 @@
                     VerticalOptions="Center"
                     Clicked="OnLoginClicked"
                     IsEnabled="{Binding CanLogin}"
-                    Margin="0,0,20,30" />
+                    Margin="0,20" />
 
                 <Entry Text="{Binding PasswordConfirm, Mode=TwoWay}"
                    Placeholder="password repeat"
@@ -39,7 +39,7 @@
                     VerticalOptions="Center"
                     Clicked="OnChangePasswordClicked"
                     IsEnabled="{Binding CanChangePassword}"
-                    Margin="0,0,20,30" />
+                    Margin="0,20" />
 
                 <Entry Text="{Binding PhoneNumber, Mode=TwoWay}"
                    Placeholder="phone number"

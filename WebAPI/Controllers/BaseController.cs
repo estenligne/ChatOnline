@@ -34,6 +34,11 @@ namespace WebAPI.Controllers
             _mapper = mapper;
         }
 
+        protected ActionResult Forbid(string message)
+        {
+            return StatusCode((int)HttpStatusCode.Forbidden, message);
+        }
+
         /// <summary>
         /// Log the exception and return an InternalServerError status code
         /// </summary>

@@ -25,6 +25,6 @@ namespace Global.Models
         public DateTime? DateExited { get; set; }
 
         public DateTime? DateMuted { get; set; }
-        public TimeSpan? MuteDuration { get; set; }
+        public DateTime? DatePinned { get; set; }
     }
 }

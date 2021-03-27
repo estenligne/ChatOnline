@@ -331,7 +331,7 @@ namespace WebAPI.Migrations
                     DateDeleted = table.Column<DateTime>(type: DataType.DateTime, nullable: true),
                     DateExited = table.Column<DateTime>(type: DataType.DateTime, nullable: true),
                     DateMuted = table.Column<DateTime>(type: DataType.DateTime, nullable: true),
-                    MuteDuration = table.Column<TimeSpan>(type: "time", nullable: true)
+                    DatePinned = table.Column<TimeSpan>(type: DataType.DateTime, nullable: true)
                 },
                 constraints: table =>
                 {

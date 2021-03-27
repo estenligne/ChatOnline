@@ -12,6 +12,8 @@ using Microsoft.EntityFrameworkCore;
 using MySql.EntityFrameworkCore.Extensions;
 using WebAPI.Models;
 using System;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace WebAPI
 {
@@ -75,23 +77,25 @@ namespace WebAPI
 
                 options.Events = new CookieAuthenticationEvents
                 {
+                    OnRedirectToAccessDenied = ctx => {
+                        if (ctx.Request.Path.StartsWithSegments("/api"))
+                            ctx.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                        else ctx.Response.Redirect(ctx.RedirectUri);
+                        return Task.CompletedTask;
+                    },
+
                     OnRedirectToLogin = ctx => {
                         if (ctx.Request.Path.StartsWithSegments("/api"))
-                        {
-                            ctx.Response.StatusCode = (int)System.Net.HttpStatusCode.Unauthorized;
-                        }
-                        else
-                        {
-                            ctx.Response.Redirect(ctx.RedirectUri);
-                        }
-                        return System.Threading.Tasks.Task.CompletedTask;
+                            ctx.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                        else ctx.Response.Redirect(ctx.RedirectUri);
+                        return Task.CompletedTask;
                     }
                 };
             });
 
             services.AddControllers();
-            services.AddSwaggerGen(c =>
-            {
+
+            services.AddSwaggerGen(c => {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAPI", Version = "v1" });
             });
 
@@ -118,10 +122,7 @@ namespace WebAPI
 
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
             ApplicationDbSeed.Seed(context, logger);
         }
