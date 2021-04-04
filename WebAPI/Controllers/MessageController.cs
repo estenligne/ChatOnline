@@ -34,7 +34,7 @@ namespace WebAPI.Controllers
                 if (messageReceived.MessageSentId != messageSent.Id)
                     _logger.LogError($"In GetMessage(): {messageReceived.MessageSentId} != {messageSent.Id}");
 
-                if (messageReceived.ReceiverId == messageSent.SenderId)
+                if (messageReceived.ReceiverId == messageSent.SenderId) // if user received their own message
                     _logger.LogError($"In GetMessage(): {messageReceived.ReceiverId} == {messageSent.SenderId}");
 
                 messageSentDto.DateReceived = messageReceived.DateReceived;
@@ -58,9 +58,9 @@ namespace WebAPI.Controllers
             try
             {
                 var userChatRoom = await dbc.UserChatRooms
-                        .Where(x => x.Id == userChatRoomId && x.UserProfile.User.UserName == User.Identity.Name)
-                        .FirstOrDefaultAsync();
-
+                                            .Where(x => x.Id == userChatRoomId &&
+                                                x.UserProfile.User.UserName == User.Identity.Name)
+                                            .FirstOrDefaultAsync();
                 if (userChatRoom == null)
                     return NotFound("Sender's user chat room not found.");
 
@@ -72,7 +72,8 @@ namespace WebAPI.Controllers
                 var messageSentIds = messagesSent.Select(x => x.Id);
 
                 var messagesReceived = await dbc.MessagesReceived
-                                                .Where(x => messageSentIds.Contains(x.MessageSentId) && x.ReceiverId == userChatRoom.Id)
+                                                .Where(x => x.ReceiverId == userChatRoomId &&
+                                                    messageSentIds.Contains(x.MessageSentId))
                                                 .ToDictionaryAsync(x => x.MessageSentId);
 
                 var messages = new List<MessageSentDTO>();
@@ -81,7 +82,12 @@ namespace WebAPI.Controllers
                 {
                     MessageReceived messageReceived = null;
                     messagesReceived.TryGetValue(messageSent.Id, out messageReceived);
-                    messages.Add(GetMessage(messageSent, messageReceived));
+
+                    if (messageReceived == null && messageSent.SenderId != userChatRoomId)
+                    {
+                        _logger.LogWarning($"GetMany({userChatRoomId}): user did not receive message {messageSent.Id}.");
+                    }
+                    else messages.Add(GetMessage(messageSent, messageReceived));
                 }
                 return messages;
             }
@@ -237,8 +243,8 @@ namespace WebAPI.Controllers
                     return BadRequest("Cannot receive your own message sent!");
 
                 var messageReceived = await dbc.MessagesReceived
-                                                .Where(x => x.ReceiverId == userChatRoom.Id && x.MessageSentId == messageSentId)
-                                                .FirstOrDefaultAsync();
+                                            .Where(x => x.ReceiverId == userChatRoom.Id && x.MessageSentId == messageSentId)
+                                            .FirstOrDefaultAsync();
                 if (messageReceived != null)
                     return Conflict("Message already received.");
 
@@ -281,6 +287,9 @@ namespace WebAPI.Controllers
 
                 if (!LesserTime(dateRead, DateTime.UtcNow))
                     return BadRequest("Date read cannot be in the future!");
+
+                if (messageReceived.DateRead != null)
+                    return Conflict("Message already read.");
 
                 messageReceived.DateRead = dateRead;
                 await dbc.SaveChangesAsync();

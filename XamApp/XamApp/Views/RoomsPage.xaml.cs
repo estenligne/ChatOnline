@@ -1,20 +1,25 @@
 ﻿using Xamarin.Forms;
 using XamApp.ViewModels;
+using Xamarin.Forms.Xaml;
 
 namespace XamApp.Views
 {
+    [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class RoomsPage : ContentPage
     {
+        private readonly RoomsViewModel vm;
+
         public RoomsPage()
         {
             InitializeComponent();
-            BindingContext = new RoomsViewModel();
+            vm = new RoomsViewModel();
+            BindingContext = vm;
         }
 
         protected override void OnAppearing()
         {
             base.OnAppearing();
-            ((RoomsViewModel)BindingContext).OnAppearing();
+            vm.OnAppearing();
         }
     }
 }

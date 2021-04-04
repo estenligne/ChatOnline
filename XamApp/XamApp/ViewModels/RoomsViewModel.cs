@@ -8,59 +8,40 @@ namespace XamApp.ViewModels
 {
     public class RoomsViewModel : BaseViewModel
     {
-        private RoomInfo _selectedRoom;
-        public ObservableCollection<RoomInfo> Rooms { get; }
+        public Command AddRoomCommand => new Command(AddChatRoom);
 
-        public Command LoadRoomsCommand { get; }
-        public Command AddRoomCommand { get; }
-        public Command<RoomInfo> RoomTapped { get; }
+        public Command<RoomInfo> RoomTapped => new Command<RoomInfo>(OnRoomSelected);
+
+        public Command LoadRoomsCommand => new Command(async () => await LoadRooms());
+
+        public ObservableCollection<RoomInfo> Rooms { get; }
 
         public RoomsViewModel()
         {
             Title = "Chat Rooms";
-
             Rooms = new ObservableCollection<RoomInfo>();
-
-            LoadRoomsCommand = new Command(async () => await LoadRooms());
-
-            RoomTapped = new Command<RoomInfo>(OnRoomSelected);
-
-            AddRoomCommand = new Command(AddChatRoom);
-        }
-
-        private async Task LoadRooms()
-        {
-            IsBusy = true;
-
-            var response = await HTTPClient.GetAsync(null, "/api/ChatRoom/GetAll");
-            if (response.IsSuccessStatusCode)
-            {
-                var rooms = await HTTPClient.ReadAsAsync<List<RoomInfo>>(response);
-                Rooms.Clear();
-                foreach (var room in rooms)
-                    Rooms.Add(room);
-            }
-            else
-            {
-                var message = await HTTPClient.GetResponseError(response);
-                await DisplayAlert("Request Error", message, "Ok");
-            }
-            IsBusy = false;
         }
 
         public void OnAppearing()
         {
-            IsBusy = true;
-            SelectedRoom = null;
+            LoadRoomsCommand.Execute(null);
         }
 
-        public RoomInfo SelectedRoom
+        private async Task LoadRooms()
         {
-            get => _selectedRoom;
-            set
+            if (!IsBusy)
             {
-                SetProperty(ref _selectedRoom, value);
-                OnRoomSelected(value);
+                IsBusy = true;
+                var response = await HTTPClient.GetAsync(null, "/api/ChatRoom/GetAll");
+                if (response.IsSuccessStatusCode)
+                {
+                    var rooms = await HTTPClient.ReadAsAsync<List<RoomInfo>>(response);
+                    Rooms.Clear();
+                    foreach (var room in rooms)
+                        Rooms.Add(room);
+                }
+                else await DisplayAlert("Error", await HTTPClient.GetResponseError(response), "Ok");
+                IsBusy = false;
             }
         }
 
@@ -69,11 +50,13 @@ namespace XamApp.ViewModels
             await DisplayAlert("Not Available", "The feature to add a chat room is not yet implemented!", "Ok");
         }
 
-        private async void OnRoomSelected(RoomInfo item)
+        private async void OnRoomSelected(RoomInfo room)
         {
-            if (item != null)
+            if (room != null && !IsBusy)
             {
-                await DisplayAlert("Not Available", "The feature to view a chat room is not yet implemented!", "Ok");
+                ChatRoomViewModel.Room = room; // provide necessary data
+                // This will push the ChatRoomPage onto the navigation stack
+                await Shell.Current.GoToAsync(nameof(Views.ChatRoomPage));
             }
         }
     }

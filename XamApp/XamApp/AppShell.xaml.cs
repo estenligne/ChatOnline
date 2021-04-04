@@ -12,6 +12,7 @@ namespace XamApp
         public AppShell()
         {
             InitializeComponent();
+            Routing.RegisterRoute(nameof(ChatRoomPage), typeof(ChatRoomPage));
         }
 
         private async void OnLogoutClicked(object sender, EventArgs e)
