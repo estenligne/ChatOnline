@@ -8,17 +8,18 @@ namespace XamApp.ViewModels
 {
     public class RoomsViewModel : BaseViewModel
     {
-        public Command AddRoomCommand => new Command(AddChatRoom);
-
-        public Command<RoomInfo> RoomTapped => new Command<RoomInfo>(OnRoomSelected);
-
-        public Command LoadRoomsCommand => new Command(async () => await LoadRooms());
+        public Command LoadRoomsCommand { get; }
+        public Command AddChatRoomCommand { get; }
+        public Command<RoomInfo> RoomSelectedCommand { get; }
 
         public ObservableCollection<RoomInfo> Rooms { get; }
 
         public RoomsViewModel()
         {
             Title = "Chat Rooms";
+            LoadRoomsCommand = new Command(LoadRooms);
+            AddChatRoomCommand = new Command(AddChatRoom);
+            RoomSelectedCommand = new Command<RoomInfo>(OnRoomSelected);
             Rooms = new ObservableCollection<RoomInfo>();
         }
 
@@ -27,7 +28,7 @@ namespace XamApp.ViewModels
             LoadRoomsCommand.Execute(null);
         }
 
-        private async Task LoadRooms()
+        private async void LoadRooms()
         {
             if (!IsBusy)
             {

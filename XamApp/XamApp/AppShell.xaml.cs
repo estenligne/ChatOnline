@@ -17,16 +17,22 @@ namespace XamApp
 
         private async void OnLogoutClicked(object sender, EventArgs e)
         {
-            var response = await HTTPClient.PostAsync<string>(null, "/api/User/Logout", null);
+            var user = await DataStore.Instance.GetUserAsync();
+            var url = "/api/User/Logout?deviceUsedId=" + user.DeviceUsedId;
+
+            var response = await HTTPClient.PostAsync<string>(null, url, null);
             if (!response.IsSuccessStatusCode)
             {
                 string message = await HTTPClient.GetResponseError(response);
-                message += "\n\nYour login details will still be cleared.";
+                message += "\n\nFor your security, you must please clear all app data if this persists.";
                 await DisplayAlert("Logout Error", message,  "Ok");
             }
-            HTTPClient.Clear();
-            await DataStore.Instance.DeleteUserAsync();
-            await Shell.Current.GoToAsync("//" + nameof(LoginPage));
+            else
+            {
+                HTTPClient.Clear();
+                await DataStore.Instance.DeleteUserAsync();
+                await Shell.Current.GoToAsync("//" + nameof(LoginPage));
+            }
         }
     }
 }

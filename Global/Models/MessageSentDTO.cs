@@ -9,9 +9,14 @@ namespace Global.Models
         public long Id { get; set; }
 
         /// <summary>
-        /// A FK to a UserChatRoom
+        /// A FK to a UserChatRoom, for the user who sent the message.
         /// </summary>
         public long SenderId { get; set; }
+
+        /// <summary>
+        /// A FK to a UserChatRoom. Is equal to 0 if SenderId == logged-in user.
+        /// </summary>
+        public long ReceiverId { get; set; }
 
         public long MessageTagId { get; set; }
         public MessageTagDTO MessageTag { get; set; }
@@ -33,7 +38,7 @@ namespace Global.Models
         public string Body { get; set; }
 
         /// <summary>
-        /// Equal to MessageSent.DateSent, even if SenderId != logged-in user
+        /// Equal to MessageSent.DateSent, even if not SenderId == logged-in user
         /// </summary>
         public DateTime DateSent { get; set; }
 
@@ -53,7 +58,7 @@ namespace Global.Models
         public DateTime? DateStarred { get; set; }
 
         /// <summary>
-        /// Equal to MessageReceived.Reaction, but equal to None if SenderId == logged-in user
+        /// Equal to None if SenderId == logged-in user, else equal to MessageReceived.Reaction
         /// </summary>
         public MessageReactionEnum Reaction { get; set; }
     }

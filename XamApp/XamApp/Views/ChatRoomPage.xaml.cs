@@ -21,7 +21,12 @@ namespace XamApp.Views
         {
             base.OnAppearing();
             await vm.OnAppearing();
-            vm.ScrollTo(-1);
+        }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            vm.OnDisappearing();
         }
     }
 }

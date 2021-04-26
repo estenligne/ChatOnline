@@ -16,6 +16,7 @@ namespace WebAPI
             CreateMap<UserChatRoom, UserChatRoomDTO>();
             CreateMap<MessageTag, MessageTagDTO>().ReverseMap();
             CreateMap<MessageSent, MessageSentDTO>().ReverseMap();
+            CreateMap<DeviceUsed, DeviceUsedDTO>();
         }
     }
 }

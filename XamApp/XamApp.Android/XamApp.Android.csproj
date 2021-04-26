@@ -59,15 +59,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Xamarin.Forms" Version="4.8.0.1451" />
-    <PackageReference Include="Xamarin.Essentials" Version="1.5.3.2" />
+    <PackageReference Include="Xamarin.Forms" Version="5.0.0.2012" />
+    <PackageReference Include="Xamarin.Essentials" Version="1.6.1" />
+    <PackageReference Include="Xamarin.Firebase.Messaging" Version="121.0.1" />
+    <PackageReference Include="Xamarin.Google.Dagger" Version="2.27.0" />
+    <PackageReference Include="Xamarin.GooglePlayServices.Base" Version="117.6.0" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainActivity.cs" />
+    <Compile Include="Notifications\MyFirebaseMessagingService.cs" />
+    <Compile Include="Notifications\Notifications.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <GoogleServicesJson Include="google-services.json" />
     <None Include="Resources\AboutResources.txt" />
     <None Include="Assets\AboutAssets.txt" />
     <None Include="Properties\AndroidManifest.xml" />
@@ -94,6 +100,10 @@
     <AndroidResource Include="Resources\drawable\icon_feed.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Global\Global.csproj">
+      <Project>{902e58a1-7fff-468e-9b0d-736672fe4c1c}</Project>
+      <Name>Global</Name>
+    </ProjectReference>
     <ProjectReference Include="..\XamApp\XamApp.csproj">
       <Project>{F68E92D2-61D7-46E6-ACA6-693D9397B057}</Project>
       <Name>XamApp</Name>

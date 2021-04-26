@@ -17,5 +17,6 @@ namespace WebAPI.Models
         public DbSet<MessageTag> MessageTags { get; set; }
         public DbSet<MessageSent> MessagesSent { get; set; }
         public DbSet<MessageReceived> MessagesReceived { get; set; }
+        public DbSet<DeviceUsed> DevicesUsed { get; set; }
     }
 }

@@ -6,9 +6,13 @@ namespace XamApp.Models
     public class User
     {
         [PrimaryKey]
-        public long Id { get; set; }
+        public long UserId { get; set; }
+
         public string Email { get; set; }
         public string Password { get; set; }
         public string PhoneNumber { get; set; }
+
+        public long DeviceUsedId { get; set; }
+        public long UserProfileId { get; set; }
     }
 }

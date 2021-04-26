@@ -10,19 +10,17 @@ namespace XamApp.ViewModels
 {
     public class ChatRoomViewModel : BaseViewModel
     {
+        public static ChatRoomViewModel Appearing = null;
         public static RoomInfo Room;
         private RoomInfo _room;
         private string _body;
 
-        public Command SendMessageCommand => new Command(async () => await SendMessage());
-
-        public Command LoadMessagesCommand => new Command(async () => await LoadMessages());
-
+        public Command SendMessageCommand { get; }
         public ObservableCollection<Message> Messages { get; }
-
 
         public ChatRoomViewModel()
         {
+            SendMessageCommand = new Command(SendMessage);
             Messages = new ObservableCollection<Message>();
         }
 
@@ -30,6 +28,22 @@ namespace XamApp.ViewModels
         {
             IsBusy = busy;
             OnPropertyChanged(nameof(ShowSendButton));
+        }
+
+        public bool AddMessage(MessageSentDTO message)
+        {
+            if (_room != null && message.MessageTag.ChatRoomId == _room.Id)
+            {
+                Messages.Add(new Message(_room, message));
+                ScrollTo(-1);
+                return true;
+            }
+            else return false;
+        }
+
+        public void OnDisappearing()
+        {
+            Appearing = null;
         }
 
         public Task OnAppearing()
@@ -40,6 +54,7 @@ namespace XamApp.ViewModels
                 Room = null;
                 Title = _room.Name;
             }
+            Appearing = this;
             return LoadMessages();
         }
 
@@ -56,6 +71,7 @@ namespace XamApp.ViewModels
                     Messages.Clear();
                     foreach (var message in messages)
                         Messages.Add(new Message(_room, message));
+                    ScrollTo(-1);
                 }
                 else await DisplayAlert("Error", await HTTPClient.GetResponseError(response), "Ok");
                 SetBusy(false);
@@ -79,7 +95,7 @@ namespace XamApp.ViewModels
         public bool CanSendMessage => ShowSendButton && !string.IsNullOrEmpty(Body);
 
         public CollectionView MessagesView;
-        public void ScrollTo(int index)
+        private void ScrollTo(int index)
         {
             if (index < 0)
                 index += Messages.Count;
@@ -87,7 +103,7 @@ namespace XamApp.ViewModels
                 MessagesView.ScrollTo(index);
         }
 
-        private async Task SendMessage()
+        private async void SendMessage()
         {
             if (CanSendMessage)
             {

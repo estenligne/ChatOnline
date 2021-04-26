@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "310036780903",
+    "project_id": "rhyscitlema-chatonline",
+    "storage_bucket": "rhyscitlema-chatonline.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:310036780903:android:16761fcc5e829f55bd41c2",
+        "android_client_info": {
+          "package_name": "com.estenligne.chatonline"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "310036780903-eoo2ui10s9m45rrdu94lmlgfsf6ersfd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDelqtQ9xPljmmEx05NJODAc5Sfo5-MuiI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "310036780903-eoo2ui10s9m45rrdu94lmlgfsf6ersfd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

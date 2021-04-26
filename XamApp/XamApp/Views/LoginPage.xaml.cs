@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using Global.Enums;
 using Global.Models;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -50,24 +51,39 @@ namespace XamApp.Views
                 var response = await HTTPClient.PostAsync(null, "/api/User/Login", userDto);
                 if (response.IsSuccessStatusCode)
                 {
-                    var user = new User()
-                    {
-                        Email = userDto.Email,
-                        Password = userDto.Password,
-                        PhoneNumber = userDto.PhoneNumber,
-                    };
-                    await DataStore.Instance.InsertUserAsync(user);
+                    userDto = await HTTPClient.ReadAsAsync<ApplicationUserDTO>(response);
 
-                    // Prefixing with `//` switches to a different
-                    // navigation stack instead of pushing to the active one
-                    await Shell.Current.GoToAsync($"//{nameof(RoomsPage)}");
+                    var url = "/api/DeviceUsed/GetOrCreate?devicePlatform=" + DevicePlatformEnum.Unknown;
+                    response = await HTTPClient.PostAsync<string>(null, url, null);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var deviceUsedDto = await HTTPClient.ReadAsAsync<DeviceUsedDTO>(response);
+
+                        var user = new User()
+                        {
+                            UserId = userDto.Id,
+                            Email = userDto.Email,
+                            Password = vm.Password,
+                            PhoneNumber = userDto.PhoneNumber,
+                            DeviceUsedId = deviceUsedDto.Id,
+                            UserProfileId = deviceUsedDto.UserProfileId,
+                        };
+                        await DataStore.Instance.InsertUserAsync(user);
+
+                        DependencyService.Get<INotifications>().RegisterFcmToken(deviceUsedDto.Id);
+
+                        // Prefixing with `//` switches to a different
+                        // navigation stack instead of pushing to the active one
+                        await Shell.Current.GoToAsync($"//{nameof(RoomsPage)}");
+                    }
                 }
-                else
+
+                if (!response.IsSuccessStatusCode)
                 {
                     string message = await HTTPClient.GetResponseError(response);
                     await DisplayAlert("Login Error", message, "Ok");
                 }
-
                 SetBusy(false);
             }
         }

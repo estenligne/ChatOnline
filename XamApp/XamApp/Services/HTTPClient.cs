@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using Global.Enums;
 using Global.Models;
 
 namespace XamApp.Services
@@ -156,10 +157,13 @@ namespace XamApp.Services
             if (response.StatusCode == HttpStatusCode.GatewayTimeout)
                 return response.ReasonPhrase;
 
-            if (response.Content == null)
+            string content = null;
+            if (response.Content != null)
+                content = await response.Content.ReadAsStringAsync();
+
+            if (string.IsNullOrEmpty(content))
                 return response.ReasonPhrase;
 
-            var content = await response.Content.ReadAsStringAsync();
             var contentType = response.Content.Headers.ContentType.MediaType;
 
             if (contentType == "application/json")
@@ -179,10 +183,37 @@ namespace XamApp.Services
                         content = error.ExceptionMessage ?? error.Message;
                     }
                 }
-                catch (Exception) { }
+                catch (Exception) { } // 'content' from ReadAsStringAsync() is preserved
             }
 
             return content;
+        }
+
+        public static async Task<string> RegisterFcmToken(long deviceUsedId, string fcmToken)
+        {
+            string error = null;
+            if (deviceUsedId != 0)
+            {
+                try
+                {
+                    var args = $"?deviceUsedId={deviceUsedId}&fcmToken={fcmToken}";
+                    var url = "/api/DeviceUsed/RegisterFcmToken" + args;
+
+                    var response = await PostAsync<string>(null, url, null);
+
+                    if (!response.IsSuccessStatusCode)
+                        error = await GetResponseError(response);
+                }
+                catch (Exception ex)
+                {
+                    error = ex.Message;
+                }
+            }
+            if (error != null)
+            {
+                System.Diagnostics.Debug.WriteLine($"RegisterFcmToken(): {error}");
+            }
+            return error;
         }
     }
 }

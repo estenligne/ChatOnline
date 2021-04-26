@@ -480,7 +480,7 @@ namespace WebAPI.Migrations
                 b.Property<DateTime?>("DateMuted")
                     .HasColumnType(DataType.DateTime);
 
-                b.Property<TimeSpan?>("DatePinned")
+                b.Property<DateTime?>("DatePinned")
                     .HasColumnType(DataType.DateTime);
 
                 b.Property<long>("UserProfileId")
@@ -687,6 +687,8 @@ namespace WebAPI.Migrations
                     .IsRequired();
 
                 b.Navigation("Author");
+
+                b.Navigation("File");
 
                 b.Navigation("Linked");
 

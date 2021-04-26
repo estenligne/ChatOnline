@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using WebAPI.Models;
 using Global.Models;
+using Global.Enums;
 using AutoMapper;
 using Newtonsoft.Json;
 
@@ -148,7 +149,8 @@ namespace WebAPI.Controllers
             }
         }
 
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType(typeof(ApplicationUserDTO), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.Accepted)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         [AllowAnonymous]
@@ -174,11 +176,12 @@ namespace WebAPI.Controllers
                 if (result.Succeeded)
                 {
                     _logger.LogInformation($"User account {userDto.Email} has logged in.");
-                    return NoContent();
+                    userDto = _mapper.Map<ApplicationUserDTO>(user);
+                    return Ok(userDto);
                 }
                 if (result.RequiresTwoFactor)
                 {
-                    return Ok(result);
+                    return Accepted(result);
                 }
                 if (result.IsLockedOut)
                 {
@@ -199,11 +202,19 @@ namespace WebAPI.Controllers
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [HttpPost]
         [Route(nameof(Logout))]
-        public async Task<ActionResult> Logout()
+        public async Task<ActionResult> Logout(long deviceUsedId)
         {
             try
             {
                 await _signInManager.SignOutAsync();
+
+                var deviceUsed = dbc.DevicesUsed.Find(deviceUsedId);
+                if (deviceUsed != null && deviceUsed.DateDeleted == null)
+                {
+                    deviceUsed.DateDeleted = DateTime.UtcNow;
+                    dbc.SaveChanges();
+                }
+
                 _logger.LogInformation($"User {User.Identity.Name} logged out.");
                 return NoContent();
             }
