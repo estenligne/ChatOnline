@@ -33,6 +33,13 @@
                 TextColor="{Binding GroupNameColor}"
                 Margin="0,20" />
 
+            <Label Text="OR" TextColor="Black" HorizontalOptions="Center" />
+
+            <Entry Text="{Binding JoinToken, Mode=TwoWay}"
+                Placeholder="token for joining a group"
+                FontSize="Large"
+                Margin="0,20" />
+
             <Button Text="Add Chat Room"
                 VerticalOptions="Center"
                 Clicked="AddChatRoom"

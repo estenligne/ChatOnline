@@ -20,7 +20,7 @@ namespace XamApp.ViewModels
         public bool AmNotSender => !IamSender;
         public bool IsGroupChat => _room.Type == ChatRoomTypeEnum.Group;
 
-        public string Sender => _message.SenderId.ToString();
+        public string Sender => _message.SenderName;
         public string Body => _message.Body;
     }
 }

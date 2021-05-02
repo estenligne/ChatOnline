@@ -7,6 +7,7 @@ namespace XamApp.ViewModels
         private string email;
         private string phoneNumber;
         private string groupName;
+        private string joinToken;
 
         public string Email
         {
@@ -47,16 +48,32 @@ namespace XamApp.ViewModels
             }
         }
 
+        public string JoinToken
+        {
+            get { return joinToken; }
+            set
+            {
+                if (SetProperty(ref joinToken, value))
+                {
+                    OnUserEntry(Type.Password, value);
+                    OnPropertyChanged(nameof(GroupNameColor));
+                }
+            }
+        }
+
         public Color EmailColor => IsValid(Type.Email, Email) ? Color.Green : Color.Black;
 
         public Color PhoneNumberColor => IsValid(Type.PhoneNumber, PhoneNumber) ? Color.Green : Color.Black;
 
         public Color GroupNameColor => IsValid(Type.ProfileName, GroupName) ? Color.Green : Color.Black;
 
+        private bool JoinTokenIsValid => !string.IsNullOrEmpty(JoinToken) && JoinToken.Length <= 70;
+
         public bool CanAdd => !IsBusy && (
             IsValid(Type.Email, Email) != // using XOR
             IsValid(Type.PhoneNumber, PhoneNumber) !=
-            IsValid(Type.ProfileName, GroupName));
+            IsValid(Type.ProfileName, GroupName) !=
+            JoinTokenIsValid);
 
         public void UpdateButton()
         {
@@ -70,6 +87,7 @@ namespace XamApp.ViewModels
                 if (type != Type.Email) Email = null;
                 if (type != Type.PhoneNumber) PhoneNumber = null;
                 if (type != Type.ProfileName) GroupName = null;
+                if (type != Type.Password) JoinToken = null;
             }
             UpdateButton();
         }

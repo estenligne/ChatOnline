@@ -182,31 +182,42 @@ namespace WebAPI.Controllers
         [ProducesResponseType((int)HttpStatusCode.Created)]
         [HttpPost]
         [Route(nameof(Join))]
-        public async Task<ActionResult<UserChatRoomDTO>> Join(int id, string token)
+        public async Task<ActionResult<UserChatRoomDTO>> Join(long userProfileId, long groupProfileId, string joinToken)
         {
             try
             {
-                if (string.IsNullOrEmpty(token) || token.Length > 63)
+                if (string.IsNullOrEmpty(joinToken) || joinToken.Length > 63)
                     return BadRequest("Invalid token length.");
 
-                var chatRoom = await dbc.ChatRooms.Include(x => x.GroupProfile).FirstOrDefaultAsync(x => x.GroupProfileId == id);
+                var chatRoom = await dbc.ChatRooms
+                                        .Include(x => x.GroupProfile)
+                                        .FirstOrDefaultAsync(x => x.GroupProfileId == groupProfileId);
+
                 if (chatRoom == null)
                     return NotFound("Group's chat room not found.");
 
-                if (chatRoom.GroupProfile.JoinToken != token)
+                if (chatRoom.GroupProfile.JoinToken != joinToken)
                     return Forbid("Invalid token value!");
 
-                var userProfile = await dbc.UserProfiles.FirstOrDefaultAsync(x => x.User.UserName == User.Identity.Name);
+                var userProfile = await dbc.UserProfiles
+                                            .Include(x => x.User)
+                                            .FirstOrDefaultAsync(x => x.Id == userProfileId);
+
                 if (userProfile == null)
                     return NotFound("User profile not found.");
 
-                var userChatRoom = await dbc.UserChatRooms.FirstOrDefaultAsync(x => x.UserProfileId == userProfile.Id && x.ChatRoomId == chatRoom.Id);
+                if (userProfile.User.UserName != User.Identity.Name)
+                    return Forbid("User profile does not match!");
+
+                var userChatRoom = await dbc.UserChatRooms
+                                            .Where(x => x.UserProfileId == userProfileId && x.ChatRoomId == chatRoom.Id)
+                                            .FirstOrDefaultAsync();
                 if (userChatRoom != null)
                     return Conflict("User already joined to group.");
 
                 userChatRoom = new UserChatRoom
                 {
-                    UserProfileId = userProfile.Id,
+                    UserProfileId = userProfileId,
                     ChatRoomId = chatRoom.Id,
                     DateAdded = DateTime.UtcNow,
                 };
@@ -215,7 +226,15 @@ namespace WebAPI.Controllers
                 await dbc.SaveChangesAsync();
 
                 var userChatRoomDto = _mapper.Map<UserChatRoomDTO>(userChatRoom);
-                return CreatedAtAction(nameof(GetGroupProfile), new { id }, userChatRoomDto);
+
+                return CreatedAtRoute(
+                    new
+                    {
+                        controller = "ChatRoom",
+                        action = nameof(ChatRoomController.GetUser),
+                        userChatRoomId = userChatRoomDto.Id
+                    },
+                    userChatRoomDto);
             }
             catch (Exception ex)
             {

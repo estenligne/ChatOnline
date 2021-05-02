@@ -13,6 +13,8 @@ namespace Global.Models
         /// </summary>
         public long SenderId { get; set; }
 
+        public string SenderName { get; set; }
+
         /// <summary>
         /// A FK to a UserChatRoom. Is equal to 0 if SenderId == logged-in user.
         /// </summary>

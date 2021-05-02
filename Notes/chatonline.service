@@ -1,0 +1,38 @@
+# Copy this file to:
+# /etc/systemd/system/
+# Then execute:
+# systemctl enable chatonline
+# systemctl restart chatonline
+
+[Unit]
+Description=ChatOnline WebAPI
+
+[Service]
+Environment=ASPNETCORE_ENVIRONMENT=Production
+
+Environment=ASPNETCORE_URLS=https://estenligne.com:44364
+
+WorkingDirectory=/var/www/ChatOnline
+
+ExecStart=/var/www/ChatOnline/WebAPI
+
+# If set to control-group it kills all subprocesses as well,
+# if set to process it only kills the main process,
+# other option exist.
+KillMode=control-group
+
+#Always restart application should it stop running
+Restart=always
+
+# Time to sleep before restarting the application
+RestartSec=10
+
+KillSignal=SIGINT
+
+SyslogIdentifier=ChatOnline
+
+User=www-data
+
+[Install]
+WantedBy=multi-user.target
+

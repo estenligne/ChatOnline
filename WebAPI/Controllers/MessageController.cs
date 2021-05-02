@@ -33,6 +33,7 @@ namespace WebAPI.Controllers
                 _logger.LogError("In GetMessage(): messageSent.MessageTag == null");
 
             var messageSentDto = _mapper.Map<MessageSentDTO>(messageSent);
+            messageSentDto.SenderName = messageSent.Sender?.UserProfile?.Username;
 
             if (messageReceived != null)
             {
@@ -77,6 +78,7 @@ namespace WebAPI.Controllers
 
                 var messagesSent = await dbc.MessagesSent
                                             .Include(x => x.MessageTag)
+                                            .Include(x => x.Sender.UserProfile)
                                             .Where(x => x.MessageTag.ChatRoomId == userChatRoom.ChatRoomId)
                                             .ToListAsync();
 
