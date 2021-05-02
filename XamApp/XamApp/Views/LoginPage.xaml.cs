@@ -26,6 +26,8 @@ namespace XamApp.Views
         protected override void OnAppearing()
         {
             vm.Password = null;
+            vm.PhoneNumber = null;
+            vm.ProfileName = null;
             SetBusy(false);
         }
 
@@ -42,11 +44,13 @@ namespace XamApp.Views
             {
                 SetBusy(true);
 
-                var userDto = new ApplicationUserDTO();
-                userDto.Email = vm.Email;
-                userDto.Password = vm.Password;
-                userDto.PhoneNumber = vm.PhoneNumber;
-                userDto.RememberMe = true;
+                var userDto = new ApplicationUserDTO()
+                {
+                    Email = vm.Email,
+                    Password = vm.Password,
+                    PhoneNumber = vm.PhoneNumber,
+                    RememberMe = true,
+                };
 
                 var response = await HTTPClient.PostAsync(null, "/api/User/Login", userDto);
                 if (response.IsSuccessStatusCode)
@@ -102,11 +106,13 @@ namespace XamApp.Views
             {
                 SetBusy(true);
 
-                var userDto = new ApplicationUserDTO();
-                userDto.Email = vm.Email;
-                userDto.Password = vm.Password;
-                userDto.PhoneNumber = vm.PhoneNumber;
-                userDto.ProfileName = vm.ProfileName;
+                var userDto = new ApplicationUserDTO()
+                {
+                    Email = vm.Email,
+                    Password = vm.Password,
+                    PhoneNumber = vm.PhoneNumber,
+                    ProfileName = vm.ProfileName,
+                };
 
                 var response = await HTTPClient.PostAsync(null, "/api/User/Register", userDto);
                 if (response.IsSuccessStatusCode)

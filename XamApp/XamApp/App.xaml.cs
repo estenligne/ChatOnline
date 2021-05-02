@@ -56,7 +56,7 @@ namespace XamApp
 
         private static async Task<bool> SetChatRoomPage(long userChatRoomId)
         {
-            var url = $"/api/ChatRoom?userChatRoomId={userChatRoomId}";
+            var url = $"/api/ChatRoom/GetInfo?userChatRoomId={userChatRoomId}";
             var response = await HTTPClient.GetAsync(null, url);
 
             if (response.IsSuccessStatusCode)

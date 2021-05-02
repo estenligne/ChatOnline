@@ -11,7 +11,6 @@ namespace XamApp.ViewModels
         public Command LoadRoomsCommand { get; }
         public Command AddChatRoomCommand { get; }
         public Command<RoomInfo> RoomSelectedCommand { get; }
-
         public ObservableCollection<RoomInfo> Rooms { get; }
 
         public RoomsViewModel()
@@ -46,16 +45,17 @@ namespace XamApp.ViewModels
             }
         }
 
-        private async void AddChatRoom(object obj)
+        private async void AddChatRoom()
         {
-            await DisplayAlert("Not Available", "The feature to add a chat room is not yet implemented!", "Ok");
+            // This will push the AddRoomPage onto the navigation stack
+            await Shell.Current.GoToAsync(nameof(Views.AddRoomPage));
         }
 
         private async void OnRoomSelected(RoomInfo room)
         {
             if (room != null && !IsBusy)
             {
-                ChatRoomViewModel.Room = room; // provide necessary data
+                ChatRoomViewModel.Room = room; // provide the necessary data
                 // This will push the ChatRoomPage onto the navigation stack
                 await Shell.Current.GoToAsync(nameof(Views.ChatRoomPage));
             }

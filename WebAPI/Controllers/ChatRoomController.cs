@@ -23,15 +23,15 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet]
-        [Route(nameof(GetUserChatRoom))]
-        public async Task<ActionResult<UserChatRoomDTO>> GetUserChatRoom(long id)
+        [Route(nameof(GetUser))]
+        public async Task<ActionResult<UserChatRoomDTO>> GetUser(long userChatRoomId)
         {
             try
             {
                 var userChatRoom = await dbc.UserChatRooms
                                             .Include(x => x.UserProfile.User)
-                                            .Include(x => x.ChatRoom.GroupProfile.PhotoFile)
-                                            .FirstOrDefaultAsync(x => x.Id == id);
+                                            .Include(x => x.ChatRoom.GroupProfile)
+                                            .FirstOrDefaultAsync(x => x.Id == userChatRoomId);
 
                 if (userChatRoom == null)
                     return NotFound("User chat room not found.");
@@ -49,7 +49,8 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ChatRoomInfo>> GetChatRoomInfo(long userChatRoomId)
+        [Route(nameof(GetInfo))]
+        public async Task<ActionResult<ChatRoomInfo>> GetInfo(long userChatRoomId)
         {
             try
             {
@@ -173,13 +174,19 @@ namespace WebAPI.Controllers
         [ProducesResponseType((int)HttpStatusCode.Created)]
         [HttpPost]
         [Route(nameof(CreatePrivate))]
-        public async Task<ActionResult<UserChatRoomDTO>> CreatePrivate(string emailAddress, string phoneNumber)
+        public async Task<ActionResult<UserChatRoomDTO>> CreatePrivate(long userProfileId, string emailAddress, string phoneNumber)
         {
             try
             {
-                var user1 = await dbc.UserProfiles.FirstOrDefaultAsync(x => x.User.UserName == User.Identity.Name);
+                var user1 = await dbc.UserProfiles
+                                    .Include(x => x.User)
+                                    .FirstOrDefaultAsync(x => x.Id == userProfileId);
+
                 if (user1 == null)
                     return NotFound("User profile not found.");
+
+                if (user1.User.UserName != User.Identity.Name)
+                    return Forbid("User profile does not match!");
 
                 UserProfile user2 = await dbc.UserProfiles
                     .Where(x =>
@@ -189,6 +196,9 @@ namespace WebAPI.Controllers
 
                 if (user2 == null)
                     return NotFound("Given user was not found.");
+
+                if (user1.Id == user2.Id)
+                    return Forbid("Cannot create a chat room with self!");
 
                 UserChatRoom user1ChatRoom;
                 UserChatRoom user2ChatRoom;
@@ -256,7 +266,7 @@ namespace WebAPI.Controllers
                 await dbc.SaveChangesAsync();
 
                 var userChatRoomDto = _mapper.Map<UserChatRoomDTO>(user1ChatRoom);
-                return CreatedAtAction(nameof(GetUserChatRoom), new { id = userChatRoomDto.Id }, userChatRoomDto);
+                return CreatedAtAction(nameof(GetUser), new { userChatRoomId = userChatRoomDto.Id }, userChatRoomDto);
             }
             catch (Exception ex)
             {

@@ -26,9 +26,22 @@ namespace WebAPI.Services
             _logger = logger;
             _httpClient = new HttpClient();
 
-            string authorization = "key=" + configuration.GetValue<string>("FcmServerKey");
-            if (!_httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", authorization))
-                _logger.LogError("Failed to add the FcmServerKey to the Authorization header.");
+            string name = "FcmServerKey";
+            string key = configuration.GetValue<string>(name);
+
+            if (string.IsNullOrEmpty(key))
+            {
+                key = Environment.GetEnvironmentVariable(name);
+            }
+
+            if (string.IsNullOrEmpty(key))
+            {
+                _logger.LogError($"Cannot find the {name} environment variable.");
+            }
+            else if (!_httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", "key=" + key))
+            {
+                _logger.LogError($"Failed to add the {name} to the Authorization header.");
+            }
         }
 
         public async Task<List<PushNotificationOutcome>> SendAsync(ApplicationDbContext dbc, List<long> userProfileIds, PushNotificationDTO pushNotificationDto)

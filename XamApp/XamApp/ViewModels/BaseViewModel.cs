@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using Xamarin.Forms;
 
 namespace XamApp.ViewModels
@@ -46,6 +47,49 @@ namespace XamApp.ViewModels
         protected Task DisplayAlert(string title, string message, string cancel)
         {
             return Application.Current.MainPage.DisplayAlert(title, message, cancel);
+        }
+
+        public enum Type
+        {
+            Email,
+            Password,
+            PhoneNumber,
+            ProfileName,
+        }
+
+        public static bool IsValid(Type Type, string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return false;
+
+            if (value[0] == ' ' || value[value.Length - 1] == ' ')
+                return false;
+
+            string regexPattern;
+            switch (Type)
+            {
+                case Type.Email:
+                    regexPattern =
+                        @"^[\w!#$%&'*+\-/=?\^_`{|}~]+(\.[\w!#$%&'*+\-/=?\^_`{|}~]+)*" + "@" +
+                        @"((([\-\w]+\.)+[a-zA-Z]{2,4})|(([0-9]{1,3}\.){3}[0-9]{1,3}))$";
+
+                    return Regex.IsMatch(value, regexPattern);
+
+                case Type.Password:
+                    return value.Length >= 6;
+
+                case Type.ProfileName:
+                    return value.Length >= 5;
+
+                case Type.PhoneNumber:
+                    regexPattern =
+                        @"^\+(9[976]\d|8[987530]\d|6[987]\d|5[90]\d|42\d|3[875]\d|" +
+                        @"2[98654321]\d|9[8543210]|8[6421]|6[6543210]|5[87654321]|" +
+                        @"4[987654310]|3[9643210]|2[70]|7|1)\d{1,14}$";
+                    return Regex.IsMatch(value, regexPattern);
+
+                default: return false;
+            }
         }
     }
 }

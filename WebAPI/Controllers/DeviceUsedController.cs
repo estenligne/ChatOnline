@@ -124,8 +124,8 @@ namespace WebAPI.Controllers
 
         #if DEBUG
         [HttpPost]
-        [Route(nameof(Send))]
-        public async Task<ActionResult<List<PushNotificationOutcome>>> Send(
+        [Route(nameof(SendPushNotification))]
+        public async Task<ActionResult<List<PushNotificationOutcome>>> SendPushNotification(
             [FromQuery] List<long> userProfileIds,
             [FromBody] PushNotificationDTO pushNotificationDto)
         {

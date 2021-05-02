@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="XamApp.Views.AddRoomPage"
+             Title="Add Chat Room">
+    <ContentPage.Content>
+        <StackLayout Padding="10,30,10,0">
+
+            <Label Text="Enter" TextColor="Black" HorizontalOptions="Center" />
+
+            <Entry Text="{Binding Email, Mode=TwoWay}"
+                    Placeholder="email address of contact"
+                    Keyboard="Email"
+                    FontSize="Large"
+                    TextColor="{Binding EmailColor}"
+                    Margin="0,20" />
+
+            <Label Text="OR" TextColor="Black" HorizontalOptions="Center" />
+
+            <Entry Text="{Binding PhoneNumber, Mode=TwoWay}"
+                    Placeholder="phone number: +237123456789"
+                    Keyboard="Telephone"
+                    FontSize="Large"
+                    TextColor="{Binding PhoneNumberColor}"
+                    Margin="0,20" />
+
+            <Label Text="OR" TextColor="Black" HorizontalOptions="Center" />
+
+            <Entry Text="{Binding GroupName, Mode=TwoWay}"
+                Placeholder="name of new group to create"
+                Keyboard="Plain"
+                FontSize="Large"
+                TextColor="{Binding GroupNameColor}"
+                Margin="0,20" />
+
+            <Button Text="Add Chat Room"
+                VerticalOptions="Center"
+                Clicked="AddChatRoom"
+                IsEnabled="{Binding CanAdd}"
+                Margin="0,20" />
+
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

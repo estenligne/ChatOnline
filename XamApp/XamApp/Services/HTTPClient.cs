@@ -14,7 +14,11 @@ namespace XamApp.Services
     {
         private static HttpClient httpClient = null;
 
+#if DEBUG
         private static string WebAPIBaseURL = "http://192.168.43.64:44363";
+#else
+        private static string WebAPIBaseURL = "https://estenligne.com:44364";
+#endif
 
         public static async Task<HttpClient> NewClient(bool doLogin = true, int timeout = 60)
         {

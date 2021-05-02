@@ -12,6 +12,7 @@ namespace XamApp
         public AppShell()
         {
             InitializeComponent();
+            Routing.RegisterRoute(nameof(AddRoomPage), typeof(AddRoomPage));
             Routing.RegisterRoute(nameof(ChatRoomPage), typeof(ChatRoomPage));
         }
 
