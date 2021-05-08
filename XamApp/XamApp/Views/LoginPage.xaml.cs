@@ -40,7 +40,11 @@ namespace XamApp.Views
 
         private async void OnLoginClicked(object sender, EventArgs e)
         {
-            if (vm.CanLogin)
+            if (vm.DoNone)
+            {
+                vm.UpdateChoice(LoginViewModel.Choice.Login);
+            }
+            else if (vm.CanLogin)
             {
                 SetBusy(true);
 
@@ -92,17 +96,25 @@ namespace XamApp.Views
             }
         }
 
-        private async void OnChangePasswordClicked(object sender, EventArgs e)
+        private async void OnResetPasswordClicked(object sender, EventArgs e)
         {
-            if (vm.CanChangePassword)
+            if (vm.DoNone)
             {
-                await DisplayAlert("Not Available", "The feature to change password is not yet available!", "Ok");
+                vm.UpdateChoice(LoginViewModel.Choice.ResetPassword);
+            }
+            else if (vm.CanResetPassword)
+            {
+                await DisplayAlert("Not Available", "The feature to reset password is not yet available!", "Ok");
             }
         }
 
         private async void OnRegisterClicked(object sender, EventArgs e)
         {
-            if (vm.CanRegister)
+            if (vm.DoNone)
+            {
+                vm.UpdateChoice(LoginViewModel.Choice.Register);
+            }
+            else if (vm.CanRegister)
             {
                 SetBusy(true);
 
@@ -117,7 +129,11 @@ namespace XamApp.Views
                 var response = await HTTPClient.PostAsync(null, "/api/User/Register", userDto);
                 if (response.IsSuccessStatusCode)
                 {
-                    await DisplayAlert("Confirm Your Account", $"A registration confirmation email has been sent to {vm.Email}. Please click on the link provided to confirm your account.", "Ok");
+                    string message = $"A registration confirmation email has been sent to {vm.Email}.";
+                    message += "\n\nPlease click on the link provided to confirm your account.";
+                    message += "\n\nPlease also check your Spam or Junk folder for the email.";
+                    await DisplayAlert("Confirm Your Account", message, "Ok");
+                    vm.UpdateChoice(LoginViewModel.Choice.Login);
                 }
                 else
                 {

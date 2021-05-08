@@ -8,59 +8,90 @@
              Shell.NavBarIsVisible="False">
     <ContentPage.Content>
         <ScrollView>
-            <StackLayout Padding="10,0,10,0" VerticalOptions="Center">
+            <StackLayout Padding="10,30,10,0">
 
-                <Entry Text="{Binding Email, Mode=TwoWay}"
-                    Placeholder="email address"
-                    Keyboard="Email"
-                    FontSize="Large"
-                    TextColor="{Binding EmailColor}"
-                    Margin="0,20" />
+                <StackLayout IsVisible="{Binding DoNone}">
 
-                <Entry Text="{Binding Password, Mode=TwoWay}"
-                    Placeholder="strong password"
-                    IsPassword="True"
-                    FontSize="Large"
-                    TextColor="{Binding PasswordColor}"
-                    Margin="0,20" />
+                    <Button FontSize="Large" Text="Register" Clicked="OnRegisterClicked" BackgroundColor="Blue" />
 
-                <Button Text="Login"
-                    VerticalOptions="Center"
-                    Clicked="OnLoginClicked"
-                    IsEnabled="{Binding CanLogin}"
-                    Margin="0,20" />
+                    <Label FontSize="Large" Text="OR" TextColor="Black" HorizontalOptions="Center" Margin="0,20" />
 
-                <Entry Text="{Binding PasswordConfirm, Mode=TwoWay}"
-                   Placeholder="repeat password"
-                   FontSize="Large"
-                   TextColor="{Binding PasswordConfirmColor}"
-                   Margin="0,20" />
+                    <Button FontSize="Large" Text="Login" Clicked="OnLoginClicked" BackgroundColor="Green" />
 
-                <Button Text="Change Password"
-                    VerticalOptions="Center"
-                    Clicked="OnChangePasswordClicked"
-                    IsEnabled="{Binding CanChangePassword}"
-                    Margin="0,20" />
+                    <Label FontSize="Large" Text="OR" TextColor="Black" HorizontalOptions="Center" Margin="0,20" />
 
-                <Entry Text="{Binding PhoneNumber, Mode=TwoWay}"
-                    Placeholder="phone number: +237123456789"
-                    Keyboard="Telephone"
-                    FontSize="Large"
-                    TextColor="{Binding PhoneNumberColor}"
-                    Margin="0,20" />
+                    <Button FontSize="Large" Text="Reset Password" Clicked="OnResetPasswordClicked" BackgroundColor="Red" />
 
-                <Entry Text="{Binding ProfileName, Mode=TwoWay}"
-                    Placeholder="profile name"
-                    Keyboard="Plain"
-                    FontSize="Large"
-                    TextColor="{Binding ProfileNameColor}"
-                    Margin="0,20" />
+                </StackLayout>
 
-                <Button Text="Register"
-                    VerticalOptions="Center"
-                    Clicked="OnRegisterClicked"
-                    IsEnabled="{Binding CanRegister}"
-                    Margin="0,20" />
+                <StackLayout IsVisible="{Binding DoKnown}">
+
+                    <Entry Text="{Binding Email, Mode=TwoWay}"
+                        Placeholder="enter email address"
+                        TextColor="{Binding EmailColor}"
+                        Keyboard="Email"
+                        FontSize="Large"
+                        Margin="0,20" />
+
+                    <Entry Text="{Binding Password, Mode=TwoWay}"
+                        Placeholder="enter strong password"
+                        TextColor="{Binding PasswordColor}"
+                        IsPassword="True"
+                        FontSize="Large"
+                        Margin="0,20" />
+
+                    <Button Text="Login"
+                        Clicked="OnLoginClicked"
+                        IsEnabled="{Binding CanLogin}"
+                        IsVisible="{Binding DoLogin}"
+                        FontSize="Large"
+                        Margin="0,20" />
+
+                    <Entry Text="{Binding PasswordConfirm, Mode=TwoWay}"
+                        Placeholder="repeat your password"
+                        TextColor="{Binding PasswordConfirmColor}"
+                        IsVisible="{Binding DoResetPassword}"
+                        FontSize="Large"
+                        Margin="0,20" />
+
+                    <Button Text="Reset Password"
+                        Clicked="OnResetPasswordClicked"
+                        IsEnabled="{Binding CanResetPassword}"
+                        IsVisible="{Binding DoResetPassword}"
+                        FontSize="Large"
+                        Margin="0,20" />
+
+                </StackLayout>
+
+                <StackLayout IsVisible="{Binding DoRegister}">
+
+                    <Entry Text="{Binding PasswordConfirm, Mode=TwoWay}"
+                        Placeholder="repeat your password"
+                        TextColor="{Binding PasswordConfirmColor}"
+                        FontSize="Large"
+                        Margin="0,20" />
+
+                    <Entry Text="{Binding PhoneNumber, Mode=TwoWay}"
+                        Placeholder="phone number: +237123456789"
+                        Keyboard="Telephone"
+                        TextColor="{Binding PhoneNumberColor}"
+                        FontSize="Large"
+                        Margin="0,20" />
+
+                    <Entry Text="{Binding ProfileName, Mode=TwoWay}"
+                        Placeholder="enter profile name"
+                        Keyboard="Plain"
+                        TextColor="{Binding ProfileNameColor}"
+                        FontSize="Large"
+                        Margin="0,20" />
+
+                    <Button Text="Register"
+                        Clicked="OnRegisterClicked"
+                        IsEnabled="{Binding CanRegister}"
+                        FontSize="Large"
+                        Margin="0,20" />
+
+                </StackLayout>
 
             </StackLayout>
         </ScrollView>

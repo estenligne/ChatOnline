@@ -4,6 +4,32 @@ namespace XamApp.ViewModels
 {
     public class LoginViewModel : BaseViewModel
     {
+        public enum Choice
+        {
+            None,
+            Login,
+            Register,
+            ResetPassword,
+        }
+
+        private Choice choice;
+        public bool DoKnown => !DoNone;
+        public bool DoNone => choice == Choice.None;
+        public bool DoLogin => choice == Choice.Login;
+        public bool DoRegister => choice == Choice.Register;
+        public bool DoResetPassword => choice == Choice.ResetPassword;
+
+        public void UpdateChoice(Choice choice)
+        {
+            this.choice = choice;
+            OnPropertyChanged(nameof(DoKnown));
+            OnPropertyChanged(nameof(DoNone));
+            OnPropertyChanged(nameof(DoLogin));
+            OnPropertyChanged(nameof(DoRegister));
+            OnPropertyChanged(nameof(DoResetPassword));
+            UpdateButtons();
+        }
+
         private string email;
         private string password;
         private string passwordConfirm;
@@ -79,15 +105,15 @@ namespace XamApp.ViewModels
         public void UpdateButtons()
         {
             OnPropertyChanged(nameof(CanLogin));
-            OnPropertyChanged(nameof(CanChangePassword));
+            OnPropertyChanged(nameof(CanResetPassword));
             OnPropertyChanged(nameof(CanRegister));
         }
 
         public bool CanLogin => !IsBusy && IsValid(Type.Email, Email) && IsValid(Type.Password, Password);
 
-        public bool CanChangePassword => CanLogin && Password == PasswordConfirm;
+        public bool CanResetPassword => CanLogin && Password == PasswordConfirm;
 
-        public bool CanRegister => CanChangePassword && IsValid(Type.PhoneNumber, PhoneNumber) && IsValid(Type.ProfileName, ProfileName);
+        public bool CanRegister => CanResetPassword && IsValid(Type.PhoneNumber, PhoneNumber) && IsValid(Type.ProfileName, ProfileName);
 
         public Color EmailColor => IsValid(Type.Email, Email) ? Color.Green : Color.Black;
 

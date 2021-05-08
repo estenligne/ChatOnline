@@ -29,8 +29,8 @@ namespace WebAPI.Controllers
 
         private MessageSentDTO GetMessage(MessageSent messageSent, MessageReceived messageReceived)
         {
-            if (messageSent.MessageTag == null) // Simple check for .Include() in caller, do NOT remove!
-                _logger.LogError("In GetMessage(): messageSent.MessageTag == null");
+            if (messageSent.Sender == null) // Simple check for .Include() in caller, do NOT remove!
+                _logger.LogError("In GetMessage(): messageSent.Sender == null");
 
             var messageSentDto = _mapper.Map<MessageSentDTO>(messageSent);
             messageSentDto.SenderName = messageSent.Sender?.UserProfile?.Username;
@@ -65,11 +65,14 @@ namespace WebAPI.Controllers
             try
             {
                 var userChatRoom = await dbc.UserChatRooms
-                                            .Where(x => x.Id == userChatRoomId &&
-                                                x.UserProfile.User.UserName == User.Identity.Name)
-                                            .FirstOrDefaultAsync();
+                                            .Include(x => x.UserProfile.User)
+                                            .FirstOrDefaultAsync(x => x.Id == userChatRoomId);
+
                 if (userChatRoom == null)
                     return NotFound("Sender's user chat room not found.");
+
+                if (userChatRoom.UserProfile.User.UserName != User.Identity.Name)
+                    return Forbid("Sender's user chat room does not match!");
 
                 if (userChatRoom.DateBlocked != null ||
                     userChatRoom.DateDeleted != null ||
@@ -77,9 +80,8 @@ namespace WebAPI.Controllers
                     return Forbid("You are not allowed to view messages in this chat room!");
 
                 var messagesSent = await dbc.MessagesSent
-                                            .Include(x => x.MessageTag)
                                             .Include(x => x.Sender.UserProfile)
-                                            .Where(x => x.MessageTag.ChatRoomId == userChatRoom.ChatRoomId)
+                                            .Where(x => x.Sender.ChatRoomId == userChatRoom.ChatRoomId)
                                             .ToListAsync();
 
                 var messageSentIds = messagesSent.Select(x => x.Id);
@@ -244,8 +246,8 @@ namespace WebAPI.Controllers
                 };
 
                 var userProfileIds = await dbc.UserChatRooms
-                                            .Where(x =>
-                                                x.Id != userChatRoom.Id &&
+                                            .Where(x => x.Id != userChatRoom.Id &&
+                                                x.ChatRoomId == userChatRoom.ChatRoomId &&
                                                 x.DateBlocked == null &&
                                                 x.DateDeleted == null &&
                                                 x.DateExited == null)
@@ -254,6 +256,7 @@ namespace WebAPI.Controllers
 
                 var outcomes = await _pushNotificationService.SendAsync(dbc, userProfileIds, pushNotificationDto);
 
+                messageSentDto.SenderName = userChatRoom.UserProfile.Username;
                 messageSentDto.Id = messageSent.Id;
                 return CreatedAtAction(nameof(GetMany), null, messageSentDto);
             }
@@ -272,7 +275,6 @@ namespace WebAPI.Controllers
             {
                 var messageSent = await dbc.MessagesSent
                                             .Include(x => x.Sender)
-                                            .Include(x => x.MessageTag)
                                             .FirstOrDefaultAsync(x => x.Id == messageSentId);
                 if (messageSent == null)
                     return NotFound($"messageSentId {messageSentId} not found.");

@@ -134,15 +134,17 @@ namespace WebAPI.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route(nameof(GetAll))]
-        public async Task<ActionResult<List<ChatRoomInfo>>> GetAll()
+        public async Task<ActionResult<List<ChatRoomInfo>>> GetAll(long userProfileId)
         {
             try
             {
                 var userChatRooms = await dbc.UserChatRooms
                     .Include(x => x.ChatRoom.GroupProfile.PhotoFile)
-                    .Include(x => x.UserProfile.User)
-                    .Where(x => x.DateDeleted == null && x.UserProfile.User.UserName == User.Identity.Name
-                        && (x.ChatRoom.GroupProfile == null || x.ChatRoom.GroupProfile.DateDeleted == null))
+                    .Where(x =>
+                        x.UserProfileId == userProfileId &&
+                        x.UserProfile.User.UserName == User.Identity.Name &&
+                        x.DateDeleted == null &&
+                        (x.ChatRoom.GroupProfile == null || x.ChatRoom.GroupProfile.DateDeleted == null))
                     .ToListAsync();
 
                 var chatRoomsInfos = new List<ChatRoomInfo>();

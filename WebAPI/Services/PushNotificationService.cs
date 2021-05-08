@@ -62,6 +62,7 @@ namespace WebAPI.Services
                 if (string.IsNullOrEmpty(device.PushNotificationToken))
                 {
                     outcome.errorMessage = $"device.PushNotificationToken was not provided.";
+                    outcomes.Add(outcome);
                     failure = true;
                     continue;
                 }

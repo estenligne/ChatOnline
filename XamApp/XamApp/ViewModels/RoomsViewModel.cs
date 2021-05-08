@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Xamarin.Forms;
+using XamApp.Models;
 using XamApp.Services;
 
 namespace XamApp.ViewModels
@@ -32,15 +33,25 @@ namespace XamApp.ViewModels
             if (!IsBusy)
             {
                 IsBusy = true;
-                var response = await HTTPClient.GetAsync(null, "/api/ChatRoom/GetAll");
+
+                var user = await DataStore.Instance.GetUserAsync();
+                var url = "/api/ChatRoom/GetAll?userProfileId=" + user.UserProfileId;
+
+                var response = await HTTPClient.GetAsync(null, url);
                 if (response.IsSuccessStatusCode)
                 {
                     var rooms = await HTTPClient.ReadAsAsync<List<RoomInfo>>(response);
+                    rooms.Sort((a, b) => b.LatestMessage.DateSent.CompareTo(a.LatestMessage.DateSent));
+
                     Rooms.Clear();
                     foreach (var room in rooms)
                         Rooms.Add(room);
                 }
-                else await DisplayAlert("Error", await HTTPClient.GetResponseError(response), "Ok");
+                else
+                {
+                    var message = await HTTPClient.GetResponseError(response);
+                    await DisplayAlert("Error", message, "Ok");
+                }
                 IsBusy = false;
             }
         }

@@ -5,7 +5,7 @@
              Title="{Binding Title}"
              xmlns:local="clr-namespace:XamApp.ViewModels">
 
-    <StackLayout Orientation="Vertical" BackgroundColor="MintCream">
+    <StackLayout Orientation="Vertical" BackgroundColor="LightYellow">
 
         <CollectionView x:Name="MessagesView"
             ItemsSource="{Binding Messages}"
@@ -73,7 +73,7 @@
 
             <StackLayout Orientation="Vertical" HorizontalOptions="End">
                 <ActivityIndicator
-                    WidthRequest="55"
+                    WidthRequest="60"
                     HeightRequest="65"
                     VerticalOptions="EndAndExpand"
                     IsVisible="{Binding IsBusy}"
@@ -81,7 +81,7 @@
 
                 <Button
                     Text="Send"
-                    WidthRequest="55"
+                    WidthRequest="60"
                     HeightRequest="65"
                     VerticalOptions="EndAndExpand"
                     Command="{Binding SendMessageCommand}"
