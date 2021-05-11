@@ -22,6 +22,7 @@ namespace WebAPI.Services
         {
             public string Host { get; set; }
             public int Port { get; set; }
+            public string Name { get; set; }
             public string Sender { get; set; }
             public string Password { get; set; }
         }
@@ -41,7 +42,7 @@ namespace WebAPI.Services
             {
                 var message = new MimeMessage();
                 message.Sender = MailboxAddress.Parse(_settings.Sender);
-                message.From.Add(MailboxAddress.Parse(_settings.Sender));
+                message.From.Add(new MailboxAddress(_settings.Name, _settings.Sender));
                 message.To.Add(MailboxAddress.Parse(to));
                 message.Subject = subject;
 
