@@ -47,7 +47,8 @@ namespace XamApp.Droid.Notifications
             var channelId = PushNotificationDTO.GetChannelId(notification.Topic);
 
             var notificationBuilder = new NotificationCompat.Builder(context, channelId)
-                .SetSmallIcon(Resource.Drawable.icon_about)
+                .SetDefaults((int)NotificationDefaults.All)
+                .SetSmallIcon(Resource.Mipmap.icon)
                 .SetColor(ContextCompat.GetColor(context, Resource.Color.colorPrimary))
                 .SetContentTitle(notification.Title)
                 .SetContentText(notification.Body)

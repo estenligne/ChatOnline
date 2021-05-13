@@ -18,21 +18,26 @@ namespace XamApp
 
         private async void OnLogoutClicked(object sender, EventArgs e)
         {
-            var user = await DataStore.Instance.GetUserAsync();
-            var url = "/api/User/Logout?deviceUsedId=" + user.DeviceUsedId;
+            User user = IsBusy ? null : await DataStore.Instance.GetUserAsync();
+            if (user != null)
+            {
+                IsBusy = true;
+                var url = "/api/User/Logout?deviceUsedId=" + user.DeviceUsedId;
 
-            var response = await HTTPClient.PostAsync<string>(null, url, null);
-            if (!response.IsSuccessStatusCode)
-            {
-                string message = await HTTPClient.GetResponseError(response);
-                message += "\n\nFor your security, you must please clear all app data if this persists.";
-                await DisplayAlert("Logout Error", message,  "Ok");
-            }
-            else
-            {
-                HTTPClient.Clear();
-                await DataStore.Instance.DeleteUserAsync();
-                await Shell.Current.GoToAsync("//" + nameof(LoginPage));
+                var response = await HTTPClient.PostAsync<string>(null, url, null);
+                if (!response.IsSuccessStatusCode)
+                {
+                    string message = await HTTPClient.GetResponseError(response);
+                    message += "\n\nFor your security, you must please clear all app data if this persists.";
+                    await DisplayAlert("Logout Error", message, "Ok");
+                }
+                else
+                {
+                    HTTPClient.Clear();
+                    await DataStore.Instance.DeleteUserAsync();
+                    await Shell.Current.GoToAsync("//" + nameof(LoginPage));
+                }
+                IsBusy = false;
             }
         }
     }
