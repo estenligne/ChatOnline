@@ -1,8 +1,16 @@
-# Copy this file to:
-# /etc/systemd/system/
-# Then execute:
-# systemctl enable chatonline
-# systemctl restart chatonline
+#
+# Copy this file to systemd:
+#  sudo cp chatonline.service /etc/systemd/system/
+#
+# Then enable the service:
+#  sudo systemctl enable chatonline
+#
+# Then start or restart the service:
+#  sudo systemctl restart chatonline
+#
+# Finally, check that the service is running:
+#  systemctl status chatonline
+#
 
 [Unit]
 Description=ChatOnline WebAPI
