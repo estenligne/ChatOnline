@@ -29,8 +29,16 @@ namespace WebAPI.Controllers
 
         private MessageSentDTO GetMessage(MessageSent messageSent, MessageReceived messageReceived)
         {
-            if (messageSent.Sender == null) // Simple check for .Include() in caller, do NOT remove!
-                _logger.LogError("In GetMessage(): messageSent.Sender == null");
+            // First check whether the caller did the necessary .Include() for extra data:
+
+            if (messageSent.MessageTag == null) // MessageTag is needed by app
+                _logger.LogError("In GetMessage(): messageSent.MessageTag == null");
+
+            if (messageSent.File == null && messageSent.FileId != null) // File is needed by app
+                _logger.LogError("In GetMessage(): messageSent.File == null");
+
+            if (messageSent.Sender?.UserProfile == null) // UserProfile needed below
+                _logger.LogError("In GetMessage(): messageSent.Sender?.UserProfile == null");
 
             var messageSentDto = _mapper.Map<MessageSentDTO>(messageSent);
             messageSentDto.SenderName = messageSent.Sender?.UserProfile?.Username;
@@ -53,7 +61,7 @@ namespace WebAPI.Controllers
             if (messageSentDto.DateDeleted != null) // if a deleted message
             {
                 messageSentDto.Body = null; // then reduce payload size a bit!
-                messageSentDto.File = null;
+                messageSentDto.File = null; // reduce payload size some more!
             }
             return messageSentDto;
         }
@@ -81,7 +89,10 @@ namespace WebAPI.Controllers
 
                 var messagesSent = await dbc.MessagesSent
                                             .Include(x => x.Sender.UserProfile)
+                                            .Include(x => x.MessageTag)
+                                            .Include(x => x.File)
                                             .Where(x => x.Sender.ChatRoomId == userChatRoom.ChatRoomId)
+                                            .OrderBy(x => x.Id)
                                             .ToListAsync();
 
                 var messageSentIds = messagesSent.Select(x => x.Id);
@@ -91,6 +102,7 @@ namespace WebAPI.Controllers
                                                     messageSentIds.Contains(x.MessageSentId))
                                                 .ToDictionaryAsync(x => x.MessageSentId);
 
+                var utcNow = DateTime.UtcNow;
                 var messages = new List<MessageSentDTO>();
 
                 foreach (var messageSent in messagesSent)
@@ -101,8 +113,10 @@ namespace WebAPI.Controllers
                     if (messageReceived == null && messageSent.SenderId != userChatRoomId)
                     {
                         _logger.LogWarning($"GetMany({userChatRoomId}): user did not receive message {messageSent.Id}.");
+                        messageReceived = await AddMessageReceived(messageSent, userChatRoom.Id, utcNow);
                     }
-                    else messages.Add(GetMessage(messageSent, messageReceived));
+
+                    messages.Add(GetMessage(messageSent, messageReceived));
                 }
                 return messages;
             }
@@ -274,8 +288,11 @@ namespace WebAPI.Controllers
             try
             {
                 var messageSent = await dbc.MessagesSent
-                                            .Include(x => x.Sender)
+                                            .Include(x => x.Sender.UserProfile)
+                                            .Include(x => x.MessageTag)
+                                            .Include(x => x.File)
                                             .FirstOrDefaultAsync(x => x.Id == messageSentId);
+
                 if (messageSent == null)
                     return NotFound($"messageSentId {messageSentId} not found.");
 
@@ -299,30 +316,11 @@ namespace WebAPI.Controllers
                 var messageReceived = await dbc.MessagesReceived
                                             .Where(x => x.ReceiverId == userChatRoom.Id && x.MessageSentId == messageSentId)
                                             .FirstOrDefaultAsync();
+
                 if (messageReceived != null)
                     return Conflict("Message already received.");
 
-                messageReceived = new MessageReceived()
-                {
-                    ReceiverId = userChatRoom.Id,
-                    MessageSentId = messageSentId,
-                    DateReceived = dateReceived,
-                };
-
-                dbc.MessagesReceived.Add(messageReceived);
-                await dbc.SaveChangesAsync();
-
-                // Send the MessageReceived push notification
-                var pushNotificationDto = new PushNotificationDTO
-                {
-                    Topic = PushNotificationTopic.MessageReceived,
-                    DateCreated = DateTime.UtcNow,
-                    UserChatRoomId = userChatRoom.Id,
-                    MessageSentId = messageSentId,
-                };
-
-                var userProfileIds = new List<long> { messageSent.Sender.UserProfileId };
-                var outcomes = await _pushNotificationService.SendAsync(dbc, userProfileIds, pushNotificationDto);
+                messageReceived = await AddMessageReceived(messageSent, userChatRoom.Id, dateReceived);
 
                 var messageSentDto = GetMessage(messageSent, messageReceived);
                 return CreatedAtAction(nameof(GetMany), null, messageSentDto);
@@ -331,6 +329,33 @@ namespace WebAPI.Controllers
             {
                 return InternalServerError(ex);
             }
+        }
+
+        private async Task<MessageReceived> AddMessageReceived(MessageSent messageSent, long userChatRoomId, DateTime dateReceived)
+        {
+            var messageReceived = new MessageReceived()
+            {
+                ReceiverId = userChatRoomId,
+                MessageSentId = messageSent.Id,
+                DateReceived = dateReceived,
+            };
+
+            dbc.MessagesReceived.Add(messageReceived);
+            await dbc.SaveChangesAsync();
+
+            // Send the MessageReceived push notification
+            var pushNotificationDto = new PushNotificationDTO
+            {
+                Topic = PushNotificationTopic.MessageReceived,
+                DateCreated = DateTime.UtcNow,
+                UserChatRoomId = userChatRoomId,
+                MessageSentId = messageSent.Id,
+            };
+
+            var userProfileIds = new List<long> { messageSent.Sender.UserProfileId };
+            await _pushNotificationService.SendAsync(dbc, userProfileIds, pushNotificationDto);
+
+            return messageReceived;
         }
 
         [ProducesResponseType((int)HttpStatusCode.NoContent)]

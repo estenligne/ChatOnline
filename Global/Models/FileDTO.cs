@@ -13,9 +13,8 @@ namespace Global.Models
 
         public FilePurposeEnum Purpose { get; set; }
 
-        public long UploaderId { get; set; }
-
         public DateTime DateUploaded { get; set; }
+
         public DateTime? DateDeleted { get; set; }
     }
 }

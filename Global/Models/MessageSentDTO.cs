@@ -25,8 +25,10 @@ namespace Global.Models
 
         public MessageTypeEnum MessageType { get; set; }
 
+        /// <summary>
+        /// A FK to a MessageSent. It is the message being replied to or being forwarded.
+        /// </summary>
         public long? LinkedId { get; set; }
-        public MessageSentDTO Linked { get; set; }
 
         /// <summary>
         /// If AuthorId != null then message is a <b>forwarded</b> message specified by LinkedId.
