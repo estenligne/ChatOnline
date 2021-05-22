@@ -22,7 +22,7 @@ namespace XamApp
             if (user != null)
             {
                 IsBusy = true;
-                var url = "/api/User/Logout?deviceUsedId=" + user.DeviceUsedId;
+                var url = "/api/Account/Logout?deviceUsedId=" + user.DeviceUsedId;
 
                 var response = await HTTPClient.PostAsync<string>(null, url, null);
                 if (!response.IsSuccessStatusCode)

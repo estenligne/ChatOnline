@@ -181,8 +181,8 @@ namespace WebAPI.Controllers
 
         [ProducesResponseType((int)HttpStatusCode.Created)]
         [HttpPost]
-        [Route(nameof(Join))]
-        public async Task<ActionResult<UserChatRoomDTO>> Join(long userProfileId, long groupProfileId, string joinToken)
+        [Route(nameof(JoinGroup))]
+        public async Task<ActionResult<UserChatRoomDTO>> JoinGroup(long userProfileId, long groupProfileId, string joinToken)
         {
             try
             {

@@ -15,18 +15,18 @@ using Newtonsoft.Json;
 
 namespace WebAPI.Controllers
 {
-    public class UserController : BaseController<UserController>
+    public class AccountController : BaseController<AccountController>
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly Services.EmailService _emailService;
 
-        public UserController(
+        public AccountController(
             SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager,
             Services.EmailService emailService,
             ApplicationDbContext context,
-            ILogger<UserController> logger,
+            ILogger<AccountController> logger,
             IMapper mapper) : base(context, logger, mapper)
         {
             _signInManager = signInManager;
@@ -35,9 +35,10 @@ namespace WebAPI.Controllers
         }
 
         /// <summary>
-        /// Endpoint to get details of the currently logged in user
+        /// Endpoint to get details of the currently logged-in user
         /// </summary>
         [HttpGet]
+        [Route(nameof(GetUser))]
         public async Task<ActionResult<ApplicationUserDTO>> GetUser()
         {
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
@@ -107,14 +108,15 @@ namespace WebAPI.Controllers
 
         private async Task SendConfirmationEmail(ApplicationUser user)
         {
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var domainName = $"{this.Request.Scheme}://{this.Request.Host}";
-            var path = $"{domainName}/api/User/{nameof(ConfirmEmail)}";
-            var email = System.Web.HttpUtility.UrlEncode(user.Email);
+            string token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            string domainName = $"{this.Request.Scheme}://{this.Request.Host}";
+            string controller = ControllerContext.ActionDescriptor.ControllerName;
+            string path = $"{domainName}/api/{controller}/{nameof(ConfirmEmail)}";
+            string email = System.Web.HttpUtility.UrlEncode(user.Email);
             token = System.Web.HttpUtility.UrlEncode(token);
-            var href = $"{path}?email={email}&token={token}";
-            var body = $"<p>Please confirm your account by <a href='{href}'>clicking here</a>.</p>";
-            _logger.LogDebug(body);
+            string href = $"{path}?email={email}&token={token}";
+            string body = "<h2>Thank you for registering!</h2>\n";
+            body += $"<p>Please confirm your account by <a href='{href}'>clicking here</a>.</p>\n";
             await _emailService.SendEmailAsync(user.Email, "Confirm Your Account", body);
         }
 

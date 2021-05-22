@@ -70,7 +70,7 @@ namespace XamApp.Views
                             joinToken = vm.JoinToken.Substring(index);
                     }
 
-                    url = "/api/GroupProfile/Join";
+                    url = "/api/GroupProfile/JoinGroup";
                     url += "?userProfileId=" + user.UserProfileId;
                     url += "&groupProfileId=" + groupProfileId;
                     url += "&joinToken=" + joinToken;

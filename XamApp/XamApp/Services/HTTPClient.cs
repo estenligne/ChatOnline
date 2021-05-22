@@ -41,7 +41,7 @@ namespace XamApp.Services
                     Password = user.Password,
                     RememberMe = true
                 };
-                var response = await PostAsync(client, "/api/User/Login", userDto);
+                var response = await PostAsync(client, "/api/Account/Login", userDto);
                 return response;
             }
             else if (oldResponse != null)

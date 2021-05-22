@@ -56,7 +56,7 @@ namespace XamApp.Views
                     RememberMe = true,
                 };
 
-                var response = await HTTPClient.PostAsync(null, "/api/User/Login", userDto);
+                var response = await HTTPClient.PostAsync(null, "/api/Account/Login", userDto);
                 if (response.IsSuccessStatusCode)
                 {
                     userDto = await HTTPClient.ReadAsAsync<ApplicationUserDTO>(response);
@@ -126,7 +126,7 @@ namespace XamApp.Views
                     ProfileName = vm.ProfileName,
                 };
 
-                var response = await HTTPClient.PostAsync(null, "/api/User/Register", userDto);
+                var response = await HTTPClient.PostAsync(null, "/api/Account/Register", userDto);
                 if (response.IsSuccessStatusCode)
                 {
                     string message = $"A registration confirmation email has been sent to {vm.Email}.";
