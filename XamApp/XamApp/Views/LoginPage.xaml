@@ -8,7 +8,12 @@
              Shell.NavBarIsVisible="False">
     <ContentPage.Content>
         <ScrollView>
-            <StackLayout Padding="10,30,10,0">
+            <StackLayout Padding="20,0">
+
+                <Image Source="icon_logo.png"
+                       HorizontalOptions="Center"
+                       HeightRequest="64"
+                       Margin="0,20" />
 
                 <StackLayout IsVisible="{Binding DoNone}">
 
@@ -51,6 +56,7 @@
                         Placeholder="repeat your password"
                         TextColor="{Binding PasswordConfirmColor}"
                         IsVisible="{Binding DoResetPassword}"
+                        IsPassword="True"
                         FontSize="Large"
                         Margin="0,20" />
 
@@ -68,6 +74,7 @@
                     <Entry Text="{Binding PasswordConfirm, Mode=TwoWay}"
                         Placeholder="repeat your password"
                         TextColor="{Binding PasswordConfirmColor}"
+                        IsPassword="True"
                         FontSize="Large"
                         Margin="0,20" />
 
