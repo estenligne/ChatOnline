@@ -1,0 +1,78 @@
+<html lang="fr">
+<head>
+	<meta charset="utf-8" />
+	<title>Faire que le serveur local serve le trafic externe</title>
+	<style>
+		h3 {
+			margin: 2em 0em 0em 4em;
+		}
+
+		.text {
+			font-family: monospace;
+			background-color: lightgray;
+		}
+	</style>
+</head>
+<body>
+	<h1 style="text-align: center">Faire que le serveur local serve le trafic externe</h1>
+
+	<h3>Étape 1</h3>
+	<p>Faites une première compilation et lancement de la solution ChatOnline.sln dans Visual Studio, ensuite <b>fermez</b> Visual Studio.</p>
+	<p>Ouvrez le fichier <span class="text">C:\Projects\ChatOnline\.vs\ChatOnline\config\applicationhost.config</span> avec votre éditeur de texte préféré</p>
+	<p>Changez la ligne <span class="text">&lt;binding protocol="http" bindingInformation="*:44363:localhost" /&gt;</span></p>
+	<p>À la ligne <span class="text">&lt;binding protocol="http" bindingInformation="*:44363:" /&gt;</span></p>
+	<p>C'est-à-dire, supprimez simplement le texte <span class="text">localhost</span> comme indiqué dans l'image ci-dessous</p>
+	<p>Plus d'informations à <a href="https://stackoverflow.com/questions/18454751/unable-to-launch-the-iis-express-web-server-error/18456361#18456361">https://stackoverflow.com/questions/18454751/unable-to-launch-the-iis-express-web-server-error/18456361#18456361</a></p>
+	<p><img src="étape1.png" alt="" /></p>
+
+	<h3>Étape 2.1</h3>
+	<p>Ouvrez l'invite de commandes en tant qu'administrateur, comme indiqué dans l'image ci-dessous. Répondez <span class="text">Oui</span> lorsqu'il vous est demandé d'autoriser le privilège administratif.</p>
+	<p><img src="étape2.1.png" alt="" /></p>
+
+	<h3>Étape 2.2</h3>
+	<p>Exécutez la ligne de commande: <span class="text">netsh http add urlacl url=http://*:44363/ user="Tout le monde"</span> comme indiqué dans l'image ci-dessous.</p>
+	<p>Si vous utilisez HTTPS, utilisez <span class="text">url=https:...</span> plutôt. Vous pouvez même exécuter la commande pour chacun des deux: <span class="text">http</span> et <span class="text">https</span>.</p>
+	<p>Pour supprimer la réservation d'URL, exécutez <span class="text">netsh http delete urlacl url=http://*:44363/</span>.</p>
+	<p>Si vous utilisez une autre langue système, disons l'anglais par exemple, alors le <span class="text">user="Tout le monde"</span> doit plutôt être <span class="text">user=everyone</span>.</p>
+	<p>Plus d'informations à <a href="https://docs.microsoft.com/en-us/iis/extensions/using-iis-express/handling-url-binding-failures-in-iis-express">https://docs.microsoft.com/en-us/iis/extensions/using-iis-express/handling-url-binding-failures-in-iis-express</a></p>
+	<p><img src="étape2.2.png" alt="" /></p>
+
+	<h3>Étape 3.1</h3>
+	<p>Ouvrez la fenêtre <span class="text">Pare-feu et protection du réseau</span> comme indiqué ci-dessous, puis cliquez sur <span class="text">Paramètres avancés</span>. Répondez <span class="text">Oui</span> lorsqu'il vous est demandé d'autoriser le privilège administratif.</p>
+	<p><img src="étape3.1.png" alt="" /></p>
+
+	<h3>Étape 3.2</h3>
+	<p>Dans la fenêtre qui s'ouvre, appelée <span class="text">Pare-feu Windows Defender avec fonctions avancées de sécurité</span>, faites d'abord un clic gauche sur <span class="text">Règles de trafic entrant</span> pour le sélectionner, puis faites un clic droit dessus et sélectionnez <span class="text">Nouvelle règle...</span>.</p>
+	<p><img src="étape3.2.png" alt="" /></p>
+
+	<h3>Étape 3.3</h3>
+	<p>Dans la fenêtre qui s'ouvre, appelée <span class="text">Assistant Nouvelle règle de trafic entrant</span>, sélectionnez <span class="text">Port</span> comme indiqué ci-dessous, puis cliquez sur <span class="text">Suivant</span>.</p>
+	<p><img src="étape3.3.png" alt="" /></p>
+
+	<h3>Étape 3.4</h3>
+	<p>Sélectionnez maintenant <span class="text">Ports locaux spécifiques:</span> et entrez le port <span class="text">44363</span> comme indiqué ci-dessous, puis cliquez sur <span class="text">Suivant</span>.</p>
+	<p><img src="étape3.4.png" alt="" /></p>
+
+	<h3>Étape 3.5</h3>
+	<p>Sélectionnez maintenant <span class="text">Autoriser la connexion</span> comme indiqué ci-dessous, puis cliquez sur <span class="text">Suivant</span>.</p>
+	<p><img src="étape3.5.png" alt="" /></p>
+
+	<h3>Étape 3.6</h3>
+	<p>Cliquez sur <span class="text">Suivant</span>.</p>
+	<p><img src="étape3.6.png" alt="" /></p>
+
+	<h3>Étape 3.7</h3>
+	<p>Spécifiez un nom pour la nouvelle règle, comme par exemple <span class="text">Connexion à ChatOnline</span> comme indiqué ci-dessous, puis cliquez sur <span class="text">Terminer</span>.</p>
+	<p><img src="étape3.7.png" alt="" /></p>
+
+	<h3>Étape 3.8</h3>
+	<p>La nouvelle règle est ajoutée comme indiqué ci-dessous. Vous devrez peut-être actualiser les règles de trafic entrant pour le voir. Fermez maintenant la fenêtre.</p>
+	<p><img src="étape3.8.png" alt="" /></p>
+
+	<h3>Étape 4</h3>
+	<p>Relancez Visual Studio et relancez la solution ChatOnline.sln.</p>
+	<p>Ouvrez le fichier <span class="text">HTTPClient.cs</span> et remplacez l'adresse IP par celle de votre ordinateur comme indiqué ci-dessous.</p>
+	<p><img src="étape4.png" alt="" /></p>
+
+</body>
+</html>
