@@ -10,7 +10,7 @@ namespace WebAPI.Models
         public long Id { get; set; }
 
         public long UserId { get; set; }
-        public virtual ApplicationUser User { get; set; }
+        public virtual User User { get; set; }
 
         [MaxLength(63)]
         public string Username { get; set; }

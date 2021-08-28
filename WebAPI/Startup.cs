@@ -31,18 +31,23 @@ namespace WebAPI
         {
             if (Migrations.DataType.UseMySQL)
             {
+                services.AddDbContext<AccountDbContext>(options => options
+                    .UseMySQL(Configuration.GetConnectionString("Account_MySQL_Connection")));
+
                 services.AddDbContext<ApplicationDbContext>(options => options
-                    //.UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()))
-                    .UseMySQL(Configuration.GetConnectionString("MySQLConnection")));
+                    .UseMySQL(Configuration.GetConnectionString("ChatOnline_MySQL_Connection")));
             }
             else
             {
+                services.AddDbContext<AccountDbContext>(options => options
+                    .UseSqlServer(Configuration.GetConnectionString("Account_SQLServer_Connection")));
+
                 services.AddDbContext<ApplicationDbContext>(options => options
-                    .UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                    .UseSqlServer(Configuration.GetConnectionString("ChatOnline_SQLServer_Connection")));
             }
 
             services.AddIdentity<ApplicationUser, ApplicationRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddEntityFrameworkStores<AccountDbContext>()
                 .AddDefaultTokenProviders();
 
             services.Configure<IdentityOptions>(options =>
