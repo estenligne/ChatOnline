@@ -73,13 +73,13 @@ namespace WebAPI.Controllers
             try
             {
                 var userChatRoom = await dbc.UserChatRooms
-                                            .Include(x => x.UserProfile.User)
+                                            .Include(x => x.UserProfile)
                                             .FirstOrDefaultAsync(x => x.Id == userChatRoomId);
 
                 if (userChatRoom == null)
                     return NotFound("Sender's user chat room not found.");
 
-                if (userChatRoom.UserProfile.User.UserName != User.Identity.Name)
+                if (userChatRoom.UserProfile.Identity != UserIdentity)
                     return Forbid("Sender's user chat room does not match!");
 
                 if (userChatRoom.DateBlocked != null ||
@@ -155,7 +155,7 @@ namespace WebAPI.Controllers
                     return BadRequest("The date sent cannot be in the future!");
 
                 var userChatRoom = await dbc.UserChatRooms
-                                            .Include(x => x.UserProfile.User)
+                                            .Include(x => x.UserProfile)
                                             .Include(x => x.ChatRoom.GroupProfile)
                                             .Where(x => x.Id == messageSentDto.SenderId)
                                             .FirstOrDefaultAsync();
@@ -163,7 +163,7 @@ namespace WebAPI.Controllers
                 if (userChatRoom == null)
                     return NotFound("Sender's user chat room not found.");
 
-                if (userChatRoom.UserProfile.User.UserName != User.Identity.Name)
+                if (userChatRoom.UserProfile.Identity != UserIdentity)
                     return Forbid("Sender's user chat room does not match!");
 
                 if (messageSentDto.LinkedId != null)
@@ -304,7 +304,7 @@ namespace WebAPI.Controllers
 
                 var userChatRoom = await dbc.UserChatRooms
                                             .Where(x => x.ChatRoomId == messageSent.Sender.ChatRoomId
-                                                && x.UserProfile.User.UserName == User.Identity.Name)
+                                                && x.UserProfile.Identity == UserIdentity)
                                             .FirstOrDefaultAsync();
 
                 if (userChatRoom == null)
@@ -368,7 +368,7 @@ namespace WebAPI.Controllers
                 var messageReceived = await dbc.MessagesReceived
                                         .Include(x => x.MessageSent.Sender)
                                         .Where(x => x.MessageSentId == messageSentId &&
-                                            x.Receiver.UserProfile.User.UserName == User.Identity.Name)
+                                            x.Receiver.UserProfile.Identity == UserIdentity)
                                         .FirstOrDefaultAsync();
 
                 if (messageReceived == null)

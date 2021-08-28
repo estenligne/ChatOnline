@@ -8,7 +8,6 @@ namespace WebAPI.Models
         {
         }
 
-        public DbSet<User> Users { get; set; }
         public DbSet<File> Files { get; set; }
         public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<GroupProfile> GroupProfiles { get; set; }

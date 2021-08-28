@@ -26,8 +26,8 @@ namespace WebAPI.Controllers
             return dbc.UserChatRooms
                     .Include(x => x.UserProfile)
                     .Where(x =>
-                        x.UserProfile.User.UserName == User.Identity.Name
-                        && x.ChatRoom.GroupProfileId == groupProfileId)
+                        x.UserProfile.Identity == UserIdentity &&
+                        x.ChatRoom.GroupProfileId == groupProfileId)
                     .FirstOrDefaultAsync();
         }
 
@@ -141,7 +141,7 @@ namespace WebAPI.Controllers
                 if (groupProfileDto.DateDeleted != null)
                     return Forbid("Cannot delete group profile!");
 
-                var userProfile = await dbc.UserProfiles.FirstOrDefaultAsync(x => x.User.UserName == User.Identity.Name);
+                var userProfile = await dbc.UserProfiles.FirstOrDefaultAsync(x => x.Identity == UserIdentity);
                 if (userProfile == null)
                     return NotFound("User profile not found.");
 
@@ -199,14 +199,12 @@ namespace WebAPI.Controllers
                 if (chatRoom.GroupProfile.JoinToken != joinToken)
                     return Forbid("Invalid token value!");
 
-                var userProfile = await dbc.UserProfiles
-                                            .Include(x => x.User)
-                                            .FirstOrDefaultAsync(x => x.Id == userProfileId);
+                var userProfile = dbc.UserProfiles.Find(userProfileId);
 
                 if (userProfile == null)
                     return NotFound("User profile not found.");
 
-                if (userProfile.User.UserName != User.Identity.Name)
+                if (userProfile.Identity != UserIdentity)
                     return Forbid("User profile does not match!");
 
                 var userChatRoom = await dbc.UserChatRooms

@@ -80,7 +80,8 @@ namespace WebAPI.Controllers
                     if (!string.IsNullOrWhiteSpace(userDto.ProfileName))
                     {
                         var userProfile = new UserProfile();
-                        userProfile.UserId = user.Id;
+                        userProfile.Id = user.Id;
+                        userProfile.Identity = user.UserName;
                         userProfile.Username = userDto.ProfileName;
                         userProfile.DateCreated = DateTime.UtcNow;
                         dbc.UserProfiles.Add(userProfile);

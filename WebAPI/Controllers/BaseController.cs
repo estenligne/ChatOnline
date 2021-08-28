@@ -34,6 +34,8 @@ namespace WebAPI.Controllers
             _mapper = mapper;
         }
 
+        protected string UserIdentity => User.Identity.Name;
+
         protected ActionResult Forbid(string message)
         {
             return StatusCode((int)HttpStatusCode.Forbidden, message);

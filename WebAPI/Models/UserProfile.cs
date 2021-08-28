@@ -1,16 +1,20 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebAPI.Models
 {
     [Table(nameof(ApplicationDbContext.UserProfiles))]
+    [Index(nameof(Identity), IsUnique = true)]
     public class UserProfile
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long Id { get; set; }
 
-        public long UserId { get; set; }
-        public virtual User User { get; set; }
+        [Required]
+        [MaxLength(255)]
+        public string Identity { get; set; }
 
         [MaxLength(63)]
         public string Username { get; set; }

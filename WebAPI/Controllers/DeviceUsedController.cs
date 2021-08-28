@@ -36,7 +36,7 @@ namespace WebAPI.Controllers
                 var userProfile = await dbc.UserProfiles
                                             .Include(x => x.PhotoFile)
                                             .Include(x => x.WallpaperFile)
-                                            .Where(x => x.User.UserName == User.Identity.Name)
+                                            .Where(x => x.Identity == UserIdentity)
                                             .FirstOrDefaultAsync();
 
                 if (userProfile == null)
@@ -98,7 +98,7 @@ namespace WebAPI.Controllers
                 }
 
                 var deviceUsed = dbc.DevicesUsed
-                                    .Include(d => d.UserProfile.User)
+                                    .Include(d => d.UserProfile)
                                     .FirstOrDefault(d => d.Id == deviceUsedId);
 
                 if (deviceUsed == null)
@@ -107,7 +107,7 @@ namespace WebAPI.Controllers
                 if (deviceUsed.DateDeleted != null)
                     return Forbid($"User already logged out of this device!");
 
-                if (deviceUsed.UserProfile.User.UserName != User.Identity.Name)
+                if (deviceUsed.UserProfile.Identity != UserIdentity)
                     return Forbid("User profile does not match!");
 
                 deviceUsed.PushNotificationToken = fcmToken;

@@ -7,7 +7,7 @@ namespace Global.Models
     {
         public long Id { get; set; }
 
-        public long UserId { get; set; }
+        public string Identity { get; set; }
 
         [StringLength(63)]
         public string Username { get; set; }
