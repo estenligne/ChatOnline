@@ -52,6 +52,11 @@ namespace Global.Models
         public DateTime? DateReceived { get; set; }
 
         /// <summary>
+        /// Equal to null if SenderId == logged-in user, else equal to MessageReceived.DateRead
+        /// </summary>
+        public DateTime? DateRead { get; set; }
+
+        /// <summary>
         /// Equal to MessageSent.DateDeleted if SenderId == logged-in user, else equal to MessageReceived.DateDeleted
         /// </summary>
         public DateTime? DateDeleted { get; set; }

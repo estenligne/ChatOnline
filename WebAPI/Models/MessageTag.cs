@@ -1,10 +1,12 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebAPI.Models
 {
     [Table(nameof(ApplicationDbContext.MessageTags))]
+    [Index(nameof(ChatRoomId), nameof(Name), IsUnique = true)]
     public class MessageTag
     {
         public long Id { get; set; }
@@ -18,7 +20,9 @@ namespace WebAPI.Models
         public long CreatorId { get; set; }
         public virtual UserProfile Creator { get; set; }
 
+        public long? ParentId { get; set; }
+        public virtual MessageTag Parent { get; set; }
+
         public DateTime DateCreated { get; set; }
-        public bool IsPrivate { get; set; }
     }
 }

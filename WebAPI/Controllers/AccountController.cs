@@ -80,7 +80,6 @@ namespace WebAPI.Controllers
                     if (!string.IsNullOrWhiteSpace(userDto.ProfileName))
                     {
                         var userProfile = new UserProfile();
-                        userProfile.Id = user.Id;
                         userProfile.Identity = user.UserName;
                         userProfile.Username = userDto.ProfileName;
                         userProfile.DateCreated = DateTime.UtcNow;
@@ -218,7 +217,7 @@ namespace WebAPI.Controllers
                     dbc.SaveChanges();
                 }
 
-                _logger.LogInformation($"User {User.Identity.Name} logged out.");
+                _logger.LogInformation($"User {UserIdentity} logged out on deviceUsedId {deviceUsedId}.");
                 return NoContent();
             }
             catch (Exception ex)

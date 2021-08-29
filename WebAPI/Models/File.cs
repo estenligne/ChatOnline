@@ -16,7 +16,7 @@ namespace WebAPI.Models
         [MaxLength(255)]
         public string Name { get; set; }
 
-        public int Size { get; set; }
+        public long Size { get; set; }
 
         public FilePurposeEnum Purpose { get; set; }
 

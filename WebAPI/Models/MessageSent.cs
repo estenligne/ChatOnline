@@ -31,7 +31,7 @@ namespace WebAPI.Models
         public string Body { get; set; }
 
         public DateTime DateSent { get; set; }
-        public DateTime DateReceicedByServer { get; set; }
+        public DateTime DateCreated { get; set; }
         public DateTime? DateDeleted { get; set; }
         public DateTime? DateStarred { get; set; }
     }

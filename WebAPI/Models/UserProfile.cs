@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
+using Global.Enums;
 
 namespace WebAPI.Models
 {
@@ -9,7 +10,6 @@ namespace WebAPI.Models
     [Index(nameof(Identity), IsUnique = true)]
     public class UserProfile
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long Id { get; set; }
 
         [Required]
@@ -19,11 +19,10 @@ namespace WebAPI.Models
         [MaxLength(63)]
         public string Username { get; set; }
 
-        [MaxLength(63)]
-        public string Availability { get; set; }
-
         [MaxLength(4095)]
         public string About { get; set; }
+
+        public AvailabilityEnum Availability { get; set; }
 
         public long? PhotoFileId { get; set; }
         public virtual File PhotoFile { get; set; }

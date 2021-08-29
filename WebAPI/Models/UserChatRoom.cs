@@ -1,11 +1,13 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 using Global.Enums;
 
 namespace WebAPI.Models
 {
     [Table(nameof(ApplicationDbContext.UserChatRooms))]
+    [Index(nameof(UserProfileId), nameof(ChatRoomId), IsUnique = true)]
     public class UserChatRoom
     {
         public long Id { get; set; }

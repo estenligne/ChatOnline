@@ -42,24 +42,29 @@ namespace WebAPI.Controllers
                 if (userProfile == null)
                     return NotFound("User profile not found.");
 
+                var utcNow = DateTime.UtcNow;
+
                 var deviceUsed = await dbc.DevicesUsed
                                         .Where(x =>
-                                            x.DateDeleted == null &&
                                             x.UserProfileId == userProfile.Id &&
                                             x.DevicePlatform == devicePlatform)
                                         .FirstOrDefaultAsync();
-
                 if (deviceUsed == null)
                 {
                     deviceUsed = new DeviceUsed
                     {
                         UserProfileId = userProfile.Id,
                         DevicePlatform = devicePlatform,
-                        DateCreated = DateTime.UtcNow,
+                        DateCreated = utcNow
                     };
                     dbc.DevicesUsed.Add(deviceUsed);
-                    dbc.SaveChanges();
                 }
+                else if (deviceUsed.DateDeleted != null)
+                {
+                    deviceUsed.DateDeleted = null;
+                }
+                deviceUsed.DateUpdated = utcNow;
+                dbc.SaveChanges();
 
                 deviceUsed.UserProfile = userProfile;
                 var deviceUsedDto = _mapper.Map<DeviceUsedDTO>(deviceUsed);
@@ -104,11 +109,11 @@ namespace WebAPI.Controllers
                 if (deviceUsed == null)
                     return NotFound($"DeviceUsed {deviceUsedId} not found.");
 
-                if (deviceUsed.DateDeleted != null)
-                    return Forbid($"User already logged out of this device!");
-
                 if (deviceUsed.UserProfile.Identity != UserIdentity)
                     return Forbid("User profile does not match!");
+
+                if (deviceUsed.DateDeleted != null)
+                    return Forbid($"User already logged out of this device!");
 
                 deviceUsed.PushNotificationToken = fcmToken;
                 deviceUsed.DateTokenProvided = DateTime.UtcNow;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Global.Enums;
 
 namespace Global.Models
 {
@@ -12,11 +13,10 @@ namespace Global.Models
         [StringLength(63)]
         public string Username { get; set; }
 
-        [StringLength(63)]
-        public string Availability { get; set; }
-
         [StringLength(4095)]
         public string About { get; set; }
+
+        public AvailabilityEnum Availability { get; set; }
 
         public long? PhotoFileId { get; set; }
         public FileDTO PhotoFile { get; set; }

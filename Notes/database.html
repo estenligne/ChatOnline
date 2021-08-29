@@ -61,10 +61,11 @@
 	<hr />
 	<h2><u>Database Tables</u></h2>
 
+	<!---
 	<table border="1" id="table-Users">
 		<thead>
 			<tr><th colspan="3"><div class="table_name">Users</div></th></tr>
-			<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
+			<tr><th>Data Type</th><th>Column Name</th><th>Other Details</th></tr>
 		</thead>
 		<tbody>
 			<tr><td>&nbsp;</td><td></td><td></td></tr>
@@ -74,7 +75,7 @@
 	<table border="1" id="table-LoginDetails">
 		<thead>
 			<tr><th colspan="3"><div class="table_name">LoginDetails</div></th></tr>
-			<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
+			<tr><th>Data Type</th><th>Column Name</th><th>Other Details</th></tr>
 		</thead>
 		<tbody>
 			<tr><td>FK</td><td>UserId</td><td><a href="#table-Users">Users</a></td></tr>
@@ -92,7 +93,7 @@
 	<table border="1" id="table-LoginAttempts">
 		<thead>
 			<tr><th colspan="3"><div class="table_name">LoginAttempts</div></th></tr>
-			<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
+			<tr><th>Data Type</th><th>Column Name</th><th>Other Details</th></tr>
 		</thead>
 		<tbody>
 			<tr><td>FK</td><td>LoginDetailId</td><td><a href="#table-LoginDetails">LoginDetails</a></td></tr>
@@ -103,36 +104,37 @@
 			<tr><td>string[255]</td><td>DeviceUsed</td><td></td></tr>
 		</tbody>
 	</table>
+	-->
 
 	<table border="1" id="table-Files">
 		<thead>
 			<tr><th colspan="3"><div class="table_name">Files</div></th></tr>
-			<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
+			<tr><th>Data Type</th><th>Column Name</th><th>Other Details</th></tr>
 		</thead>
 		<tbody>
-			<tr><td>string[255]</td><td>Name</td><td></td></tr>
-			<tr><td>int</td><td>Size</td><td></td></tr>
+			<tr><td>string[255]</td><td>Name</td><td>indexed, unique</td></tr>
+			<tr><td>long</td><td>Size</td><td></td></tr>
 			<tr><td>enum</td><td>Purpose</td><td><a href="#enum-FilePurposeEnum">FilePurposeEnum</a></td></tr>
-			<tr><td>FK</td><td>UploaderId</td><td><a href="#table-Users">Users</a></td></tr>
+			<tr><td>FK</td><td>UploaderId</td><td><a href="#table-UserProfiles">UserProfiles</a></td></tr>
 			<tr><td>DateTime</td><td>DateUploaded</td><td></td></tr>
 			<tr><td>DateTime?</td><td>DateDeleted</td><td></td></tr>
 		</tbody>
 	</table>
 
 	<ul class="comments">
-		<li>Note: the file type must be obtained <b>only</b> from the file extension</li>
+		<li>Note: a file's <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types">MIME type</a> must be obtained <b>only</b> from its file extension.</li>
 	</ul>
 
 	<table border="1" id="table-UserProfiles">
 		<thead>
 			<tr><th colspan="3"><div class="table_name">UserProfiles</div></th></tr>
-			<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
+			<tr><th>Data Type</th><th>Column Name</th><th>Other Details</th></tr>
 		</thead>
 		<tbody>
-			<tr><td>FK</td><td>UserId</td><td><a href="#table-Users">Users</a></td></tr>
+			<tr><td>string[255]</td><td>Identity</td><td>indexed, unique</td></tr>
 			<tr><td>string[63]</td><td>Username</td><td></td></tr>
-			<tr><td>string[63]</td><td>Availability</td><td><a href="#enum-AvailabilityEnum">AvailabilityEnum</a></td></tr>
 			<tr><td>string[4095]</td><td>About</td><td></td></tr>
+			<tr><td>enum</td><td>Availability</td><td><a href="#enum-AvailabilityEnum">AvailabilityEnum</a></td></tr>
 			<tr><td>FK?</td><td>PhotoFileId</td><td><a href="#table-Files">Files</a></td></tr>
 			<tr><td>FK?</td><td>WallpaperFileId</td><td><a href="#table-Files">Files</a></td></tr>
 			<tr><td>DateTime</td><td>DateCreated</td><td></td></tr>
@@ -141,13 +143,13 @@
 	</table>
 
 	<ul class="comments">
-		<li>Constraint in UserProfiles: <b>unique UserId</b>, meaning a user can only have 1 profile. This constraint will be removed in future.</li>
+		<li>Note: <b>Identity</b> identifies the identity user account.</li>
 	</ul>
 
 	<table border="1" id="table-GroupProfiles">
 		<thead>
 			<tr><th colspan="3"><div class="table_name">GroupProfiles</div></th></tr>
-			<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
+			<tr><th>Data Type</th><th>Column Name</th><th>Other Details</th></tr>
 		</thead>
 		<tbody>
 			<tr><td>FK</td><td>CreatorId</td><td><a href="#table-UserProfiles">UserProfiles</a></td></tr>
@@ -161,10 +163,14 @@
 		</tbody>
 	</table>
 
+	<ul class="comments">
+		<li>Constraint in GroupProfiles: unique pair (CreatorId, GroupName)</li>
+	</ul>
+
 	<table border="1" id="table-ChatRooms">
 		<thead>
 			<tr><th colspan="3"><div class="table_name">ChatRooms</div></th></tr>
-			<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
+			<tr><th>Data Type</th><th>Column Name</th><th>Other Details</th></tr>
 		</thead>
 		<tbody>
 			<tr><td>enum</td><td>Type</td><td><a href="#enum-ChatRoomTypeEnum">ChatRoomTypeEnum</a></td></tr>
@@ -173,14 +179,10 @@
 		</tbody>
 	</table>
 
-	<ul class="comments">
-		<li>Constraint in ChatRooms: <b>unique</b> GroupProfileId, meaning a Group can have only 1 ChatRoom.</li>
-	</ul>
-
 	<table border="1" id="table-UserChatRooms">
 		<thead>
 			<tr><th colspan="3"><div class="table_name">UserChatRooms</div></th></tr>
-			<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
+			<tr><th>Data Type</th><th>Column Name</th><th>Other Details</th></tr>
 		</thead>
 		<tbody>
 			<tr><td>FK</td><td>UserProfileId</td><td><a href="#table-UserProfiles">UserProfiles</a></td></tr>
@@ -198,34 +200,32 @@
 	</table>
 
 	<ul class="comments">
-		<li>Constraint in UserChatRooms: <b>unique</b> pair (UserProfileId, ChatRoomId)</li>
+		<li>Constraint in UserChatRooms: unique pair (UserProfileId, ChatRoomId)</li>
 	</ul>
 
 	<table border="1" id="table-MessageTags">
 		<thead>
 			<tr><th colspan="3"><div class="table_name">MessageTags</div></th></tr>
-			<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
+			<tr><th>Data Type</th><th>Column Name</th><th>Other Details</th></tr>
 		</thead>
 		<tbody>
 			<tr><td>string[63]</td><td>Name</td><td></td></tr>
 			<tr><td>FK</td><td>ChatRoomId</td><td><a href="#table-ChatRooms">ChatRooms</a></td></tr>
 			<tr><td>FK</td><td>CreatorId</td><td><a href="#table-UserProfiles">UserProfiles</a></td></tr>
+			<tr><td>FK</td><td>ParentId</td><td><a href="#table-MessageTags">MessageTags</a></td></tr>
 			<tr><td>DateTime</td><td>DateCreated</td><td></td></tr>
-			<tr><td>bool</td><td>IsPrivate</td><td></td></tr>
 		</tbody>
 	</table>
 
 	<ul class="comments">
-		<li>Constraint in MessageTags: <b>unique</b> pair (TagName, ChatRoomId)</li>
-		<li>Note: the default TagName for every ChatRoom is simply <b>null</b></li>
-		<li>Note: IsPrivate means the tag is only visible by the owner of the linked message.<br />
-		That is, if you reply to a message and change the tag of your message as well as mark it as private, then the sender (of the message you are replying to) will be the only one to see your message.</li>
+		<li>Constraint in MessageTags: unique pair (ChatRoomId, Name)</li>
+		<li>Note: the default tag name for every ChatRoom is simply <b>null</b></li>
 	</ul>
 
 	<table border="1" id="table-MessagesSent">
 		<thead>
 			<tr><th colspan="3"><div class="table_name">MessagesSent</div></th></tr>
-			<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
+			<tr><th>Data Type</th><th>Column Name</th><th>Other Details</th></tr>
 		</thead>
 		<tbody>
 			<tr><td>FK</td><td>SenderId</td><td><a href="#table-UserChatRooms">UserChatRooms</a></td></tr>
@@ -236,7 +236,7 @@
 			<tr><td>FK?</td><td>FileId</td><td><a href="#table-Files">Files</a></td></tr>
 			<tr><td>string[16383]</td><td>Body</td><td></td></tr>
 			<tr><td>DateTime</td><td>DateSent</td><td></td></tr>
-			<tr><td>DateTime</td><td>DateReceicedByServer</td><td></td></tr>
+			<tr><td>DateTime</td><td>DateCreated</td><td>date received by server</td></tr>
 			<tr><td>DateTime?</td><td>DateDeleted</td><td></td></tr>
 			<tr><td>DateTime?</td><td>DateStarred</td><td></td></tr>
 		</tbody>
@@ -249,11 +249,12 @@
 	<table border="1" id="table-MessagesReceived">
 		<thead>
 			<tr><th colspan="3"><div class="table_name">MessagesReceived</div></th></tr>
-			<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
+			<tr><th>Data Type</th><th>Column Name</th><th>Other Details</th></tr>
 		</thead>
 		<tbody>
 			<tr><td>FK</td><td>ReceiverId</td><td><a href="#table-UserChatRooms">UserChatRooms</a></td></tr>
 			<tr><td>FK</td><td>MessageSentId</td><td><a href="#table-MessagesSent">MessagesSent</a></td></tr>
+			<tr><td>DateTime</td><td>DateCreated</td><td></td></tr>
 			<tr><td>DateTime</td><td>DateReceived</td><td></td></tr>
 			<tr><td>DateTime?</td><td>DateRead</td><td></td></tr>
 			<tr><td>DateTime?</td><td>DateDeleted</td><td></td></tr>
@@ -263,23 +264,28 @@
 	</table>
 
 	<ul class="comments">
-		<li>Constraint in MessagesReceived: <b>unique</b> pair (ReceiverId, MessageSentId)</li>
+		<li>Constraint in MessagesReceived: unique pair (ReceiverId, MessageSentId)</li>
 	</ul>
 
 	<table border="1" id="table-DevicesUsed">
 		<thead>
 			<tr><th colspan="3"><div class="table_name">DevicesUsed</div></th></tr>
-			<tr><th>Data Type</th><th>Column Name</th><th>Enum or FK</th></tr>
+			<tr><th>Data Type</th><th>Column Name</th><th>Other Details</th></tr>
 		</thead>
 		<tbody>
 			<tr><td>FK</td><td>UserProfileId</td><td><a href="#table-UserProfiles">UserProfiles</a></td></tr>
 			<tr><td>enum</td><td>DevicePlatform</td><td><a href="#enum-DevicePlatformEnum">DevicePlatformEnum</a></td></tr>
 			<tr><td>DateTime</td><td>DateCreated</td><td></td></tr>
+			<tr><td>DateTime</td><td>DateUpdated</td><td></td></tr>
 			<tr><td>DateTime?</td><td>DateDeleted</td><td></td></tr>
 			<tr><td>string[1023]</td><td>PushNotificationToken</td><td></td></tr>
 			<tr><td>DateTime?</td><td>DateTokenProvided</td><td></td></tr>
 		</tbody>
 	</table>
+
+	<ul class="comments">
+		<li>Constraint in DevicesUsed: unique pair (ReceiverId, MessageSentId)</li>
+	</ul>
 
 	<hr />
 	<h2><u>Enums</u></h2>
@@ -374,6 +380,8 @@
 		<li>Unknown = 0</li>
 		<li>Android = 1</li>
 		<li>AppleiOS = 2</li>
+		<li>Desktop = 3</li>
+		<li>WebApp = 4</li>
 	</ul>
 
 </body>

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebAPI.Models
 {
     [Table(nameof(ApplicationDbContext.GroupProfiles))]
+    [Index(nameof(CreatorId), nameof(GroupName), IsUnique = true)]
     public class GroupProfile
     {
         public long Id { get; set; }
@@ -12,6 +14,7 @@ namespace WebAPI.Models
         public long CreatorId { get; set; }
         public virtual UserProfile Creator { get; set; }
 
+        [Required]
         [MaxLength(63)]
         public string GroupName { get; set; }
 

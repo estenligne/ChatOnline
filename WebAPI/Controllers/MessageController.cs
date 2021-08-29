@@ -49,10 +49,11 @@ namespace WebAPI.Controllers
                     _logger.LogError($"In GetMessage(): {messageReceived.MessageSentId} != {messageSent.Id}");
 
                 if (messageReceived.ReceiverId == messageSent.SenderId) // if user received their own message
-                    _logger.LogError($"In GetMessage(): {messageReceived.ReceiverId} == {messageSent.SenderId}");
+                    _logger.LogError($"In GetMessage(): SenderId {messageSent.SenderId} received their own message");
 
                 messageSentDto.ReceiverId = messageReceived.ReceiverId;
                 messageSentDto.DateReceived = messageReceived.DateReceived;
+                messageSentDto.DateRead = messageReceived.DateRead;
                 messageSentDto.DateDeleted = messageReceived.DateDeleted;
                 messageSentDto.DateStarred = messageReceived.DateStarred;
                 messageSentDto.Reaction = messageReceived.Reaction;
@@ -113,7 +114,7 @@ namespace WebAPI.Controllers
                     if (messageReceived == null && messageSent.SenderId != userChatRoomId)
                     {
                         _logger.LogWarning($"GetMany({userChatRoomId}): user did not receive message {messageSent.Id}.");
-                        messageReceived = await AddMessageReceived(messageSent, userChatRoom.Id, utcNow);
+                        messageReceived = await AddMessageReceived(messageSent, userChatRoom.Id, utcNow, utcNow);
                     }
 
                     messages.Add(GetMessage(messageSent, messageReceived));
@@ -128,7 +129,7 @@ namespace WebAPI.Controllers
 
         private static bool LesserTime(DateTime a, DateTime b)
         {
-            return a < b + TimeSpan.FromSeconds(30);
+            return a < b + TimeSpan.FromMinutes(1);
         }
 
         [ProducesResponseType((int)HttpStatusCode.Created)]
@@ -235,7 +236,7 @@ namespace WebAPI.Controllers
                 messageSentDto.File = null; // do not update file database data
 
                 var messageSent = _mapper.Map<MessageSent>(messageSentDto);
-                messageSent.DateReceicedByServer = dateCreated;
+                messageSent.DateCreated = dateCreated;
 
                 dbc.MessagesSent.Add(messageSent);
                 await dbc.SaveChangesAsync();
@@ -296,10 +297,11 @@ namespace WebAPI.Controllers
                 if (messageSent == null)
                     return NotFound($"messageSentId {messageSentId} not found.");
 
-                if (!LesserTime(messageSent.DateReceicedByServer, dateReceived))
-                    return BadRequest("Date received cannot be before date sent!");
+                if (!LesserTime(messageSent.DateCreated, dateReceived))
+                    return BadRequest("Date user received cannot be before date server received!");
 
-                if (!LesserTime(dateReceived, DateTime.UtcNow))
+                var dateCreated = DateTime.UtcNow;
+                if (!LesserTime(dateReceived, dateCreated))
                     return BadRequest("Date received cannot be in the future!");
 
                 var userChatRoom = await dbc.UserChatRooms
@@ -320,7 +322,7 @@ namespace WebAPI.Controllers
                 if (messageReceived != null)
                     return Conflict("Message already received.");
 
-                messageReceived = await AddMessageReceived(messageSent, userChatRoom.Id, dateReceived);
+                messageReceived = await AddMessageReceived(messageSent, userChatRoom.Id, dateCreated, dateReceived);
 
                 var messageSentDto = GetMessage(messageSent, messageReceived);
                 return CreatedAtAction(nameof(GetMany), null, messageSentDto);
@@ -331,12 +333,13 @@ namespace WebAPI.Controllers
             }
         }
 
-        private async Task<MessageReceived> AddMessageReceived(MessageSent messageSent, long userChatRoomId, DateTime dateReceived)
+        private async Task<MessageReceived> AddMessageReceived(MessageSent messageSent, long userChatRoomId, DateTime dateCreated, DateTime dateReceived)
         {
             var messageReceived = new MessageReceived()
             {
                 ReceiverId = userChatRoomId,
                 MessageSentId = messageSent.Id,
+                DateCreated = dateCreated,
                 DateReceived = dateReceived,
             };
 
