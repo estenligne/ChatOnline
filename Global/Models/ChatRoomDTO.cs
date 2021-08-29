@@ -11,6 +11,6 @@ namespace Global.Models
         public long? GroupProfileId { get; set; }
         public GroupProfileDTO GroupProfile { get; set; }
 
-        public DateTime DateCreated { get; set; }
+        public DateTimeOffset DateCreated { get; set; }
     }
 }

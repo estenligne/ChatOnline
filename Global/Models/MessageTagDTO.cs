@@ -14,6 +14,6 @@ namespace Global.Models
 
         public long CreatorId { get; set; }
 
-        public DateTime DateCreated { get; set; }
+        public DateTimeOffset DateCreated { get; set; }
     }
 }

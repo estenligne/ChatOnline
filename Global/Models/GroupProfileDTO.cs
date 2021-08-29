@@ -24,7 +24,7 @@ namespace Global.Models
         public long? WallpaperFileId { get; set; }
         public FileDTO WallpaperFile { get; set; }
 
-        public DateTime DateCreated { get; set; }
-        public DateTime? DateDeleted { get; set; }
+        public DateTimeOffset DateCreated { get; set; }
+        public DateTimeOffset? DateDeleted { get; set; }
     }
 }

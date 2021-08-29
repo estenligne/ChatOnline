@@ -55,7 +55,6 @@
 		<li>The <b>?</b> in front of a data type means it is <b>nullable</b>. For example <b>int?</b> means a <a target="_blank" href="https://en.wikipedia.org/wiki/Nullable_type">nullable integer</a>.</li>
 		<li>The <b>string[n]</b> where n is a positive integer means a string with length at most n characters.</li>
 		<li><b>OTP</b> means <a target="_blank" href="https://fr.wikipedia.org/wiki/Mot_de_passe_%C3%A0_usage_unique">One Time PIN</a></li>
-		<li>The value of a <a target="_blank" href="https://dev.mysql.com/doc/refman/8.0/en/datetime.html">DateTime</a> must always be set to the UTC time, <b>never</b> to a local time.</li>
 	</ul>
 
 	<hr />
@@ -82,7 +81,7 @@
 			<tr><td>enum</td><td>Type</td><td><a href="#enum-LoginDetailType">LoginDetailType</a></td></tr>
 			<tr><td>string[63]</td><td>Value</td><td></td></tr>
 			<tr><td>FK?</td><td>LoginSuccessId</td><td><a href="#table-LoginAttempts">LoginAttempts</a></td></tr>
-			<tr><td>DateTime?</td><td>DateDeleted</td><td></td></tr>
+			<tr><td>DateTimeOffset?</td><td>DateDeleted</td><td></td></tr>
 		</tbody>
 	</table>
 
@@ -99,8 +98,8 @@
 			<tr><td>FK</td><td>LoginDetailId</td><td><a href="#table-LoginDetails">LoginDetails</a></td></tr>
 			<tr><td>enum</td><td>Outcome</td><td><a href="#enum-LoginOutcomeEnum">LoginOutcomeEnum</a></td></tr>
 			<tr><td>string[15]</td><td>OTP</td><td></td></tr>
-			<tr><td>DateTime</td><td>DateRequested</td><td></td></tr>
-			<tr><td>DateTime?</td><td>DateProvided</td><td></td></tr>
+			<tr><td>DateTimeOffset</td><td>DateRequested</td><td></td></tr>
+			<tr><td>DateTimeOffset?</td><td>DateProvided</td><td></td></tr>
 			<tr><td>string[255]</td><td>DeviceUsed</td><td></td></tr>
 		</tbody>
 	</table>
@@ -116,8 +115,8 @@
 			<tr><td>long</td><td>Size</td><td></td></tr>
 			<tr><td>enum</td><td>Purpose</td><td><a href="#enum-FilePurposeEnum">FilePurposeEnum</a></td></tr>
 			<tr><td>FK</td><td>UploaderId</td><td><a href="#table-UserProfiles">UserProfiles</a></td></tr>
-			<tr><td>DateTime</td><td>DateUploaded</td><td></td></tr>
-			<tr><td>DateTime?</td><td>DateDeleted</td><td></td></tr>
+			<tr><td>DateTimeOffset</td><td>DateUploaded</td><td></td></tr>
+			<tr><td>DateTimeOffset?</td><td>DateDeleted</td><td></td></tr>
 		</tbody>
 	</table>
 
@@ -137,8 +136,8 @@
 			<tr><td>enum</td><td>Availability</td><td><a href="#enum-AvailabilityEnum">AvailabilityEnum</a></td></tr>
 			<tr><td>FK?</td><td>PhotoFileId</td><td><a href="#table-Files">Files</a></td></tr>
 			<tr><td>FK?</td><td>WallpaperFileId</td><td><a href="#table-Files">Files</a></td></tr>
-			<tr><td>DateTime</td><td>DateCreated</td><td></td></tr>
-			<tr><td>DateTime?</td><td>DateDeleted</td><td></td></tr>
+			<tr><td>DateTimeOffset</td><td>DateCreated</td><td></td></tr>
+			<tr><td>DateTimeOffset?</td><td>DateDeleted</td><td></td></tr>
 		</tbody>
 	</table>
 
@@ -158,8 +157,8 @@
 			<tr><td>string[4095]</td><td>About</td><td></td></tr>
 			<tr><td>FK?</td><td>PhotoFileId</td><td><a href="#table-Files">Files</a></td></tr>
 			<tr><td>FK?</td><td>WallpaperFileId</td><td><a href="#table-Files">Files</a></td></tr>
-			<tr><td>DateTime</td><td>DateCreated</td><td></td></tr>
-			<tr><td>DateTime?</td><td>DateDeleted</td><td></td></tr>
+			<tr><td>DateTimeOffset</td><td>DateCreated</td><td></td></tr>
+			<tr><td>DateTimeOffset?</td><td>DateDeleted</td><td></td></tr>
 		</tbody>
 	</table>
 
@@ -175,7 +174,7 @@
 		<tbody>
 			<tr><td>enum</td><td>Type</td><td><a href="#enum-ChatRoomTypeEnum">ChatRoomTypeEnum</a></td></tr>
 			<tr><td>FK?</td><td>GroupProfileId</td><td><a href="#table-GroupProfiles">GroupProfiles</a></td></tr>
-			<tr><td>DateTime</td><td>DateCreated</td><td></td></tr>
+			<tr><td>DateTimeOffset</td><td>DateCreated</td><td></td></tr>
 		</tbody>
 	</table>
 
@@ -190,12 +189,12 @@
 			<tr><td>enum</td><td>UserRole</td><td><a href="#enum-UserRoleEnum">UserRoleEnum</a></td></tr>
 			<tr><td>FK?</td><td>AdderId</td><td><a href="#table-UserChatRooms">UserChatRooms</a></td></tr>
 			<tr><td>FK?</td><td>BlockerId</td><td><a href="#table-UserChatRooms">UserChatRooms</a></td></tr>
-			<tr><td>DateTime</td><td>DateAdded</td><td></td></tr>
-			<tr><td>DateTime?</td><td>DateBlocked</td><td></td></tr>
-			<tr><td>DateTime?</td><td>DateDeleted</td><td></td></tr>
-			<tr><td>DateTime?</td><td>DateExited</td><td></td></tr>
-			<tr><td>DateTime?</td><td>DateMuted</td><td></td></tr>
-			<tr><td>DateTime?</td><td>DatePinned</td><td></td></tr>
+			<tr><td>DateTimeOffset</td><td>DateAdded</td><td></td></tr>
+			<tr><td>DateTimeOffset?</td><td>DateBlocked</td><td></td></tr>
+			<tr><td>DateTimeOffset?</td><td>DateDeleted</td><td></td></tr>
+			<tr><td>DateTimeOffset?</td><td>DateExited</td><td></td></tr>
+			<tr><td>DateTimeOffset?</td><td>DateMuted</td><td></td></tr>
+			<tr><td>DateTimeOffset?</td><td>DatePinned</td><td></td></tr>
 		</tbody>
 	</table>
 
@@ -213,7 +212,7 @@
 			<tr><td>FK</td><td>ChatRoomId</td><td><a href="#table-ChatRooms">ChatRooms</a></td></tr>
 			<tr><td>FK</td><td>CreatorId</td><td><a href="#table-UserProfiles">UserProfiles</a></td></tr>
 			<tr><td>FK</td><td>ParentId</td><td><a href="#table-MessageTags">MessageTags</a></td></tr>
-			<tr><td>DateTime</td><td>DateCreated</td><td></td></tr>
+			<tr><td>DateTimeOffset</td><td>DateCreated</td><td></td></tr>
 		</tbody>
 	</table>
 
@@ -235,10 +234,10 @@
 			<tr><td>FK?</td><td>AuthorId</td><td><a href="#table-UserProfiles">UserProfiles</a></td></tr>
 			<tr><td>FK?</td><td>FileId</td><td><a href="#table-Files">Files</a></td></tr>
 			<tr><td>string[16383]</td><td>Body</td><td></td></tr>
-			<tr><td>DateTime</td><td>DateSent</td><td></td></tr>
-			<tr><td>DateTime</td><td>DateCreated</td><td>date received by server</td></tr>
-			<tr><td>DateTime?</td><td>DateDeleted</td><td></td></tr>
-			<tr><td>DateTime?</td><td>DateStarred</td><td></td></tr>
+			<tr><td>DateTimeOffset</td><td>DateSent</td><td></td></tr>
+			<tr><td>DateTimeOffset</td><td>DateCreated</td><td>date received by server</td></tr>
+			<tr><td>DateTimeOffset?</td><td>DateDeleted</td><td></td></tr>
+			<tr><td>DateTimeOffset?</td><td>DateStarred</td><td></td></tr>
 		</tbody>
 	</table>
 
@@ -254,11 +253,11 @@
 		<tbody>
 			<tr><td>FK</td><td>ReceiverId</td><td><a href="#table-UserChatRooms">UserChatRooms</a></td></tr>
 			<tr><td>FK</td><td>MessageSentId</td><td><a href="#table-MessagesSent">MessagesSent</a></td></tr>
-			<tr><td>DateTime</td><td>DateCreated</td><td></td></tr>
-			<tr><td>DateTime</td><td>DateReceived</td><td></td></tr>
-			<tr><td>DateTime?</td><td>DateRead</td><td></td></tr>
-			<tr><td>DateTime?</td><td>DateDeleted</td><td></td></tr>
-			<tr><td>DateTime?</td><td>DateStarred</td><td></td></tr>
+			<tr><td>DateTimeOffset</td><td>DateCreated</td><td></td></tr>
+			<tr><td>DateTimeOffset</td><td>DateReceived</td><td></td></tr>
+			<tr><td>DateTimeOffset?</td><td>DateRead</td><td></td></tr>
+			<tr><td>DateTimeOffset?</td><td>DateDeleted</td><td></td></tr>
+			<tr><td>DateTimeOffset?</td><td>DateStarred</td><td></td></tr>
 			<tr><td>enum</td><td>Reaction</td><td><a href="#enum-MessageReactionEnum">MessageReactionEnum</a></td></tr>
 		</tbody>
 	</table>
@@ -275,11 +274,11 @@
 		<tbody>
 			<tr><td>FK</td><td>UserProfileId</td><td><a href="#table-UserProfiles">UserProfiles</a></td></tr>
 			<tr><td>enum</td><td>DevicePlatform</td><td><a href="#enum-DevicePlatformEnum">DevicePlatformEnum</a></td></tr>
-			<tr><td>DateTime</td><td>DateCreated</td><td></td></tr>
-			<tr><td>DateTime</td><td>DateUpdated</td><td></td></tr>
-			<tr><td>DateTime?</td><td>DateDeleted</td><td></td></tr>
+			<tr><td>DateTimeOffset</td><td>DateCreated</td><td></td></tr>
+			<tr><td>DateTimeOffset</td><td>DateUpdated</td><td></td></tr>
+			<tr><td>DateTimeOffset?</td><td>DateDeleted</td><td></td></tr>
 			<tr><td>string[1023]</td><td>PushNotificationToken</td><td></td></tr>
-			<tr><td>DateTime?</td><td>DateTokenProvided</td><td></td></tr>
+			<tr><td>DateTimeOffset?</td><td>DateTokenProvided</td><td></td></tr>
 		</tbody>
 	</table>
 

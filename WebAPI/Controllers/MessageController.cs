@@ -103,7 +103,7 @@ namespace WebAPI.Controllers
                                                     messageSentIds.Contains(x.MessageSentId))
                                                 .ToDictionaryAsync(x => x.MessageSentId);
 
-                var utcNow = DateTime.UtcNow;
+                var utcNow = DateTimeOffset.UtcNow;
                 var messages = new List<MessageSentDTO>();
 
                 foreach (var messageSent in messagesSent)
@@ -127,7 +127,7 @@ namespace WebAPI.Controllers
             }
         }
 
-        private static bool LesserTime(DateTime a, DateTime b)
+        private static bool LesserTime(DateTimeOffset a, DateTimeOffset b)
         {
             return a < b + TimeSpan.FromMinutes(1);
         }
@@ -151,7 +151,7 @@ namespace WebAPI.Controllers
                 if (messageSentDto.AuthorId != null && messageSentDto.LinkedId == null)
                     return BadRequest("No linked message provided for the forwarded message.");
 
-                var dateCreated = DateTime.UtcNow;
+                var dateCreated = DateTimeOffset.UtcNow;
                 if (!LesserTime(messageSentDto.DateSent, dateCreated))
                     return BadRequest("The date sent cannot be in the future!");
 
@@ -254,7 +254,7 @@ namespace WebAPI.Controllers
                     UserChatRoomId = userChatRoom.Id,
                     MessageSentId = messageSent.Id,
 
-                    Id = (int)DateTime.UtcNow.Ticks,
+                    Id = (int)DateTimeOffset.UtcNow.Ticks,
                     Title = title,
                     Body = messageSentDto.Body,
                     Priority = true,
@@ -284,7 +284,7 @@ namespace WebAPI.Controllers
         [ProducesResponseType((int)HttpStatusCode.Created)]
         [HttpPost]
         [Route(nameof(Received))]
-        public async Task<ActionResult<MessageSentDTO>> Received(long messageSentId, DateTime dateReceived)
+        public async Task<ActionResult<MessageSentDTO>> Received(long messageSentId, DateTimeOffset dateReceived)
         {
             try
             {
@@ -300,7 +300,7 @@ namespace WebAPI.Controllers
                 if (!LesserTime(messageSent.DateCreated, dateReceived))
                     return BadRequest("Date user received cannot be before date server received!");
 
-                var dateCreated = DateTime.UtcNow;
+                var dateCreated = DateTimeOffset.UtcNow;
                 if (!LesserTime(dateReceived, dateCreated))
                     return BadRequest("Date received cannot be in the future!");
 
@@ -333,7 +333,7 @@ namespace WebAPI.Controllers
             }
         }
 
-        private async Task<MessageReceived> AddMessageReceived(MessageSent messageSent, long userChatRoomId, DateTime dateCreated, DateTime dateReceived)
+        private async Task<MessageReceived> AddMessageReceived(MessageSent messageSent, long userChatRoomId, DateTimeOffset dateCreated, DateTimeOffset dateReceived)
         {
             var messageReceived = new MessageReceived()
             {
@@ -350,7 +350,7 @@ namespace WebAPI.Controllers
             var pushNotificationDto = new PushNotificationDTO
             {
                 Topic = PushNotificationTopic.MessageReceived,
-                DateCreated = DateTime.UtcNow,
+                DateCreated = dateCreated,
                 UserChatRoomId = userChatRoomId,
                 MessageSentId = messageSent.Id,
             };
@@ -364,7 +364,7 @@ namespace WebAPI.Controllers
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [HttpPost]
         [Route(nameof(Read))]
-        public async Task<ActionResult<MessageSentDTO>> Read(long messageSentId, DateTime dateRead)
+        public async Task<ActionResult<MessageSentDTO>> Read(long messageSentId, DateTimeOffset dateRead)
         {
             try
             {
@@ -380,7 +380,8 @@ namespace WebAPI.Controllers
                 if (!LesserTime(messageReceived.DateReceived, dateRead))
                     return BadRequest("Date read cannot be before date received!");
 
-                if (!LesserTime(dateRead, DateTime.UtcNow))
+                var utcNow = DateTimeOffset.UtcNow;
+                if (!LesserTime(dateRead, utcNow))
                     return BadRequest("Date read cannot be in the future!");
 
                 if (messageReceived.DateRead != null)
@@ -393,7 +394,7 @@ namespace WebAPI.Controllers
                 var pushNotificationDto = new PushNotificationDTO
                 {
                     Topic = PushNotificationTopic.MessageRead,
-                    DateCreated = DateTime.UtcNow,
+                    DateCreated = utcNow,
                     UserChatRoomId = messageReceived.ReceiverId,
                     MessageSentId = messageReceived.MessageSentId,
                 };

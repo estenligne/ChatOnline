@@ -12,10 +12,10 @@ namespace Global.Models
 
         public DevicePlatformEnum DevicePlatform { get; set; }
 
-        public DateTime DateCreated { get; set; }
-        public DateTime? DateDeleted { get; set; }
+        public DateTimeOffset DateCreated { get; set; }
+        public DateTimeOffset? DateDeleted { get; set; }
 
         public string PushNotificationToken { get; set; }
-        public DateTime? DateTokenProvided { get; set; }
+        public DateTimeOffset? DateTokenProvided { get; set; }
     }
 }

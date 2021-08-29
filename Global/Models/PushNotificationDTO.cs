@@ -16,7 +16,7 @@ namespace Global.Models
         public string Body { get; set; }
 
         public bool Priority { get; set; } // true if a priority notification
-        public DateTime DateCreated { get; set; }
+        public DateTimeOffset DateCreated { get; set; }
 
         public static string GetChannelId(PushNotificationTopic topic)
         {

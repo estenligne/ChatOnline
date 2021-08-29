@@ -82,7 +82,7 @@ namespace WebAPI.Controllers
                         var userProfile = new UserProfile();
                         userProfile.Identity = user.UserName;
                         userProfile.Username = userDto.ProfileName;
-                        userProfile.DateCreated = DateTime.UtcNow;
+                        userProfile.DateCreated = DateTimeOffset.UtcNow;
                         dbc.UserProfiles.Add(userProfile);
                         dbc.SaveChanges();
                     }
@@ -213,7 +213,7 @@ namespace WebAPI.Controllers
                 var deviceUsed = dbc.DevicesUsed.Find(deviceUsedId);
                 if (deviceUsed != null && deviceUsed.DateDeleted == null)
                 {
-                    deviceUsed.DateDeleted = DateTime.UtcNow;
+                    deviceUsed.DateDeleted = DateTimeOffset.UtcNow;
                     dbc.SaveChanges();
                 }
 

@@ -17,12 +17,12 @@ namespace WebAPI.Models
 
         public DevicePlatformEnum DevicePlatform { get; set; }
 
-        public DateTime DateCreated { get; set; }
-        public DateTime DateUpdated { get; set; }
-        public DateTime? DateDeleted { get; set; }
+        public DateTimeOffset DateCreated { get; set; }
+        public DateTimeOffset DateUpdated { get; set; }
+        public DateTimeOffset? DateDeleted { get; set; }
 
         [MaxLength(1023)]
         public string PushNotificationToken { get; set; }
-        public DateTime? DateTokenProvided { get; set; }
+        public DateTimeOffset? DateTokenProvided { get; set; }
     }
 }

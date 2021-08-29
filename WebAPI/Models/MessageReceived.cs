@@ -18,11 +18,11 @@ namespace WebAPI.Models
         public long MessageSentId { get; set; }
         public virtual MessageSent MessageSent { get; set; }
 
-        public DateTime DateCreated { get; set; }
-        public DateTime DateReceived { get; set; }
-        public DateTime? DateRead { get; set; }
-        public DateTime? DateDeleted { get; set; }
-        public DateTime? DateStarred { get; set; }
+        public DateTimeOffset DateCreated { get; set; }
+        public DateTimeOffset DateReceived { get; set; }
+        public DateTimeOffset? DateRead { get; set; }
+        public DateTimeOffset? DateDeleted { get; set; }
+        public DateTimeOffset? DateStarred { get; set; }
 
         public MessageReactionEnum Reaction { get; set; }
     }

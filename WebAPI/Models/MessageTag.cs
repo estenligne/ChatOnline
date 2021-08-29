@@ -23,6 +23,6 @@ namespace WebAPI.Models
         public long? ParentId { get; set; }
         public virtual MessageTag Parent { get; set; }
 
-        public DateTime DateCreated { get; set; }
+        public DateTimeOffset DateCreated { get; set; }
     }
 }

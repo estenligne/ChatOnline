@@ -72,7 +72,7 @@ namespace WebAPI.Controllers
                 if (groupProfile.CreatorId != userChatRoom.UserProfileId)
                     return Forbid("Cannot delete group profile!");
 
-                groupProfile.DateDeleted = DateTime.UtcNow;
+                groupProfile.DateDeleted = DateTimeOffset.UtcNow;
                 await dbc.SaveChangesAsync();
                 return NoContent();
             }
@@ -148,7 +148,7 @@ namespace WebAPI.Controllers
                 if (groupProfileDto.CreatorId != userProfile.Id)
                     return Forbid("CreatorId does not match!");
 
-                var dateCreated = DateTime.UtcNow;
+                var dateCreated = DateTimeOffset.UtcNow;
                 groupProfileDto.DateCreated = dateCreated;
                 var groupProfile = _mapper.Map<GroupProfile>(groupProfileDto);
 
@@ -217,7 +217,7 @@ namespace WebAPI.Controllers
                 {
                     UserProfileId = userProfileId,
                     ChatRoomId = chatRoom.Id,
-                    DateAdded = DateTime.UtcNow,
+                    DateAdded = DateTimeOffset.UtcNow,
                 };
 
                 dbc.UserChatRooms.Add(userChatRoom);

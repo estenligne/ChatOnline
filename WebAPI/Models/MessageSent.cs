@@ -30,9 +30,9 @@ namespace WebAPI.Models
         [MaxLength(16383)]
         public string Body { get; set; }
 
-        public DateTime DateSent { get; set; }
-        public DateTime DateCreated { get; set; }
-        public DateTime? DateDeleted { get; set; }
-        public DateTime? DateStarred { get; set; }
+        public DateTimeOffset DateSent { get; set; }
+        public DateTimeOffset DateCreated { get; set; }
+        public DateTimeOffset? DateDeleted { get; set; }
+        public DateTimeOffset? DateStarred { get; set; }
     }
 }

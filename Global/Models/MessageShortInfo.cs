@@ -13,7 +13,7 @@ namespace Global.Models
 
         public string ShortBody { get; set; }
 
-        public DateTime DateSent { get; set; }
+        public DateTimeOffset DateSent { get; set; }
 
         /// <summary>
         /// Number of users that have not yet received the message sent

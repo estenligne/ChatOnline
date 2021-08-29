@@ -218,7 +218,7 @@ namespace WebAPI.Controllers
 
                 if (user1ChatRooms.Count == 0)
                 {
-                    var dateCreated = DateTime.UtcNow;
+                    var dateCreated = DateTimeOffset.UtcNow;
 
                     var chatRoom = new ChatRoom
                     {

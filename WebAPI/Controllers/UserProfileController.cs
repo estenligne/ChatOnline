@@ -57,7 +57,7 @@ namespace WebAPI.Controllers
                 if (userProfile.Identity != UserIdentity)
                     return Forbid("User profile does not match!");
 
-                userProfile.DateDeleted = DateTime.UtcNow;
+                userProfile.DateDeleted = DateTimeOffset.UtcNow;
                 await dbc.SaveChangesAsync();
 
                 return NoContent();
@@ -108,7 +108,7 @@ namespace WebAPI.Controllers
                     if (userProfileDto.DateDeleted != null)
                         return Forbid("Cannot set DateDeleted!");
 
-                    userProfileDto.DateCreated = DateTime.UtcNow;
+                    userProfileDto.DateCreated = DateTimeOffset.UtcNow;
 
                     if (userProfile == null)
                     {

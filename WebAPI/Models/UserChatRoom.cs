@@ -26,13 +26,13 @@ namespace WebAPI.Models
         public long? BlockerId { get; set; }
         public virtual UserProfile Blocker { get; set; }
 
-        public DateTime DateAdded { get; set; }
-        public DateTime? DateBlocked { get; set; }
+        public DateTimeOffset DateAdded { get; set; }
+        public DateTimeOffset? DateBlocked { get; set; }
 
-        public DateTime? DateDeleted { get; set; }
-        public DateTime? DateExited { get; set; }
+        public DateTimeOffset? DateDeleted { get; set; }
+        public DateTimeOffset? DateExited { get; set; }
 
-        public DateTime? DateMuted { get; set; }
-        public DateTime? DatePinned { get; set; }
+        public DateTimeOffset? DateMuted { get; set; }
+        public DateTimeOffset? DatePinned { get; set; }
     }
 }

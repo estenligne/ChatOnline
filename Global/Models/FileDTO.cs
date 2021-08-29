@@ -13,8 +13,8 @@ namespace Global.Models
 
         public FilePurposeEnum Purpose { get; set; }
 
-        public DateTime DateUploaded { get; set; }
+        public DateTimeOffset DateUploaded { get; set; }
 
-        public DateTime? DateDeleted { get; set; }
+        public DateTimeOffset? DateDeleted { get; set; }
     }
 }

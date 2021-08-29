@@ -42,7 +42,7 @@ namespace WebAPI.Controllers
                 if (userProfile == null)
                     return NotFound("User profile not found.");
 
-                var utcNow = DateTime.UtcNow;
+                var utcNow = DateTimeOffset.UtcNow;
 
                 var deviceUsed = await dbc.DevicesUsed
                                         .Where(x =>
@@ -116,7 +116,7 @@ namespace WebAPI.Controllers
                     return Forbid($"User already logged out of this device!");
 
                 deviceUsed.PushNotificationToken = fcmToken;
-                deviceUsed.DateTokenProvided = DateTime.UtcNow;
+                deviceUsed.DateTokenProvided = DateTimeOffset.UtcNow;
 
                 dbc.SaveChanges();
                 return NoContent();
