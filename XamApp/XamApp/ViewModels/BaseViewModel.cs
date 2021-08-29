@@ -55,6 +55,7 @@ namespace XamApp.ViewModels
             Password,
             PhoneNumber,
             ProfileName,
+            JoinToken,
         }
 
         public static bool IsValid(Type Type, string value)
@@ -62,7 +63,9 @@ namespace XamApp.ViewModels
             if (string.IsNullOrWhiteSpace(value))
                 return false;
 
-            if (value[0] == ' ' || value[value.Length - 1] == ' ')
+            int length = value.Length;
+
+            if (value[0] == ' ' || value[length - 1] == ' ')
                 return false;
 
             string regexPattern;
@@ -72,14 +75,16 @@ namespace XamApp.ViewModels
                     regexPattern =
                         @"^[\w!#$%&'*+\-/=?\^_`{|}~]+(\.[\w!#$%&'*+\-/=?\^_`{|}~]+)*" + "@" +
                         @"((([\-\w]+\.)+[a-zA-Z]{2,4})|(([0-9]{1,3}\.){3}[0-9]{1,3}))$";
-
                     return Regex.IsMatch(value, regexPattern);
 
                 case Type.Password:
-                    return value.Length >= 6;
+                    return 6 <= length && length <= 99;
 
                 case Type.ProfileName:
-                    return value.Length >= 5;
+                    return 5 <= length && length <= 63;
+
+                case Type.JoinToken:
+                    return 5 <= length && length <= 70;
 
                 case Type.PhoneNumber:
                     regexPattern =

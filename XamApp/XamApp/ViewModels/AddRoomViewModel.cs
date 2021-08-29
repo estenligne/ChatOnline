@@ -30,7 +30,7 @@ namespace XamApp.ViewModels
                 if (SetProperty(ref phoneNumber, value))
                 {
                     OnUserEntry(Type.PhoneNumber, value);
-                    OnPropertyChanged(nameof(EmailColor));
+                    OnPropertyChanged(nameof(PhoneNumberColor));
                 }
             }
         }
@@ -55,8 +55,8 @@ namespace XamApp.ViewModels
             {
                 if (SetProperty(ref joinToken, value))
                 {
-                    OnUserEntry(Type.Password, value);
-                    OnPropertyChanged(nameof(GroupNameColor));
+                    OnUserEntry(Type.JoinToken, value);
+                    OnPropertyChanged(nameof(JoinTokenColor));
                 }
             }
         }
@@ -67,13 +67,13 @@ namespace XamApp.ViewModels
 
         public Color GroupNameColor => IsValid(Type.ProfileName, GroupName) ? Color.Green : Color.Black;
 
-        private bool JoinTokenIsValid => !string.IsNullOrEmpty(JoinToken) && JoinToken.Length <= 70;
+        public Color JoinTokenColor => IsValid(Type.JoinToken, JoinToken) ? Color.Green : Color.Black;
 
         public bool CanAdd => !IsBusy && (
             IsValid(Type.Email, Email) != // using XOR
             IsValid(Type.PhoneNumber, PhoneNumber) !=
             IsValid(Type.ProfileName, GroupName) !=
-            JoinTokenIsValid);
+            IsValid(Type.JoinToken, JoinToken));
 
         public void UpdateButton()
         {
@@ -87,7 +87,7 @@ namespace XamApp.ViewModels
                 if (type != Type.Email) Email = null;
                 if (type != Type.PhoneNumber) PhoneNumber = null;
                 if (type != Type.ProfileName) GroupName = null;
-                if (type != Type.Password) JoinToken = null;
+                if (type != Type.JoinToken) JoinToken = null;
             }
             UpdateButton();
         }

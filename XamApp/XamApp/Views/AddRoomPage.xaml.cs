@@ -46,6 +46,13 @@ namespace XamApp.Views
 
                 if (vm.GroupName != null) // if adding a new group
                 {
+                    bool confirmed = await DisplayAlert("Confirm", "Please confirm you want to create the group:\n\n" + vm.GroupName, "Ok", "Cancel");
+                    if (!confirmed)
+                    {
+                        SetBusy(false);
+                        return;
+                    }
+
                     model = new GroupProfileDTO()
                     {
                         CreatorId = user.UserProfileId,
@@ -94,8 +101,8 @@ namespace XamApp.Views
                         string joinToken = groupProfile.Id + separator + groupProfile.JoinToken;
                         await Clipboard.SetTextAsync(joinToken);
 
-                        string message = "Below is the token for others to join your new group. It has already been copied to the clipboard!\n\n" + joinToken;
-                        await DisplayAlert("New Group Created", message, "Ok");
+                        string message = "Below is the token for others to join your group. It has already been copied to your clipboard!\n\n" + joinToken;
+                        await DisplayAlert("Group Created", message, "Ok");
                     }
 
                     url = "/api/ChatRoom/GetInfo?userChatRoomId=" + userChatRoom.Id;
@@ -117,6 +124,7 @@ namespace XamApp.Views
                 }
                 SetBusy(false);
             }
+            else await DisplayAlert("Cannot Proceed", "Please first correct the information provided.", "Ok");
         }
     }
 }

@@ -96,7 +96,7 @@ namespace XamApp
             {
                 if (notification.Topic == PushNotificationTopic.MessageSent)
                 {
-                    string args = $"?messageSentId={notification.MessageSentId}&dateReceived={DateTime.UtcNow}";
+                    string args = $"?messageSentId={notification.MessageSentId}&dateReceived={DateTimeOffset.Now}";
                     var response = await HTTPClient.PostAsync<string>(null, "/api/Message/Received" + args, null);
                     if (response.IsSuccessStatusCode)
                     {

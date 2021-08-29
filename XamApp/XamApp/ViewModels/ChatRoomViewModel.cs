@@ -113,7 +113,7 @@ namespace XamApp.ViewModels
                     SenderId = _room.UserChatRoomId,
                     MessageTag = new MessageTagDTO { ChatRoomId = _room.Id },
                     Body = Body,
-                    DateSent = DateTime.UtcNow,
+                    DateSent = DateTimeOffset.Now,
                 };
                 var response = await HTTPClient.PostAsync(null, "/api/Message", messageSent);
                 if (response.IsSuccessStatusCode)

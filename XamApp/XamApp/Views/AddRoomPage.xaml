@@ -38,6 +38,7 @@
             <Entry Text="{Binding JoinToken, Mode=TwoWay}"
                 Placeholder="token for joining a group"
                 FontSize="Large"
+                TextColor="{Binding JoinTokenColor}"
                 Margin="0,20" />
 
             <Button Text="Add Chat Room"

@@ -141,6 +141,9 @@ namespace WebAPI.Controllers
                 if (groupProfileDto.DateDeleted != null)
                     return Forbid("Cannot delete group profile!");
 
+                var dateCreated = DateTimeOffset.UtcNow;
+                groupProfileDto.DateCreated = dateCreated;
+
                 var userProfile = await dbc.UserProfiles.FirstOrDefaultAsync(x => x.Identity == UserIdentity);
                 if (userProfile == null)
                     return NotFound("User profile not found.");
@@ -148,26 +151,59 @@ namespace WebAPI.Controllers
                 if (groupProfileDto.CreatorId != userProfile.Id)
                     return Forbid("CreatorId does not match!");
 
-                var dateCreated = DateTimeOffset.UtcNow;
-                groupProfileDto.DateCreated = dateCreated;
-                var groupProfile = _mapper.Map<GroupProfile>(groupProfileDto);
+                ChatRoom chatRoom = null;
+                UserChatRoom userChatRoom = null;
 
-                var chatRoom = new ChatRoom
+                var groupProfile = await dbc.GroupProfiles
+                    .Where(g =>
+                        g.CreatorId == groupProfileDto.CreatorId &&
+                        g.GroupName == groupProfileDto.GroupName)
+                    .FirstOrDefaultAsync();
+
+                if (groupProfile == null)
                 {
-                    Type = ChatRoomTypeEnum.Group,
-                    GroupProfile = groupProfile,
-                    DateCreated = dateCreated,
-                };
-
-                var userChatRoom = new UserChatRoom
+                    groupProfile = _mapper.Map<GroupProfile>(groupProfileDto);
+                }
+                else if (groupProfile.DateDeleted != null)
                 {
-                    UserProfileId = userProfile.Id,
-                    ChatRoom = chatRoom,
-                    UserRole = UserRoleEnum.FullNode | UserRoleEnum.GroupAdmin,
-                    DateAdded = dateCreated,
-                };
+                    groupProfileDto.Id = groupProfile.Id;
+                    _mapper.Map(groupProfileDto, groupProfile);
 
-                dbc.UserChatRooms.Add(userChatRoom);
+                    chatRoom = dbc.ChatRooms.FirstOrDefault(c => c.GroupProfileId == groupProfile.Id);
+                }
+                else return Conflict("Cannot create another group with the same name.");
+
+                if (chatRoom == null)
+                {
+                    chatRoom = new ChatRoom
+                    {
+                        Type = ChatRoomTypeEnum.Group,
+                        GroupProfile = groupProfile,
+                        DateCreated = dateCreated,
+                    };
+                }
+                else
+                {
+                    userChatRoom = dbc.UserChatRooms.FirstOrDefault(u => u.ChatRoomId == chatRoom.Id);
+                }
+
+                if (userChatRoom == null)
+                {
+                    userChatRoom = new UserChatRoom
+                    {
+                        UserProfileId = userProfile.Id,
+                        ChatRoom = chatRoom,
+                        UserRole = UserRoleEnum.FullNode | UserRoleEnum.GroupAdmin,
+                        DateAdded = dateCreated,
+                    };
+                    dbc.UserChatRooms.Add(userChatRoom);
+                }
+                else
+                {
+                    userChatRoom.DateDeleted = null;
+                    userChatRoom.DateExited = null;
+                    userChatRoom.DateBlocked = null;
+                }
                 await dbc.SaveChangesAsync();
 
                 var userChatRoomDto = _mapper.Map<UserChatRoomDTO>(userChatRoom);

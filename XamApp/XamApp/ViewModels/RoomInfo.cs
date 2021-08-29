@@ -47,11 +47,12 @@ namespace XamApp.ViewModels
         {
             if (message.Id == 0)
                 return null;
-            var dateUtc = DateTime.SpecifyKind(message.DateSent, DateTimeKind.Utc);
-            var dateLocal = dateUtc.ToLocalTime();
-            if (dateUtc.Date == DateTime.UtcNow.Date)
-                return dateLocal.ToString("H:mm");
-            else return dateLocal.ToString("yyyy-MM-dd");
+            var dateLocal = message.DateSent.ToLocalTime();
+            string time = dateLocal.ToString("HH:mm");
+            var diff = DateTimeOffset.Now - dateLocal;
+            if (diff >= TimeSpan.FromDays(1))
+                time = dateLocal.ToString("yyyy-MM-dd ") + time;
+            return time;
         }
 
         public string MsgReadTick => GetMsgReadTick(LatestMessage);
