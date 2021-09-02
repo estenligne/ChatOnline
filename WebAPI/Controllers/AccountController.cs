@@ -35,7 +35,7 @@ namespace WebAPI.Controllers
         }
 
         /// <summary>
-        /// Endpoint to get details of the currently logged-in user
+        /// Endpoint to get details of the currently signed-in user
         /// </summary>
         [HttpGet]
         [Route(nameof(GetUser))]
@@ -44,6 +44,11 @@ namespace WebAPI.Controllers
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
             var userDto = _mapper.Map<ApplicationUserDTO>(user);
             return userDto;
+        }
+
+        private static string GetUserName(ApplicationUserDTO userDto)
+        {
+            return string.IsNullOrEmpty(userDto.PhoneNumber) ? userDto.Email : userDto.PhoneNumber;
         }
 
         [ProducesResponseType((int)HttpStatusCode.Created)]
@@ -56,16 +61,16 @@ namespace WebAPI.Controllers
         {
             try
             {
-                var email = userDto.Email;
+                var userName = GetUserName(userDto);
 
-                var user = await _userManager.FindByEmailAsync(email);
+                var user = await _userManager.FindByNameAsync(userName);
                 if (user != null)
-                    return Conflict($"User account {email} already exists.");
+                    return Conflict($"User account {userName} already exists.");
 
                 user = new ApplicationUser
                 {
-                    UserName = email,
-                    Email = email,
+                    UserName = userName,
+                    Email = userDto.Email,
                     PhoneNumber = userDto.PhoneNumber,
                 };
 
@@ -74,23 +79,15 @@ namespace WebAPI.Controllers
                 {
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
-                        await SendConfirmationEmail(user);
+                        if (userName == user.Email)
+                            await SendConfirmationEmail(user);
+                        else await SendConfirmationOTP(user);
                     }
 
-                    if (!string.IsNullOrWhiteSpace(userDto.ProfileName))
-                    {
-                        var userProfile = new UserProfile();
-                        userProfile.Identity = user.UserName;
-                        userProfile.Username = userDto.ProfileName;
-                        userProfile.DateCreated = DateTimeOffset.UtcNow;
-                        dbc.UserProfiles.Add(userProfile);
-                        dbc.SaveChanges();
-                    }
+                    _logger.LogInformation($"User account {userName} created successfully.");
 
-                    _logger.LogInformation($"User account {email} created successfully.");
                     userDto = _mapper.Map<ApplicationUserDTO>(user);
-
-                    return CreatedAtAction(nameof(Login), null, userDto);
+                    return CreatedAtAction(nameof(SignIn), null, userDto);
                 }
                 else
                 {
@@ -104,6 +101,13 @@ namespace WebAPI.Controllers
             {
                 return InternalServerError(ex);
             }
+        }
+
+        private async Task SendConfirmationOTP(ApplicationUser user)
+        {
+            user.EmailConfirmed = true;
+            user.PhoneNumberConfirmed = true;
+            await _userManager.UpdateAsync(user);
         }
 
         private async Task SendConfirmationEmail(ApplicationUser user)
@@ -157,42 +161,58 @@ namespace WebAPI.Controllers
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         [AllowAnonymous]
         [HttpPost]
-        [Route(nameof(Login))]
-        public async Task<ActionResult> Login(ApplicationUserDTO userDto)
+        [Route(nameof(SignIn))]
+        public async Task<ActionResult> SignIn(ApplicationUserDTO userDto)
         {
             try
             {
-                var user = await _userManager.FindByEmailAsync(userDto.Email);
-                if (user == null)
-                    return NotFound($"User account {userDto.Email} not found.");
+                string userName = GetUserName(userDto);
 
-                if (_userManager.Options.SignIn.RequireConfirmedAccount && !user.EmailConfirmed)
+                var user = await _userManager.FindByNameAsync(userName);
+                if (user == null)
+                    return NotFound($"User account {userName} not found.");
+
+                if (_userManager.Options.SignIn.RequireConfirmedAccount)
                 {
-                    await SendConfirmationEmail(user);
-                    return Unauthorized("Please first confirm your account using the email sent. Check your Spam/Junk folder.");
+                    if (userName == user.Email && !user.EmailConfirmed)
+                    {
+                        await SendConfirmationEmail(user);
+                        return Unauthorized("Please first confirm your account using the email sent. Check your Spam/Junk folder.");
+                    }
+                    if(userName == user.PhoneNumber && !user.PhoneNumberConfirmed)
+                    {
+                        await SendConfirmationOTP(user);
+                        return Unauthorized("Please first confirm your account using the OTP sent to your phone number.");
+                    }
                 }
 
-                var result = await _signInManager.PasswordSignInAsync(userDto.Email,
-                                   userDto.Password, userDto.RememberMe, lockoutOnFailure: true);
+                var result = await _signInManager.PasswordSignInAsync(userName, userDto.Password, userDto.RememberMe, lockoutOnFailure: true);
 
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation($"User account {userDto.Email} has logged in.");
+                    _logger.LogInformation($"User account {userName} has signed in.");
                     userDto = _mapper.Map<ApplicationUserDTO>(user);
                     return Ok(userDto);
                 }
-                if (result.RequiresTwoFactor)
+                else if (result.RequiresTwoFactor)
                 {
                     return Accepted(result);
                 }
-                if (result.IsLockedOut)
+                else if (result.IsLockedOut)
                 {
-                    _logger.LogWarning($"User account {userDto.Email} is locked out.");
-                    return Unauthorized($"User account {userDto.Email} is locked out.");
+                    string message = $"User account {userName} is locked out.";
+                    _logger.LogWarning(message);
+                    return Forbid(message);
+                }
+                else if (result.IsNotAllowed)
+                {
+                    string message = $"User account {userName} is not allowed.";
+                    _logger.LogWarning(message);
+                    return Forbid(message);
                 }
                 else
                 {
-                    return BadRequest("Invalid login attempt.");
+                    return BadRequest("Password not correct!");
                 }
             }
             catch (Exception ex)
@@ -203,8 +223,8 @@ namespace WebAPI.Controllers
 
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [HttpPost]
-        [Route(nameof(Logout))]
-        public async Task<ActionResult> Logout(long deviceUsedId)
+        [Route(nameof(SignOut))]
+        public async Task<ActionResult> SignOut(long deviceUsedId)
         {
             try
             {
@@ -217,7 +237,7 @@ namespace WebAPI.Controllers
                     dbc.SaveChanges();
                 }
 
-                _logger.LogInformation($"User {UserIdentity} logged out on deviceUsedId {deviceUsedId}.");
+                _logger.LogInformation($"User {UserIdentity} signed out on deviceUsedId {deviceUsedId}.");
                 return NoContent();
             }
             catch (Exception ex)

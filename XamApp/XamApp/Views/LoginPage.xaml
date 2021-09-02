@@ -13,90 +13,93 @@
                 <Image Source="icon_logo.png"
                        HorizontalOptions="Center"
                        HeightRequest="64"
-                       Margin="0,20" />
+                       Margin="0,10" />
 
-                <StackLayout IsVisible="{Binding DoNone}">
+                <Label Text="{Binding Title}"
+                        TextColor="Black"
+                        HorizontalOptions="Center"
+                        FontAttributes="Bold"
+                        FontSize="Title"
+                        Margin="0,0,0,15" />
 
-                    <Button FontSize="Large" Text="Register" Clicked="OnRegisterClicked" BackgroundColor="Blue" />
+                <Label Text="Use either email or phone" TextColor="Black" HorizontalOptions="Center" />
 
-                    <Label FontSize="Large" Text="OR" TextColor="Black" HorizontalOptions="Center" Margin="0,20" />
-
-                    <Button FontSize="Large" Text="Login" Clicked="OnLoginClicked" BackgroundColor="Green" />
-
-                    <Label FontSize="Large" Text="OR" TextColor="Black" HorizontalOptions="Center" Margin="0,20" />
-
-                    <Button FontSize="Large" Text="Reset Password" Clicked="OnResetPasswordClicked" BackgroundColor="Red" />
-
-                </StackLayout>
-
-                <StackLayout IsVisible="{Binding DoKnown}">
-
-                    <Entry Text="{Binding Email, Mode=TwoWay}"
-                        Placeholder="enter email address"
+                <Entry Text="{Binding Email, Mode=TwoWay}"
+                        Placeholder="Email address"
                         TextColor="{Binding EmailColor}"
+                        IsEnabled="{Binding EmailAllow}"
                         Keyboard="Email"
                         FontSize="Large"
-                        Margin="0,20" />
+                        Margin="0,10,0,0" />
 
-                    <Entry Text="{Binding Password, Mode=TwoWay}"
-                        Placeholder="enter strong password"
+                <Entry Text="{Binding PhoneNumber, Mode=TwoWay}"
+                        Placeholder="Phone number"
+                        TextColor="{Binding PhoneNumberColor}"
+                        IsEnabled="{Binding PhoneNumberAllow}"
+                        Keyboard="Telephone"
+                        FontSize="Large"
+                        Margin="0,10,0,0" />
+
+                <Entry Text="{Binding Password, Mode=TwoWay}"
+                        Placeholder="Password"
                         TextColor="{Binding PasswordColor}"
                         IsPassword="True"
                         FontSize="Large"
-                        Margin="0,20" />
+                        Margin="0,10,0,0" />
 
-                    <Button Text="Login"
-                        Clicked="OnLoginClicked"
-                        IsEnabled="{Binding CanLogin}"
-                        IsVisible="{Binding DoLogin}"
-                        FontSize="Large"
-                        Margin="0,20" />
+                <StackLayout IsVisible="{Binding DoSignIn}">
 
-                    <Entry Text="{Binding PasswordConfirm, Mode=TwoWay}"
-                        Placeholder="repeat your password"
-                        TextColor="{Binding PasswordConfirmColor}"
-                        IsVisible="{Binding DoResetPassword}"
-                        IsPassword="True"
+                    <Button Text="Sign In"
+                        Clicked="OnSignInClicked"
+                        IsEnabled="{Binding CanSignIn}"
                         FontSize="Large"
-                        Margin="0,20" />
+                        Margin="0,20,0,0" />
 
-                    <Button Text="Reset Password"
-                        Clicked="OnResetPasswordClicked"
-                        IsEnabled="{Binding CanResetPassword}"
-                        IsVisible="{Binding DoResetPassword}"
+                    <Label Text="Forgot Password"
+                        TextColor="Blue"
+                        HorizontalOptions="Center"
+                        Margin="0,20,0,0" >
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="ForgotPassword" />
+                        </Label.GestureRecognizers>
+                    </Label>
+
+                    <Label Text="Create Account"
+                        TextColor="Blue"
+                        HorizontalOptions="Center"
+                        FontAttributes="Bold"
                         FontSize="Large"
-                        Margin="0,20" />
+                        Margin="0,15,0,0" >
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="GotoRegister" />
+                        </Label.GestureRecognizers>
+                    </Label>
 
                 </StackLayout>
 
                 <StackLayout IsVisible="{Binding DoRegister}">
 
                     <Entry Text="{Binding PasswordConfirm, Mode=TwoWay}"
-                        Placeholder="repeat your password"
+                        Placeholder="Repeat password"
                         TextColor="{Binding PasswordConfirmColor}"
                         IsPassword="True"
                         FontSize="Large"
-                        Margin="0,20" />
-
-                    <Entry Text="{Binding PhoneNumber, Mode=TwoWay}"
-                        Placeholder="phone number: +237123456789"
-                        Keyboard="Telephone"
-                        TextColor="{Binding PhoneNumberColor}"
-                        FontSize="Large"
-                        Margin="0,20" />
-
-                    <Entry Text="{Binding ProfileName, Mode=TwoWay}"
-                        Placeholder="enter profile name"
-                        Keyboard="Plain"
-                        TextColor="{Binding ProfileNameColor}"
-                        FontSize="Large"
-                        Margin="0,20" />
+                        Margin="0,10,0,0" />
 
                     <Button Text="Register"
                         Clicked="OnRegisterClicked"
                         IsEnabled="{Binding CanRegister}"
                         FontSize="Large"
-                        Margin="0,20" />
+                        Margin="0,20,0,0" />
+
+                    <Label Text="Sign In"
+                        TextColor="Blue"
+                        HorizontalOptions="Center"
+                        Margin="0,20,0,0" >
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="GotoSignIn" />
+                        </Label.GestureRecognizers>
+                    </Label>
 
                 </StackLayout>
 

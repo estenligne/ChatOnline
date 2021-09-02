@@ -10,20 +10,14 @@ namespace Global.Models
         [EmailAddress]
         public string Email { get; set; }
 
-        public string Password { get; set; }
-
         [Phone]
         public string PhoneNumber { get; set; }
 
-        /// <summary>
-        /// Used only on Login
-        /// </summary>
-        public bool RememberMe { get; set; }
+        public string Password { get; set; }
 
         /// <summary>
-        /// Used only on Register
+        /// Used only on sign in
         /// </summary>
-        [StringLength(63)]
-        public string ProfileName { get; set; }
+        public bool RememberMe { get; set; }
     }
 }

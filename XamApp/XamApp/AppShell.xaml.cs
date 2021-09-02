@@ -16,20 +16,20 @@ namespace XamApp
             Routing.RegisterRoute(nameof(ChatRoomPage), typeof(ChatRoomPage));
         }
 
-        private async void OnLogoutClicked(object sender, EventArgs e)
+        private async void OnSignOutClicked(object sender, EventArgs e)
         {
             User user = IsBusy ? null : await DataStore.Instance.GetUserAsync();
             if (user != null)
             {
                 IsBusy = true;
-                var url = "/api/Account/Logout?deviceUsedId=" + user.DeviceUsedId;
+                var url = "/api/Account/SignOut?deviceUsedId=" + user.DeviceUsedId;
 
                 var response = await HTTPClient.PostAsync<string>(null, url, null);
                 if (!response.IsSuccessStatusCode)
                 {
                     string message = await HTTPClient.GetResponseError(response);
                     message += "\n\nFor your security, you must please clear all app data if this persists.";
-                    await DisplayAlert("Logout Error", message, "Ok");
+                    await DisplayAlert("Sign Out Failed", message, "Ok");
                 }
                 else
                 {

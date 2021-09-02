@@ -27,7 +27,8 @@ namespace WebAPI.Controllers
             _pushNotificationService = pushNotificationService;
         }
 
-        [HttpPost]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [HttpGet]
         [Route(nameof(GetOrCreate))]
         public async Task<ActionResult<DeviceUsedDTO>> GetOrCreate([FromQuery] DevicePlatformEnum devicePlatform)
         {

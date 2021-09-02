@@ -4,47 +4,58 @@ namespace XamApp.ViewModels
 {
     public class LoginViewModel : BaseViewModel
     {
-        public enum Choice
+        private bool doSignIn;
+        public bool DoSignIn => doSignIn;
+        public bool DoRegister => !doSignIn;
+
+        public void UpdateChoice(bool doSignIn)
         {
-            None,
-            Login,
-            Register,
-            ResetPassword,
+            this.doSignIn = doSignIn;
+            OnPropertyChanged(nameof(DoSignIn));
+            OnPropertyChanged(nameof(DoRegister));
+            Title = DoSignIn ? "Sign In to EstEnligne" : "Register to EstEnligne";
         }
 
-        private Choice choice;
-        public bool DoKnown => !DoNone;
-        public bool DoNone => choice == Choice.None;
-        public bool DoLogin => choice == Choice.Login;
-        public bool DoRegister => choice == Choice.Register;
-        public bool DoResetPassword => choice == Choice.ResetPassword;
-
-        public void UpdateChoice(Choice choice)
+        private void UpdateButtons()
         {
-            this.choice = choice;
-            OnPropertyChanged(nameof(DoKnown));
-            OnPropertyChanged(nameof(DoNone));
-            OnPropertyChanged(nameof(DoLogin));
-            OnPropertyChanged(nameof(DoRegister));
-            OnPropertyChanged(nameof(DoResetPassword));
-            UpdateButtons();
+            OnPropertyChanged(nameof(CanSignIn));
+            OnPropertyChanged(nameof(CanRegister));
         }
 
         private string email;
+        private string phoneNumber;
         private string password;
         private string passwordConfirm;
-        private string phoneNumber;
-        private string profileName;
 
         public string Email
         {
             get { return email; }
             set
             {
-                if (SetProperty(ref email, value))
+                if (SetProperty(ref email, Clean(value)))
                 {
                     UpdateButtons();
                     OnPropertyChanged(nameof(EmailColor));
+                    OnPropertyChanged(nameof(PhoneNumberAllow));
+                }
+            }
+        }
+
+        public string PhoneNumber
+        {
+            get { return phoneNumber; }
+            set
+            {
+                if (!string.IsNullOrEmpty(value) && value[0] != '+')
+                {
+                    DisplayAlert("Invalid", "Please start with + then country code to enter your international phone number.", "Ok");
+                    OnPropertyChanged(nameof(PhoneNumber));
+                }
+                else if (SetProperty(ref phoneNumber, Clean(value)))
+                {
+                    UpdateButtons();
+                    OnPropertyChanged(nameof(PhoneNumberColor));
+                    OnPropertyChanged(nameof(EmailAllow));
                 }
             }
         }
@@ -76,53 +87,22 @@ namespace XamApp.ViewModels
             }
         }
 
-        public string PhoneNumber
-        {
-            get { return phoneNumber; }
-            set
-            {
-                if (SetProperty(ref phoneNumber, value))
-                {
-                    UpdateButtons();
-                    OnPropertyChanged(nameof(PhoneNumberColor));
-                }
-            }
-        }
+        private bool ValidIdentifier => IsValid(Type.Email, Email) || IsValid(Type.PhoneNumber, PhoneNumber);
 
-        public string ProfileName
-        {
-            get { return profileName; }
-            set
-            {
-                if (SetProperty(ref profileName, value))
-                {
-                    UpdateButtons();
-                    OnPropertyChanged(nameof(ProfileNameColor));
-                }
-            }
-        }
+        public bool CanSignIn => !IsBusy && ValidIdentifier && IsValid(Type.Password, Password);
 
-        public void UpdateButtons()
-        {
-            OnPropertyChanged(nameof(CanLogin));
-            OnPropertyChanged(nameof(CanResetPassword));
-            OnPropertyChanged(nameof(CanRegister));
-        }
+        public bool CanRegister => CanSignIn && Password == PasswordConfirm;
 
-        public bool CanLogin => !IsBusy && IsValid(Type.Email, Email) && IsValid(Type.Password, Password);
+        public bool EmailAllow => string.IsNullOrEmpty(PhoneNumber);
 
-        public bool CanResetPassword => CanLogin && Password == PasswordConfirm;
-
-        public bool CanRegister => CanResetPassword && IsValid(Type.PhoneNumber, PhoneNumber) && IsValid(Type.ProfileName, ProfileName);
+        public bool PhoneNumberAllow => string.IsNullOrEmpty(Email);
 
         public Color EmailColor => IsValid(Type.Email, Email) ? Color.Green : Color.Black;
+
+        public Color PhoneNumberColor => IsValid(Type.PhoneNumber, PhoneNumber) ? Color.Green : Color.Black;
 
         public Color PasswordColor => IsValid(Type.Password, Password) ? Color.Green : Color.Black;
 
         public Color PasswordConfirmColor => Password == PasswordConfirm ? Color.Green : Color.Black;
-
-        public Color PhoneNumberColor => IsValid(Type.PhoneNumber, PhoneNumber) ? Color.Green : Color.Black;
-
-        public Color ProfileNameColor => IsValid(Type.ProfileName, ProfileName) ? Color.Green : Color.Black;
     }
 }

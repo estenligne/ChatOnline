@@ -48,11 +48,10 @@ namespace XamApp.ViewModels
             if (message.Id == 0)
                 return null;
             var dateLocal = message.DateSent.ToLocalTime();
-            string time = dateLocal.ToString("HH:mm");
             var diff = DateTimeOffset.Now - dateLocal;
             if (diff >= TimeSpan.FromDays(1))
-                time = dateLocal.ToString("yyyy-MM-dd ") + time;
-            return time;
+                return dateLocal.ToString("yyyy-MM-dd");
+            else return dateLocal.ToString("HH:mm");
         }
 
         public string MsgReadTick => GetMsgReadTick(LatestMessage);
