@@ -96,7 +96,21 @@ namespace XamApp.Views
 
         private async void ForgotPassword(object sender, EventArgs e)
         {
-            await DisplayAlert("Not Available", "The feature to reset password is not yet available!", "Ok");
+            if (vm.ValidIdentity)
+            {
+                SetBusy(true);
+                string args = $"?emailAddress={vm.Email}&phoneNumber={vm.PhoneNumber}";
+
+                var response = await HTTPClient.GetAsync(null, "/api/Account/ForgotPassword" + args);
+                if (response.IsSuccessStatusCode)
+                {
+                    await DisplayAlert("Success", await response.Content.ReadAsStringAsync(), "Ok");
+                }
+                else await DisplayAlert("Failed", await HTTPClient.GetResponseError(response), "Ok");
+
+                SetBusy(false);
+            }
+            else await DisplayAlert("Empty", "Please provide your email address or phone number", "Ok");
         }
 
         private void GotoSignIn(object sender, EventArgs e)
@@ -138,11 +152,8 @@ namespace XamApp.Views
                     }
                     vm.UpdateChoice(true);
                 }
-                else
-                {
-                    string message = await HTTPClient.GetResponseError(response);
-                    await DisplayAlert("Failed to Register", message, "Ok");
-                }
+                else await DisplayAlert("Failed to Register", await HTTPClient.GetResponseError(response), "Ok");
+
                 SetBusy(false);
             }
         }

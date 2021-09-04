@@ -46,9 +46,18 @@ namespace XamApp.ViewModels
             get { return phoneNumber; }
             set
             {
-                if (!string.IsNullOrEmpty(value) && value[0] != '+')
+                string message = null;
+                if (!string.IsNullOrEmpty(value))
                 {
-                    DisplayAlert("Invalid", "Please start with + then country code to enter your international phone number.", "Ok");
+                    if (value[0] != '+')
+                        message = "Please start with + then country code to enter your international phone number.";
+
+                    else if (value[value.Length - 1] == ' ')
+                        message = "No space allowed in phone number";
+                }
+                if (message != null)
+                {
+                    DisplayAlert("Invalid", message, "Ok");
                     OnPropertyChanged(nameof(PhoneNumber));
                 }
                 else if (SetProperty(ref phoneNumber, Clean(value)))
@@ -87,9 +96,9 @@ namespace XamApp.ViewModels
             }
         }
 
-        private bool ValidIdentifier => IsValid(Type.Email, Email) || IsValid(Type.PhoneNumber, PhoneNumber);
+        public bool ValidIdentity => !IsBusy && (IsValid(Type.Email, Email) || IsValid(Type.PhoneNumber, PhoneNumber));
 
-        public bool CanSignIn => !IsBusy && ValidIdentifier && IsValid(Type.Password, Password);
+        public bool CanSignIn => ValidIdentity && IsValid(Type.Password, Password);
 
         public bool CanRegister => CanSignIn && Password == PasswordConfirm;
 

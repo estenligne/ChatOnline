@@ -68,21 +68,23 @@ namespace WebAPI.Controllers
             }
         }
 
-        [ProducesResponseType((int)HttpStatusCode.Created)]
+        [ProducesResponseType(typeof(UserProfileDTO), (int)HttpStatusCode.Created)]
+        [ProducesResponseType((int)HttpStatusCode.Conflict)]
         [HttpPost]
-        public Task<ActionResult<UserProfileDTO>> PostUserProfile(UserProfileDTO userProfileDto)
+        public Task<ActionResult> PostUserProfile(UserProfileDTO userProfileDto)
         {
             return SetUserProfile(userProfileDto, false);
         }
 
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [HttpPut]
-        public Task<ActionResult<UserProfileDTO>> PutUserProfile(UserProfileDTO userProfileDto)
+        public Task<ActionResult> PutUserProfile(UserProfileDTO userProfileDto)
         {
             return SetUserProfile(userProfileDto, true);
         }
 
-        private async Task<ActionResult<UserProfileDTO>> SetUserProfile(UserProfileDTO userProfileDto, bool onPut)
+        private async Task<ActionResult> SetUserProfile(UserProfileDTO userProfileDto, bool onPut)
         {
             try
             {

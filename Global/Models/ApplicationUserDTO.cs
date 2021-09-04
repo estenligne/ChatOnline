@@ -13,6 +13,8 @@ namespace Global.Models
         [Phone]
         public string PhoneNumber { get; set; }
 
+        public string UserName => string.IsNullOrEmpty(PhoneNumber) ? Email : PhoneNumber;
+
         public string Password { get; set; }
 
         /// <summary>

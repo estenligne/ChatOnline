@@ -8,6 +8,12 @@ namespace Global.Models
     {
         public long Id { get; set; }
 
+        /// <summary>
+        /// The unique intelligible identifier of a user's account.
+        /// This corresponds to the Account.AspNetUsers.UserName value,
+        /// which in turn is equal to the email address or phone number.
+        /// </summary>
+        [StringLength(255)]
         public string Identity { get; set; }
 
         [StringLength(63)]

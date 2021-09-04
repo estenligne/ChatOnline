@@ -46,11 +46,6 @@ namespace WebAPI.Controllers
             return userDto;
         }
 
-        private static string GetUserName(ApplicationUserDTO userDto)
-        {
-            return string.IsNullOrEmpty(userDto.PhoneNumber) ? userDto.Email : userDto.PhoneNumber;
-        }
-
         [ProducesResponseType((int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(IEnumerable<IdentityError>), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.Conflict)]
@@ -61,7 +56,7 @@ namespace WebAPI.Controllers
         {
             try
             {
-                var userName = GetUserName(userDto);
+                string userName = userDto.UserName;
 
                 var user = await _userManager.FindByNameAsync(userName);
                 if (user != null)
@@ -79,9 +74,9 @@ namespace WebAPI.Controllers
                 {
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
-                        if (userName == user.Email)
-                            await SendConfirmationEmail(user);
-                        else await SendConfirmationOTP(user);
+                        if (userName == user.PhoneNumber)
+                            await SendConfirmationOTP(user);
+                        else await SendConfirmationEmail(user);
                     }
 
                     _logger.LogInformation($"User account {userName} created successfully.");
@@ -97,7 +92,7 @@ namespace WebAPI.Controllers
                     return BadRequest(result.Errors);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return InternalServerError(ex);
             }
@@ -166,7 +161,7 @@ namespace WebAPI.Controllers
         {
             try
             {
-                string userName = GetUserName(userDto);
+                string userName = userDto.UserName;
 
                 var user = await _userManager.FindByNameAsync(userName);
                 if (user == null)
@@ -174,15 +169,21 @@ namespace WebAPI.Controllers
 
                 if (_userManager.Options.SignIn.RequireConfirmedAccount)
                 {
-                    if (userName == user.Email && !user.EmailConfirmed)
+                    if (userName == user.PhoneNumber)
                     {
-                        await SendConfirmationEmail(user);
-                        return Unauthorized("Please first confirm your account using the email sent. Check your Spam/Junk folder.");
+                        if (!user.PhoneNumberConfirmed)
+                        {
+                            await SendConfirmationOTP(user);
+                            return Unauthorized("Please first confirm your account using the OTP sent to your phone number.");
+                        }
                     }
-                    if(userName == user.PhoneNumber && !user.PhoneNumberConfirmed)
+                    else
                     {
-                        await SendConfirmationOTP(user);
-                        return Unauthorized("Please first confirm your account using the OTP sent to your phone number.");
+                        if (!user.EmailConfirmed)
+                        {
+                            await SendConfirmationEmail(user);
+                            return Unauthorized("Please first confirm your account using the email sent. Check your Spam/Junk folder.");
+                        }
                     }
                 }
 
@@ -244,6 +245,29 @@ namespace WebAPI.Controllers
             {
                 return InternalServerError(ex);
             }
+        }
+
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NotImplemented)]
+        [AllowAnonymous]
+        [HttpGet]
+        [Route(nameof(ForgotPassword))]
+        public ActionResult ForgotPassword(string emailAddress, string phoneNumber)
+        {
+            if (!string.IsNullOrEmpty(phoneNumber))
+            {
+            }
+            else if (!string.IsNullOrEmpty(emailAddress))
+            {
+                if (emailAddress == "email@address.com")
+                {
+                    string target = string.IsNullOrEmpty(phoneNumber) ? "email address" : "phone number";
+                    return Ok($"A confirmation message to reset your password has been sent to your {target}!");
+                }
+            }
+            else return BadRequest("No email address nor phone number provided.");
+
+            return StatusCode((int)HttpStatusCode.NotImplemented, "The feature to reset password is not yet available!");
         }
     }
 }

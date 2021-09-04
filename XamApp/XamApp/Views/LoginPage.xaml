@@ -22,7 +22,7 @@
                         FontSize="Title"
                         Margin="0,0,0,15" />
 
-                <Label Text="Use either email or phone" TextColor="Black" HorizontalOptions="Center" />
+                <Label Text="Use either email or phone" TextColor="Brown" HorizontalOptions="Center" />
 
                 <Entry Text="{Binding Email, Mode=TwoWay}"
                         Placeholder="Email address"
