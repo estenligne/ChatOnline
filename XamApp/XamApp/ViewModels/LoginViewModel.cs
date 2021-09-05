@@ -32,7 +32,7 @@ namespace XamApp.ViewModels
             get { return email; }
             set
             {
-                if (SetProperty(ref email, Clean(value)))
+                if (SetProperty(ref email, value))
                 {
                     UpdateButtons();
                     OnPropertyChanged(nameof(EmailColor));
@@ -46,21 +46,7 @@ namespace XamApp.ViewModels
             get { return phoneNumber; }
             set
             {
-                string message = null;
-                if (!string.IsNullOrEmpty(value))
-                {
-                    if (value[0] != '+')
-                        message = "Please start with + then country code to enter your international phone number.";
-
-                    else if (value[value.Length - 1] == ' ')
-                        message = "No space allowed in phone number";
-                }
-                if (message != null)
-                {
-                    DisplayAlert("Invalid", message, "Ok");
-                    OnPropertyChanged(nameof(PhoneNumber));
-                }
-                else if (SetProperty(ref phoneNumber, Clean(value)))
+                if (SetProperty(ref phoneNumber, value))
                 {
                     UpdateButtons();
                     OnPropertyChanged(nameof(PhoneNumberColor));

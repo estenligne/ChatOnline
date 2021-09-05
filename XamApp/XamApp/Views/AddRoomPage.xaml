@@ -2,51 +2,53 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="XamApp.Views.AddRoomPage"
+             xmlns:local="clr-namespace:XamApp.ViewModels"
              Title="Add Chat Room">
-    <ContentPage.Content>
+
+    <ScrollView x:DataType="local:AddRoomViewModel">
         <StackLayout Padding="10,30,10,0">
 
             <Label Text="Enter" TextColor="Black" HorizontalOptions="Center" />
 
             <Entry Text="{Binding Email, Mode=TwoWay}"
-                    Placeholder="email address of contact"
+                    Placeholder="Email address of contact"
                     Keyboard="Email"
                     FontSize="Large"
                     TextColor="{Binding EmailColor}"
-                    Margin="0,20" />
+                    Margin="0,15" />
 
             <Label Text="OR" TextColor="Black" HorizontalOptions="Center" />
 
             <Entry Text="{Binding PhoneNumber, Mode=TwoWay}"
-                    Placeholder="phone number: +237123456789"
+                    Placeholder="Phone number of contact"
                     Keyboard="Telephone"
                     FontSize="Large"
                     TextColor="{Binding PhoneNumberColor}"
-                    Margin="0,20" />
+                    Margin="0,15" />
 
             <Label Text="OR" TextColor="Black" HorizontalOptions="Center" />
 
             <Entry Text="{Binding GroupName, Mode=TwoWay}"
-                Placeholder="name of new group to create"
+                Placeholder="Name of new group to create"
                 Keyboard="Plain"
                 FontSize="Large"
                 TextColor="{Binding GroupNameColor}"
-                Margin="0,20" />
+                Margin="0,15" />
 
             <Label Text="OR" TextColor="Black" HorizontalOptions="Center" />
 
             <Entry Text="{Binding JoinToken, Mode=TwoWay}"
-                Placeholder="token for joining a group"
+                Placeholder="Token to join a group"
                 FontSize="Large"
                 TextColor="{Binding JoinTokenColor}"
-                Margin="0,20" />
+                Margin="0,15" />
 
             <Button Text="Add Chat Room"
                 VerticalOptions="Center"
                 Clicked="AddChatRoom"
                 IsEnabled="{Binding CanAdd}"
-                Margin="0,20" />
+                Margin="0,15" />
 
         </StackLayout>
-    </ContentPage.Content>
+    </ScrollView>
 </ContentPage>

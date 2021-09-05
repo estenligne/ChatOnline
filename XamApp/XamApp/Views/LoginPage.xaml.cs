@@ -99,8 +99,8 @@ namespace XamApp.Views
             if (vm.ValidIdentity)
             {
                 SetBusy(true);
-                string args = $"?emailAddress={vm.Email}&phoneNumber={vm.PhoneNumber}";
 
+                string args = $"?emailAddress={vm.Email}&phoneNumber={vm.PhoneNumber}";
                 var response = await HTTPClient.GetAsync(null, "/api/Account/ForgotPassword" + args);
                 if (response.IsSuccessStatusCode)
                 {
@@ -110,7 +110,10 @@ namespace XamApp.Views
 
                 SetBusy(false);
             }
-            else await DisplayAlert("Empty", "Please provide your email address or phone number", "Ok");
+            else if (!vm.IsBusy)
+            {
+                await DisplayAlert("Invalid", "Please provide your email address or phone number.", "Ok");
+            }
         }
 
         private void GotoSignIn(object sender, EventArgs e)

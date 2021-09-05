@@ -3,11 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d"
+             xmlns:local="clr-namespace:XamApp.ViewModels"
              x:Class="XamApp.Views.LoginPage"
+             mc:Ignorable="d"
              Shell.NavBarIsVisible="False">
     <ContentPage.Content>
-        <ScrollView>
+        <ScrollView x:DataType="local:LoginViewModel">
             <StackLayout Padding="20,0">
 
                 <Image Source="icon_logo.png"

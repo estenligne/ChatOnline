@@ -33,7 +33,7 @@ namespace XamApp.Views
             vm.UpdateButton();
         }
 
-        private const string separator = ": ";
+        public const string separator = ": ";
 
         private async void AddChatRoom(object sender, EventArgs e)
         {

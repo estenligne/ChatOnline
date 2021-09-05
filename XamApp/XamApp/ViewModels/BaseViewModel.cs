@@ -37,6 +37,44 @@ namespace XamApp.ViewModels
             return true;
         }
 
+        protected bool SetProperty(ref string backingStore, string value,
+            [CallerMemberName] string propertyName = "",
+            Action onChanged = null)
+        {
+            if (value == "")
+                value = null;
+
+            if (propertyName == "PhoneNumber" && !CheckPhoneNumber(value, propertyName))
+                return false;
+
+            if (EqualityComparer<string>.Default.Equals(backingStore, value))
+                return false;
+
+            backingStore = value;
+            onChanged?.Invoke();
+            OnPropertyChanged(propertyName);
+            return true;
+        }
+
+        private bool CheckPhoneNumber(string value, string propertyName)
+        {
+            string message = null;
+            if (!string.IsNullOrEmpty(value))
+            {
+                if (value[0] != '+')
+                    message = "Please start with + then country code to enter the international phone number, like +237123456789.";
+
+                else if (value[value.Length - 1] == ' ')
+                    message = "No space allowed in phone number";
+            }
+            if (message != null)
+            {
+                DisplayAlert("Invalid", message, "Ok");
+                OnPropertyChanged(propertyName);
+            }
+            return message == null;
+        }
+
         public event PropertyChangedEventHandler PropertyChanged; // see INotifyPropertyChanged
         protected void OnPropertyChanged(string propertyName)
         {
@@ -48,13 +86,6 @@ namespace XamApp.ViewModels
         {
             return Application.Current.MainPage.DisplayAlert(title, message, cancel);
         }
-
-        /// <summary>
-        /// Convert string to null if empty
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static string Clean(string value) { return value == "" ? null : value; }
 
         public enum Type
         {
@@ -98,7 +129,7 @@ namespace XamApp.ViewModels
                     return 5 <= length && length <= 63;
 
                 case Type.JoinToken:
-                    return 5 <= length && length <= 70;
+                    return 5 <= length && length <= 70 && value.Contains(Views.AddRoomPage.separator);
 
                 default: return false;
             }
