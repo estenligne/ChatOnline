@@ -2,7 +2,7 @@
 
 namespace XamApp.ViewModels
 {
-    public class LoginViewModel : BaseViewModel
+    public class SignInViewModel : BaseViewModel
     {
         private bool doSignIn;
         public bool DoSignIn => doSignIn;

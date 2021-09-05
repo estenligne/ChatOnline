@@ -129,7 +129,7 @@ namespace WebAPI.Controllers
         }
 
         /// <summary>
-        /// Get the ChatRoomInfo of all chat rooms which logged-in user is associated to.
+        /// Get the ChatRoomInfo of all chat rooms which signed-in user is associated to.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -168,7 +168,7 @@ namespace WebAPI.Controllers
         }
 
         /// <summary>
-        /// Create a private chat room between the logged-in user and the given user.
+        /// Create a private chat room between the signed-in user and the given user.
         /// </summary>
         /// <param name="emailAddress"></param>
         /// <param name="phoneNumber"></param>

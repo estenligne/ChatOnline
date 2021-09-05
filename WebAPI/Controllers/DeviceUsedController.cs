@@ -114,7 +114,7 @@ namespace WebAPI.Controllers
                     return Forbid("User profile does not match!");
 
                 if (deviceUsed.DateDeleted != null)
-                    return Forbid($"User already logged out of this device!");
+                    return Forbid($"User already signed out of this device!");
 
                 deviceUsed.PushNotificationToken = fcmToken;
                 deviceUsed.DateTokenProvided = DateTimeOffset.UtcNow;

@@ -39,7 +39,7 @@ namespace XamApp
 
             if (user == null)
             {
-                page = nameof(LoginPage);
+                page = nameof(SignInPage);
             }
             else if (Notification != null)
             {

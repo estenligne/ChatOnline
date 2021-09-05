@@ -28,7 +28,7 @@ namespace Global.Models
         public string PhotoFileName { get; set; }
 
         /// <summary>
-        /// The logged-in user's UserChatRoom.Id
+        /// The signed-in user's UserChatRoom.Id
         /// </summary>
         public long UserChatRoomId { get; set; }
 

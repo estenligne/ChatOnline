@@ -16,7 +16,7 @@ namespace Global.Models
         public string SenderName { get; set; }
 
         /// <summary>
-        /// A FK to a UserChatRoom. Is equal to 0 if SenderId == logged-in user.
+        /// A FK to a UserChatRoom. Is equal to 0 if SenderId == signed-in user.
         /// </summary>
         public long ReceiverId { get; set; }
 
@@ -42,32 +42,32 @@ namespace Global.Models
         public string Body { get; set; }
 
         /// <summary>
-        /// Equal to MessageSent.DateSent, even if not SenderId == logged-in user
+        /// Equal to MessageSent.DateSent, even if not SenderId == signed-in user
         /// </summary>
         public DateTimeOffset DateSent { get; set; }
 
         /// <summary>
-        /// Equal to null if SenderId == logged-in user, else equal to MessageReceived.DateReceived
+        /// Equal to null if SenderId == signed-in user, else equal to MessageReceived.DateReceived
         /// </summary>
         public DateTimeOffset? DateReceived { get; set; }
 
         /// <summary>
-        /// Equal to null if SenderId == logged-in user, else equal to MessageReceived.DateRead
+        /// Equal to null if SenderId == signed-in user, else equal to MessageReceived.DateRead
         /// </summary>
         public DateTimeOffset? DateRead { get; set; }
 
         /// <summary>
-        /// Equal to MessageSent.DateDeleted if SenderId == logged-in user, else equal to MessageReceived.DateDeleted
+        /// Equal to MessageSent.DateDeleted if SenderId == signed-in user, else equal to MessageReceived.DateDeleted
         /// </summary>
         public DateTimeOffset? DateDeleted { get; set; }
 
         /// <summary>
-        /// Equal to MessageSent.DateStarred if SenderId == logged-in user, else equal to MessageReceived.DateStarred
+        /// Equal to MessageSent.DateStarred if SenderId == signed-in user, else equal to MessageReceived.DateStarred
         /// </summary>
         public DateTimeOffset? DateStarred { get; set; }
 
         /// <summary>
-        /// Equal to None if SenderId == logged-in user, else equal to MessageReceived.Reaction
+        /// Equal to None if SenderId == signed-in user, else equal to MessageReceived.Reaction
         /// </summary>
         public MessageReactionEnum Reaction { get; set; }
     }

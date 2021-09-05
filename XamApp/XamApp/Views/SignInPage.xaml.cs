@@ -12,14 +12,14 @@ using XamApp.Services;
 namespace XamApp.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class LoginPage : ContentPage
+    public partial class SignInPage : ContentPage
     {
-        private readonly LoginViewModel vm;
+        private readonly SignInViewModel vm;
 
-        public LoginPage()
+        public SignInPage()
         {
             InitializeComponent();
-            vm = new LoginViewModel();
+            vm = new SignInViewModel();
             vm.UpdateChoice(true);
             BindingContext = vm;
         }
@@ -118,12 +118,14 @@ namespace XamApp.Views
 
         private void GotoSignIn(object sender, EventArgs e)
         {
-            vm.UpdateChoice(true);
+            if (!vm.IsBusy)
+                vm.UpdateChoice(true);
         }
 
         private void GotoRegister(object sender, EventArgs e)
         {
-            vm.UpdateChoice(false);
+            if (!vm.IsBusy)
+                vm.UpdateChoice(false);
         }
 
         private async void OnRegisterClicked(object sender, EventArgs e)

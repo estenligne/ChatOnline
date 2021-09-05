@@ -35,7 +35,7 @@ namespace XamApp
                 {
                     HTTPClient.Clear();
                     await DataStore.Instance.DeleteUserAsync();
-                    await Shell.Current.GoToAsync("//" + nameof(LoginPage));
+                    await Shell.Current.GoToAsync("//" + nameof(SignInPage));
                 }
                 IsBusy = false;
             }

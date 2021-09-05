@@ -99,7 +99,7 @@
         await Shell.Current.GoToAsync("//LoginPage");
     -->
     <TabBar>
-        <ShellContent Route="LoginPage" ContentTemplate="{DataTemplate local:LoginPage}" />
+        <ShellContent Route="SignInPage" ContentTemplate="{DataTemplate local:SignInPage}" />
     </TabBar>
 
     <!-- Optional Templates 
