@@ -1,18 +1,28 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace WebAPI.Models
 {
     public static class ApplicationDbSeed
     {
-        /// <summary>
-        /// Seed the database
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="logger"></param>
-        public static void Seed(ApplicationDbContext context, ILogger logger)
+        // https://docs.microsoft.com/en-us/aspnet/core/tutorials/first-mvc-app/working-with-sql?view=aspnetcore-5.0&tabs=visual-studio#seed-the-database
+        public static void Initialize(IHost host)
         {
-            context.Database.Migrate();
+            using (var scope = host.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+
+                using (var account_dbc = services.GetRequiredService<AccountDbContext>())
+                {
+                    account_dbc.Database.Migrate();
+                }
+
+                using (var dbc = services.GetRequiredService<ApplicationDbContext>())
+                {
+                    dbc.Database.Migrate();
+                }
+            }
         }
     }
 }

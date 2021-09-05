@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 
 namespace WebAPI.Models
@@ -16,6 +17,10 @@ namespace WebAPI.Models
 
         [MaxLength(256)]
         public override string PhoneNumber { get; set; }
+
+        public DateTimeOffset DateCreated { get; set; }
+        public DateTimeOffset? DateDeleted { get; set; }
+        public DateTimeOffset? DateSignedIn { get; set; }
     }
 
     public class ApplicationRole : IdentityRole<long>

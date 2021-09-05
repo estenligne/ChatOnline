@@ -67,6 +67,7 @@ namespace WebAPI.Controllers
                     UserName = userName,
                     Email = userDto.Email,
                     PhoneNumber = userDto.PhoneNumber,
+                    DateCreated = DateTimeOffset.UtcNow,
                 };
 
                 var result = await _userManager.CreateAsync(user, userDto.Password);
@@ -191,6 +192,9 @@ namespace WebAPI.Controllers
 
                 if (result.Succeeded)
                 {
+                    user.DateSignedIn = DateTimeOffset.UtcNow;
+                    await _userManager.UpdateAsync(user);
+
                     _logger.LogInformation($"User account {userName} has signed in.");
                     userDto = _mapper.Map<ApplicationUserDTO>(user);
                     return Ok(userDto);

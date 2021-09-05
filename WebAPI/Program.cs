@@ -14,7 +14,9 @@ namespace WebAPI
             try
             {
                 logger.Debug("Program Main Started");
-                CreateHostBuilder(args).Build().Run();
+                IHost host = CreateHostBuilder(args).Build();
+                Models.ApplicationDbSeed.Initialize(host);
+                host.Run();
             }
             catch (Exception exception)
             {
