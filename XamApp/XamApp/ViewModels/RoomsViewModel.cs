@@ -47,28 +47,30 @@ namespace XamApp.ViewModels
                     foreach (var room in rooms)
                         Rooms.Add(room);
                 }
-                else
-                {
-                    var message = await HTTPClient.GetResponseError(response);
-                    await DisplayAlert("Error", message, "Ok");
-                }
+                else await DisplayAlert("Error", await HTTPClient.GetResponseError(response), "Ok");
+
                 IsBusy = false;
             }
         }
 
         private async void AddChatRoom()
         {
-            // This will push the AddRoomPage onto the navigation stack
-            await Shell.Current.GoToAsync(nameof(Views.AddRoomPage));
+            if (!IsBusy)
+            {
+                IsBusy = true;
+                await Shell.Current.GoToAsync(nameof(Views.AddRoomPage));
+                IsBusy = false;
+            }
         }
 
         private async void OnRoomSelected(RoomInfo room)
         {
             if (room != null && !IsBusy)
             {
+                IsBusy = true;
                 ChatRoomViewModel.Room = room; // provide the necessary data
-                // This will push the ChatRoomPage onto the navigation stack
                 await Shell.Current.GoToAsync(nameof(Views.ChatRoomPage));
+                IsBusy = false;
             }
         }
     }

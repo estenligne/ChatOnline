@@ -1,4 +1,5 @@
 ﻿using Xamarin.Forms;
+using XamApp.Models;
 using XamApp.ViewModels;
 using Xamarin.Forms.Xaml;
 
@@ -16,10 +17,20 @@ namespace XamApp.Views
             BindingContext = vm;
         }
 
-        protected override void OnAppearing()
+        protected async override void OnAppearing()
         {
-            base.OnAppearing();
-            vm.OnAppearing();
+            User user = await DataStore.Instance.GetUserAsync();
+            if (user == null || user.DeviceUsedId <= 0)
+            {
+                vm.IsBusy = true;
+                await AppShell.DoSignOut(this, user);
+                vm.IsBusy = false;
+            }
+            else
+            {
+                base.OnAppearing();
+                vm.OnAppearing();
+            }
         }
     }
 }

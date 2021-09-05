@@ -105,7 +105,7 @@ namespace XamApp.Services
             }
         }
 
-        public static async Task<HttpResponseMessage> PostAsync<T>(HttpClient client, string requestUri, T model)
+        private static async Task<HttpResponseMessage> PostOrPut<T>(bool post, HttpClient client, string requestUri, T model)
         {
             try
             {
@@ -113,14 +113,20 @@ namespace XamApp.Services
                     client = await Client();
 
                 var content = GetStringContent(model);
-                var response = await client.PostAsync(requestUri, content);
+                HttpResponseMessage response;
+
+                if (post)
+                    response = await client.PostAsync(requestUri, content);
+                else response = await client.PutAsync(requestUri, content);
 
                 if (response.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     response = await LoginAsync(client, response);
                     if (response.IsSuccessStatusCode)
                     {
-                        response = await client.PostAsync(requestUri, content);
+                        if (post)
+                            response = await client.PostAsync(requestUri, content);
+                        else response = await client.PutAsync(requestUri, content);
                     }
                 }
                 return response;
@@ -129,6 +135,16 @@ namespace XamApp.Services
             {
                 return OnException(ex);
             }
+        }
+
+        public static Task<HttpResponseMessage> PostAsync<T>(HttpClient client, string requestUri, T model)
+        {
+            return PostOrPut<T>(true, client, requestUri, model);
+        }
+
+        public static Task<HttpResponseMessage> PutAsync<T>(HttpClient client, string requestUri, T model)
+        {
+            return PostOrPut<T>(false, client, requestUri, model);
         }
 
         private static StringContent GetStringContent<T>(T model)

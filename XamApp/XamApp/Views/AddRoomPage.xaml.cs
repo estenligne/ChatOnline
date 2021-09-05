@@ -23,6 +23,7 @@ namespace XamApp.Views
 
         protected override void OnAppearing()
         {
+            base.OnAppearing();
             SetBusy(false);
         }
 

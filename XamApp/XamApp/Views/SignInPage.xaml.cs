@@ -84,7 +84,8 @@ namespace XamApp.Views
                     }
                     else if (response.StatusCode == HttpStatusCode.NotFound)
                     {
-                        await DisplayAlert("Success", "Now, go setup your user profile!", "Ok");
+                        await DataStore.Instance.InsertUserAsync(user);
+                        await Shell.Current.GoToAsync($"//{nameof(RoomsPage)}/{nameof(UserProfilePage)}");
                     }
                     else await DisplayAlert("Sign In Error", await HTTPClient.GetResponseError(response), "Ok");
                 }
