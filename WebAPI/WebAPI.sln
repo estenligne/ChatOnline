@@ -3,14 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30907.101
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAPI", "WebAPI\WebAPI.csproj", "{AABAB040-AA53-4189-A51C-F1FFEB0CC136}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAPI", "WebAPI.csproj", "{AABAB040-AA53-4189-A51C-F1FFEB0CC136}"
 	ProjectSection(ProjectDependencies) = postProject
 		{9AF2E68A-8DB3-4DDC-8280-DA59380111ED} = {9AF2E68A-8DB3-4DDC-8280-DA59380111ED}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Global", "Global\Global.csproj", "{9AF2E68A-8DB3-4DDC-8280-DA59380111ED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Global", "..\Global\Global.csproj", "{9AF2E68A-8DB3-4DDC-8280-DA59380111ED}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Notes", "Notes\Notes.csproj", "{F9CF9117-19F1-49C8-9D6B-2499A8D8110F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Notes", "..\Notes\Notes.csproj", "{F9CF9117-19F1-49C8-9D6B-2499A8D8110F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
