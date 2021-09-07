@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using AutoMapper;
 using System.Net;
+using Global.Models;
 
 namespace WebAPI.Controllers
 {
@@ -42,13 +43,14 @@ namespace WebAPI.Controllers
                 return NotFound();
             }
 
-            return Ok(file);
+            var fileDTO = _mapper.Map<FileDTO>(file);
+
+            return Ok(fileDTO);
         }
 
         [HttpPost]
         public async Task<IActionResult> PostFile(IFormFile file)
         {
-
             if (file != null)
             {
                 string filePath = _configuration.GetValue<string>("PathToFiles");
@@ -59,9 +61,7 @@ namespace WebAPI.Controllers
                 using (FileStream fileStream = new FileStream(Path.Combine(filePath, fileName), FileMode.Create, FileAccess.Write))
                 {
                     await file.CopyToAsync(fileStream);
-
                 }
-
 
                 File _file = new File();
 
@@ -73,7 +73,9 @@ namespace WebAPI.Controllers
                 dbc.Files.Add(_file);
                 dbc.SaveChanges();
 
-                return Ok(file);
+                var fileDTO = _mapper.Map<FileDTO>(_file);
+
+                return Ok(fileDTO);
             }
             else
             {
@@ -114,7 +116,7 @@ namespace WebAPI.Controllers
 
             dbc.SaveChanges();
 
-            return Ok(file2);
+            return NoContent();
         }
 
 
@@ -142,7 +144,7 @@ namespace WebAPI.Controllers
 
         [HttpGet]
         [Route(nameof(Download))]
-        public ActionResult Download(string fileName)
+        public IActionResult Download(string fileName)
         {
             try
             {
