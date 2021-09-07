@@ -7,6 +7,8 @@ namespace Global.Models
     {
         #region Generic to all push notifications
 
+        public const string Key = nameof(PushNotificationDTO);
+
         public PushNotificationTopic Topic { get; set; }
 
         public int Id { get; set; } // used to identify a notification

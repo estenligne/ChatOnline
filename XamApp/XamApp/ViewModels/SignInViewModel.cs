@@ -13,7 +13,7 @@ namespace XamApp.ViewModels
             this.doSignIn = doSignIn;
             OnPropertyChanged(nameof(DoSignIn));
             OnPropertyChanged(nameof(DoRegister));
-            Title = DoSignIn ? "Sign In to EstEnligne" : "Register to EstEnligne";
+            Title = (DoSignIn ? "Sign In" : "Register") + " to Estenligne";
         }
 
         private void UpdateButtons()

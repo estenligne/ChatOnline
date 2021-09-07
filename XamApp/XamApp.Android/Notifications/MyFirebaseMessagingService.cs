@@ -4,7 +4,6 @@ using Android.Media;
 using Firebase.Messaging;
 using System;
 using Global.Models;
-using Newtonsoft.Json;
 
 namespace XamApp.Droid.Notifications
 {
@@ -23,28 +22,30 @@ namespace XamApp.Droid.Notifications
         public override void OnMessageReceived(RemoteMessage message)
         {
             base.OnMessageReceived(message);
+            int play = 0;
             try
             {
-                if (message.Data.ContainsKey(Notifications.Key))
+                if (message.Data.ContainsKey(PushNotificationDTO.Key))
                 {
                     var source = AppIsInForeground() ?
                         App.NotificationSource.OnForeground :
                         App.NotificationSource.OnBackground;
 
-                    var data = message.Data[Notifications.Key];
-                    var notification = JsonConvert.DeserializeObject<PushNotificationDTO>(data);
-                    App.OnNotificationReceived(notification, source);
+                    string data = message.Data[PushNotificationDTO.Key];
+                    App.OnNotificationReceived(data, source);
                 }
-                else
-                {
-                    var soundUri = RingtoneManager.GetDefaultUri(RingtoneType.Notification);
-                    var sound = RingtoneManager.GetRingtone(ApplicationContext, soundUri);
-                    sound.Play();
-                }
+                else play = 1;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"OnMessageReceived() Error: {ex}");
+                System.Diagnostics.Trace.TraceError($"OnMessageReceived() Error: {ex}");
+                play = 2;
+            }
+            if (play != 0) // inform that a push notification was received
+            {
+                var soundUri = RingtoneManager.GetDefaultUri(RingtoneType.Notification);
+                var sound = RingtoneManager.GetRingtone(ApplicationContext, soundUri);
+                sound.Play();
             }
         }
 

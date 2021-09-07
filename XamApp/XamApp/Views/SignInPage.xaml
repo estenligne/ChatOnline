@@ -28,7 +28,7 @@
                 <Entry Text="{Binding Email, Mode=TwoWay}"
                         Placeholder="Email address"
                         TextColor="{Binding EmailColor}"
-                        IsEnabled="{Binding EmailAllow}"
+                        IsVisible="{Binding EmailAllow}"
                         Keyboard="Email"
                         FontSize="Large"
                         Margin="0,10,0,0" />
@@ -36,7 +36,7 @@
                 <Entry Text="{Binding PhoneNumber, Mode=TwoWay}"
                         Placeholder="Phone number"
                         TextColor="{Binding PhoneNumberColor}"
-                        IsEnabled="{Binding PhoneNumberAllow}"
+                        IsVisible="{Binding PhoneNumberAllow}"
                         Keyboard="Telephone"
                         FontSize="Large"
                         Margin="0,10,0,0" />

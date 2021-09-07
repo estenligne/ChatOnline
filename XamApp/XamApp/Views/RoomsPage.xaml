@@ -31,9 +31,9 @@
                         <ImageButton
                             Source="{Binding ProfilePhoto}"
                             BackgroundColor="Yellow"
-                            WidthRequest="60"
-                            HeightRequest="60"
-                            Margin="0,0,8,0" />
+                            WidthRequest="55"
+                            HeightRequest="55"
+                            Margin="0,0,4,0" />
 
                         <StackLayout
                             Orientation="Vertical"
@@ -45,7 +45,6 @@
                                 <Label Text="{Binding Name}"
                                     TextColor="Black"
                                     FontAttributes="Bold"
-                                    FontSize="Large"
                                     LineBreakMode="NoWrap"
                                     HorizontalOptions="StartAndExpand" />
 
@@ -72,7 +71,6 @@
                             <StackLayout Orientation="Horizontal">
                                 <Label Text="{Binding ShortBody}"
                                     TextType="Html"
-                                    FontSize="Medium"
                                     LineBreakMode="NoWrap"
                                     HorizontalOptions="StartAndExpand" />
 

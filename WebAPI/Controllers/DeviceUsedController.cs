@@ -90,19 +90,6 @@ namespace WebAPI.Controllers
                 if (fcmToken.Length > 1023)
                     return BadRequest("FcmToken length must be < 1024.");
 
-                var exists = dbc.DevicesUsed
-                                .Where(d => d.DateDeleted == null && d.PushNotificationToken == fcmToken)
-                                .FirstOrDefault();
-
-                if (exists != null)
-                {
-                    if (exists.Id != deviceUsedId)
-                    {
-                        return Conflict("The push notification token is already registered.");
-                    }
-                    else return NoContent();
-                }
-
                 var deviceUsed = dbc.DevicesUsed
                                     .Include(d => d.UserProfile)
                                     .FirstOrDefault(d => d.Id == deviceUsedId);

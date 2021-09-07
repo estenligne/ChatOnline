@@ -6,7 +6,10 @@ using XamApp.ViewModels;
 using Global.Enums;
 using Global.Models;
 using System;
+using System.Web;
+using System.Diagnostics;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace XamApp
 {
@@ -43,8 +46,8 @@ namespace XamApp
             }
             else if (Notification != null)
             {
-                var success = Task.Run(async () => await SetChatRoomPage(Notification.UserChatRoomId)).Result;
-                if (success)
+                string error = Task.Run(async () => await SetChatRoomPage(Notification.UserChatRoomId)).Result;
+                if (error == null)
                     page += "/" + nameof(ChatRoomPage);
                 Notification = null;
             }
@@ -54,7 +57,7 @@ namespace XamApp
             return appShell;
         }
 
-        private static async Task<bool> SetChatRoomPage(long userChatRoomId)
+        private static async Task<string> SetChatRoomPage(long userChatRoomId)
         {
             var url = $"/api/ChatRoom/GetInfo?userChatRoomId={userChatRoomId}";
             var response = await HTTPClient.GetAsync(null, url);
@@ -62,9 +65,9 @@ namespace XamApp
             if (response.IsSuccessStatusCode)
             {
                 ChatRoomViewModel.Room = await HTTPClient.ReadAsAsync<RoomInfo>(response);
-                return true;
+                return null;
             }
-            else return false;
+            else return await HTTPClient.GetResponseError(response);
         }
 
         public enum NotificationSource
@@ -75,51 +78,81 @@ namespace XamApp
             OnForeground,
         }
 
-        public static void OnNotificationReceived(PushNotificationDTO notification, NotificationSource source)
+        public static void OnNotificationReceived(string data, NotificationSource source)
         {
+            var notification = JsonConvert.DeserializeObject<PushNotificationDTO>(data);
+
             if (source == NotificationSource.OnLaunch)
                 Notification = notification;
-            else
-                Device.BeginInvokeOnMainThread(() => ProcessNotificationReceived(notification, source));
+
+            else if (source == NotificationSource.OnBackground)
+                ProcessNotificationReceived(notification, source);
+
+            else Device.BeginInvokeOnMainThread(() => ProcessNotificationReceived(notification, source));
         }
 
         private static async void ProcessNotificationReceived(PushNotificationDTO notification, NotificationSource source)
         {
-            if (source == NotificationSource.OnResume)
+            string error = null;
+            try
             {
-                if (await SetChatRoomPage(notification.UserChatRoomId))
+                if (source == NotificationSource.OnResume)
                 {
-                    await Shell.Current.GoToAsync(nameof(ChatRoomPage));
+                    error = await SetChatRoomPage(notification.UserChatRoomId);
+                    if (error == null)
+                        await Shell.Current.GoToAsync(nameof(ChatRoomPage));
                 }
-            }
-            else
-            {
-                if (notification.Topic == PushNotificationTopic.MessageSent)
+                else
                 {
-                    string args = $"?messageSentId={notification.MessageSentId}&dateReceived={DateTimeOffset.Now}";
-                    var response = await HTTPClient.PostAsync<string>(null, "/api/Message/Received" + args, null);
-                    if (response.IsSuccessStatusCode)
+                    if (notification.Topic == PushNotificationTopic.MessageSent)
                     {
-                        var message = await HTTPClient.ReadAsAsync<MessageSentDTO>(response);
+                        string dateReceived = HttpUtility.UrlEncode(DateTimeOffset.Now.ToString("O"));
+                        string args = $"?messageSentId={notification.MessageSentId}&dateReceived={dateReceived}";
 
-                        if (source == NotificationSource.OnForeground &&
-                            ChatRoomViewModel.Appearing != null &&
-                            ChatRoomViewModel.Appearing.AddMessage(message))
+                        var response = await HTTPClient.PostAsync<string>(null, "/api/Message/Received" + args, null);
+                        if (response.IsSuccessStatusCode)
                         {
-                            try
+                            var message = await HTTPClient.ReadAsAsync<MessageSentDTO>(response);
+
+                            Trace.TraceInformation($"ProcessNotificationReceived() ReceiverId: {message.ReceiverId}");
+
+                            if (source == NotificationSource.OnForeground &&
+                                ChatRoomViewModel.Appearing != null &&
+                                ChatRoomViewModel.Appearing.AddMessage(message))
                             {
-                                // see https://docs.microsoft.com/en-us/xamarin/essentials/vibrate
-                                Xamarin.Essentials.Vibration.Vibrate(); // Use default vibration length
+                                Vibrate(500);
                             }
-                            catch (Exception) { }
+                            else
+                            {
+                                notification.UserChatRoomId = message.ReceiverId; // a hack!
+                                DependencyService.Get<INotifications>().Notify(notification);
+                            }
                         }
-                        else
-                        {
-                            notification.UserChatRoomId = message.ReceiverId; // a hack!
-                            DependencyService.Get<INotifications>().Notify(notification);
-                        }
+                        else error = await HTTPClient.GetResponseError(response);
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+            }
+            if (error != null)
+            {
+                Trace.TraceError($"ProcessNotificationReceived() Error: {error}");
+                Vibrate(1000);
+            }
+        }
+
+        public static void Vibrate(double milliseconds)
+        {
+            try
+            {
+                // see https://docs.microsoft.com/en-us/xamarin/essentials/vibrate
+                Xamarin.Essentials.Vibration.Vibrate(milliseconds);
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"Vibrate() Error: {ex.Message}");
             }
         }
     }

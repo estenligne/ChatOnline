@@ -15,8 +15,6 @@ namespace XamApp.Droid.Notifications
 {
     public class Notifications : Java.Lang.Object, IOnCompleteListener, INotifications
     {
-        public const string Key = nameof(PushNotificationDTO);
-
         public static long DeviceUsedId = 0;
 
         public static async void RegisterFcmToken(string fcmToken)
@@ -55,7 +53,7 @@ namespace XamApp.Droid.Notifications
                 .SetAutoCancel(true);
 
             var extras = new Bundle();
-            extras.PutString(Key, JsonConvert.SerializeObject(notification));
+            extras.PutString(PushNotificationDTO.Key, JsonConvert.SerializeObject(notification));
 
             var resultIntent = new Intent(context, typeof(MainActivity));
             resultIntent.PutExtras(extras);
@@ -70,11 +68,10 @@ namespace XamApp.Droid.Notifications
 
         public static void ProcessIntent(Intent intent, App.NotificationSource source)
         {
-            if (intent.HasExtra(Key))
+            if (intent.HasExtra(PushNotificationDTO.Key))
             {
-                var data = intent.GetStringExtra(Key);
-                var notification = JsonConvert.DeserializeObject<PushNotificationDTO>(data);
-                App.OnNotificationReceived(notification, source);
+                string data = intent.GetStringExtra(PushNotificationDTO.Key);
+                App.OnNotificationReceived(data, source);
             }
         }
 

@@ -47,21 +47,21 @@ namespace WebAPI.Services
         public async Task<List<PushNotificationOutcome>> SendAsync(ApplicationDbContext dbc, List<long> userProfileIds, PushNotificationDTO pushNotificationDto)
         {
             var outcomes = new List<PushNotificationOutcome>();
-            bool failure = false;
 
             var devices = await dbc.DevicesUsed
                                     .Where(x => userProfileIds.Contains(x.UserProfileId) && x.DateDeleted == null)
                                     .ToListAsync();
 
+            bool failure = devices.Count == 0;
             foreach (var device in devices)
             {
                 var outcome = new PushNotificationOutcome();
-                outcome.deviceId = device.Id;
+                outcome.deviceUsedId = device.Id;
                 outcome.userProfileId = device.UserProfileId;
 
                 if (string.IsNullOrEmpty(device.PushNotificationToken))
                 {
-                    outcome.errorMessage = $"device.PushNotificationToken was not provided.";
+                    outcome.errorMessage = "device.PushNotificationToken was not provided.";
                     outcomes.Add(outcome);
                     failure = true;
                     continue;
@@ -79,7 +79,7 @@ namespace WebAPI.Services
                 string content = JsonConvert.SerializeObject(payload);
                 var httpContent = new StringContent(content, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response = await _httpClient.PostAsync(fcmUrl, httpContent);
+                var response = await _httpClient.PostAsync(fcmUrl, httpContent);
                 content = await response.Content.ReadAsStringAsync();
                 outcome.statusCode = response.StatusCode;
 
@@ -108,7 +108,7 @@ namespace WebAPI.Services
 
     public class PushNotificationOutcome
     {
-        public long deviceId { get; set; }
+        public long deviceUsedId { get; set; }
         public long userProfileId { get; set; }
         public HttpStatusCode statusCode { get; set; }
         public string errorMessage { get; set; }
