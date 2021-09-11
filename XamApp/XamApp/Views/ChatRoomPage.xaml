@@ -29,6 +29,11 @@
                                         FontAttributes="Bold"
                                         IsVisible="{Binding IsGroupChat}" />
 
+                                    <Image
+                                        Source="{Binding ImageFile}"
+                                        IsVisible="{Binding HasImage}"
+                                        BackgroundColor="Transparent" />
+
                                     <Label Text="{Binding Body}"
                                         TextColor="Black" />
                                 </StackLayout>
@@ -47,7 +52,12 @@
                                         FontAttributes="Bold"
                                         IsVisible="{Binding IsGroupChat}" />
 
-                                    <Label Text="{Binding Body}"
+                                <Image
+                                        Source="{Binding ImageFile}"
+                                        IsVisible="{Binding HasImage}"
+                                        BackgroundColor="Transparent" />
+
+                                <Label Text="{Binding Body}"
                                         TextColor="Black" />
                                 </StackLayout>
                             </Frame>

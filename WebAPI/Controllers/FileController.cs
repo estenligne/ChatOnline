@@ -5,13 +5,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using WebAPI.Models;
-using File = WebAPI.Models.File;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using AutoMapper;
 using System.Net;
 using Global.Models;
+using WebAPI.Models;
+using File = WebAPI.Models.File;
 
 namespace WebAPI.Controllers
 {
@@ -143,6 +144,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [Route(nameof(Download))]
         public IActionResult Download(string fileName)
         {
@@ -180,5 +182,3 @@ namespace WebAPI.Controllers
         }
     }
 }
-
-//File 2021-09-06 23-59-47 tenue-femme-stylée-avec-pantalon-fluide-taille-haute-et-crop-top-noir-manches-longues-vetement-en-wax-pantalon-blanc-et-orange-boucle-d-oreilles-rouges.jpg

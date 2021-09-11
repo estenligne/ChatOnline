@@ -104,7 +104,7 @@ namespace XamApp.ViewModels
                 MessagesView.ScrollTo(index);
         }
 
-        public async Task SendMessage(long? fileId, MessageTypeEnum type)
+        public async Task SendMessage(FileDTO file)
         {
             SetBusy(true);
             var messageSent = new MessageSentDTO()
@@ -112,14 +112,16 @@ namespace XamApp.ViewModels
                 SenderId = _room.UserChatRoomId,
                 MessageTag = new MessageTagDTO { ChatRoomId = _room.Id },
                 Body = Body,
-                FileId = fileId,
-                MessageType = type,
+                FileId = file?.Id,
+                MessageType = file == null ? MessageTypeEnum.Text : MessageTypeEnum.File,
                 DateSent = DateTimeOffset.Now,
             };
             var response = await HTTPClient.PostAsync(null, "/api/Message", messageSent);
             if (response.IsSuccessStatusCode)
             {
                 var message = await HTTPClient.ReadAsAsync<MessageSentDTO>(response);
+                message.File = file;
+
                 Messages.Add(new Message(_room, message));
                 ScrollTo(-1);
             }
@@ -132,7 +134,7 @@ namespace XamApp.ViewModels
         {
             if (CanSendMessage)
             {
-                await SendMessage(null, MessageTypeEnum.Text);
+                await SendMessage(null);
             }
         }
     }

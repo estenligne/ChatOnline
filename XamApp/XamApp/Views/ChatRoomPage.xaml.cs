@@ -54,7 +54,7 @@ namespace XamApp.Views
                     if (response.IsSuccessStatusCode)
                     {
                         FileDTO fileDto = await HTTPClient.ReadAsAsync<FileDTO>(response);            
-                        await vm.SendMessage(fileDto.Id, MessageTypeEnum.File);
+                        await vm.SendMessage(fileDto);
                     }
                     else await DisplayAlert("Error", await HTTPClient.GetResponseError(response), "Ok");
                 }
