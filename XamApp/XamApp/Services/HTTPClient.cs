@@ -105,14 +105,13 @@ namespace XamApp.Services
             }
         }
 
-        private static async Task<HttpResponseMessage> PostOrPut<T>(bool post, HttpClient client, string requestUri, T model)
+        public static async Task<HttpResponseMessage> PostOrPut(bool post, HttpClient client, string requestUri, HttpContent content)
         {
             try
             {
                 if (client == null)
                     client = await Client();
 
-                var content = GetStringContent(model);
                 HttpResponseMessage response;
 
                 if (post)
@@ -139,12 +138,12 @@ namespace XamApp.Services
 
         public static Task<HttpResponseMessage> PostAsync<T>(HttpClient client, string requestUri, T model)
         {
-            return PostOrPut<T>(true, client, requestUri, model);
+            return PostOrPut(true, client, requestUri, GetStringContent(model));
         }
 
         public static Task<HttpResponseMessage> PutAsync<T>(HttpClient client, string requestUri, T model)
         {
-            return PostOrPut<T>(false, client, requestUri, model);
+            return PostOrPut(false, client, requestUri, GetStringContent(model));
         }
 
         private static StringContent GetStringContent<T>(T model)

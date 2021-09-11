@@ -58,6 +58,14 @@
         </CollectionView>
 
         <StackLayout Orientation="Horizontal" Margin="6,0,6,6">
+
+            <Button
+                    Text="File"
+                    WidthRequest="60"
+                    HeightRequest="65"
+                    VerticalOptions="EndAndExpand"
+                    Clicked="button_cliked" />
+ 
             <Frame Padding="3"
                 CornerRadius="6"
                 HorizontalOptions="FillAndExpand"
