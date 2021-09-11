@@ -6,6 +6,8 @@ using System;
 using System.IO;
 using System.Net.Http;
 using XamApp.Services;
+using Global.Models;
+using Global.Enums;
 
 namespace XamApp.Views
 {
@@ -51,7 +53,8 @@ namespace XamApp.Views
                     var response = await HTTPClient.PostOrPut(true, null, "/api/File", fileContent);
                     if (response.IsSuccessStatusCode)
                     {
-                        await DisplayAlert("Success", "File uploaded!", "Ok");
+                        FileDTO fileDto = await HTTPClient.ReadAsAsync<FileDTO>(response);            
+                        await vm.SendMessage(fileDto.Id, MessageTypeEnum.File);
                     }
                     else await DisplayAlert("Error", await HTTPClient.GetResponseError(response), "Ok");
                 }

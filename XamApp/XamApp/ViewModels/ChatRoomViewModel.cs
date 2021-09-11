@@ -5,6 +5,7 @@ using System;
 using Global.Models;
 using XamApp.Services;
 using Xamarin.Forms;
+using Global.Enums;
 
 namespace XamApp.ViewModels
 {
@@ -103,28 +104,35 @@ namespace XamApp.ViewModels
                 MessagesView.ScrollTo(index);
         }
 
+        public async Task SendMessage(long? fileId, MessageTypeEnum type)
+        {
+            SetBusy(true);
+            var messageSent = new MessageSentDTO()
+            {
+                SenderId = _room.UserChatRoomId,
+                MessageTag = new MessageTagDTO { ChatRoomId = _room.Id },
+                Body = Body,
+                FileId = fileId,
+                MessageType = type,
+                DateSent = DateTimeOffset.Now,
+            };
+            var response = await HTTPClient.PostAsync(null, "/api/Message", messageSent);
+            if (response.IsSuccessStatusCode)
+            {
+                var message = await HTTPClient.ReadAsAsync<MessageSentDTO>(response);
+                Messages.Add(new Message(_room, message));
+                ScrollTo(-1);
+            }
+            else await DisplayAlert("Error", await HTTPClient.GetResponseError(response), "Ok");
+            Body = null;
+            SetBusy(false);
+        }
+
         private async void SendMessage()
         {
             if (CanSendMessage)
             {
-                SetBusy(true);
-                var messageSent = new MessageSentDTO()
-                {
-                    SenderId = _room.UserChatRoomId,
-                    MessageTag = new MessageTagDTO { ChatRoomId = _room.Id },
-                    Body = Body,
-                    DateSent = DateTimeOffset.Now,
-                };
-                var response = await HTTPClient.PostAsync(null, "/api/Message", messageSent);
-                if (response.IsSuccessStatusCode)
-                {
-                    var message = await HTTPClient.ReadAsAsync<MessageSentDTO>(response);
-                    Messages.Add(new Message(_room, message));
-                    ScrollTo(-1);
-                }
-                else await DisplayAlert("Error", await HTTPClient.GetResponseError(response), "Ok");
-                Body = null;
-                SetBusy(false);
+                await SendMessage(null, MessageTypeEnum.Text);
             }
         }
     }
