@@ -25,7 +25,13 @@ namespace XamApp.ViewModels
             get
             {
                 if (LatestMessage.Id == 0)
+                {
                     return "<i>(no message)</i>";
+                }
+                else if (string.IsNullOrEmpty(LatestMessage.ShortBody))
+                {
+                    return $"<i>({LatestMessage.MessageType})</i>";
+                }
                 else return LatestMessage.ShortBody;
             }
         }

@@ -36,7 +36,7 @@ namespace XamApp.Views
             vm.OnDisappearing();
         }
 
-        private async void button_cliked(object sender, System.EventArgs e)
+        private async void SendFile(object sender, System.EventArgs e)
         {
             ((Button)sender).IsEnabled = false;
             try

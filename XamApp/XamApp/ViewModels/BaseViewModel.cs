@@ -64,7 +64,7 @@ namespace XamApp.ViewModels
                 if (value[0] != '+')
                     message = "Please start with + then country code to enter the international phone number, like +237123456789.";
 
-                else if (value[value.Length - 1] == ' ')
+                else if (value.Contains(' '))
                     message = "No space allowed in phone number";
             }
             if (message != null)

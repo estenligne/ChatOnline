@@ -1,4 +1,5 @@
 ﻿using System;
+using Global.Enums;
 
 namespace Global.Models
 {
@@ -14,6 +15,8 @@ namespace Global.Models
         public string ShortBody { get; set; }
 
         public DateTimeOffset DateSent { get; set; }
+
+        public MessageTypeEnum MessageType { get; set; }
 
         /// <summary>
         /// Number of users that have not yet received the message sent

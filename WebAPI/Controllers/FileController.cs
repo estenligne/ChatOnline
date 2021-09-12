@@ -22,38 +22,34 @@ namespace WebAPI.Controllers
 
         public FileController(
             IConfiguration configuration,
-           ApplicationDbContext context,
-           ILogger<FileController> logger,
-           IMapper mapper) : base(context, logger, mapper)
+            ApplicationDbContext context,
+            ILogger<FileController> logger,
+            IMapper mapper) : base(context, logger, mapper)
         {
             _configuration = configuration;
         }
 
         [HttpGet]
-        public IActionResult GetFile(long? id)
+        public IActionResult GetFile(long id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             File file = dbc.Files.Find(id);
 
             if (file == null)
-            {
-                return NotFound();
-            }
+                return NotFound($"File {id} not found");
 
             var fileDTO = _mapper.Map<FileDTO>(file);
-
             return Ok(fileDTO);
         }
 
+        [ProducesResponseType(typeof(FileDTO), (int)HttpStatusCode.Created)]
         [HttpPost]
         public async Task<IActionResult> PostFile(IFormFile file)
         {
-            if (file != null)
+            try
             {
+                if (file == null)
+                    return BadRequest("File not provided");
+
                 string filePath = _configuration.GetValue<string>("PathToFiles");
                 string dateTime = DateTime.UtcNow.ToString("yyyy-MM-dd HH-mm-ss");
                 string fileName = $"File {dateTime} {file.FileName}";
@@ -68,39 +64,38 @@ namespace WebAPI.Controllers
 
                 _file.Name = fileName;
                 _file.Size = fileSize;
-                _file.UploaderId = 1;
                 _file.DateUploaded = DateTimeOffset.UtcNow;
+
+                var user = dbc.UserProfiles.First(u => u.Identity == UserIdentity);
+                _file.UploaderId = user.Id;
 
                 dbc.Files.Add(_file);
                 dbc.SaveChanges();
 
                 var fileDTO = _mapper.Map<FileDTO>(_file);
-
-                return Ok(fileDTO);
+                return CreatedAtAction(nameof(GetFile), null, fileDTO);
             }
-            else
+            catch (Exception ex)
             {
-                return BadRequest("file not provided");
+                return InternalServerError(ex);
             }
         }
 
 
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [HttpPut]
         public async Task<IActionResult> PutFileAsync(long id, IFormFile file)
         {
-            if (file == null)
-                return BadRequest("File model not provided");
-
-            File file2 = dbc.Files.Find(id);
-
-            if (file2 == null)
+            try
             {
-                return NotFound($"File with id {id} not found");
+                if (file == null)
+                    return BadRequest("File not provided");
 
-            }
+                File _file = dbc.Files.Find(id);
+                if (_file == null)
+                    return NotFound($"File {id} not found");
 
-            if (file != null)
-            {
                 string folder = _configuration.GetValue<string>("PathToFiles");
                 string dateTime = DateTime.UtcNow.ToString("yyyy-MM-dd HH-mm-ss");
                 string fileName = $"File {dateTime} {file.FileName}";
@@ -110,33 +105,31 @@ namespace WebAPI.Controllers
                 {
                     await file.CopyToAsync(fileStream);
                 }
-                file2.Name = fileName;
-                file2.Size = fileSize;
-                file2.DateUploaded = DateTimeOffset.UtcNow;
+
+                _file.Name = fileName;
+                _file.Size = fileSize;
+                _file.DateUploaded = DateTimeOffset.UtcNow;
+
+                dbc.SaveChanges();
+                return NoContent();
             }
-
-            dbc.SaveChanges();
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
 
         [HttpDelete]
         public async Task<IActionResult> DeleteConfirmed(long id)
         {
-
             File file = await dbc.Files.FindAsync(id);
 
-            var query = dbc.UserProfiles.Where(u => u.Identity == UserIdentity);
-
-            var user = query.First();
+            var user = dbc.UserProfiles.First(u => u.Identity == UserIdentity);
 
             if (file.UploaderId != user.Id)
-            {
-                return Forbid("This file doesn't belong to you");
-            }
+                return Forbid("This file doesn't belong to you!");
 
-            //_context.Files.Remove(file);
             file.DateDeleted = DateTimeOffset.UtcNow;
             await dbc.SaveChangesAsync();
 
@@ -175,9 +168,9 @@ namespace WebAPI.Controllers
                 }
                 else return BadRequest("File name not provided");
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, e.Message);
+                return InternalServerError(ex);
             }
         }
     }

@@ -109,11 +109,14 @@ namespace WebAPI.Controllers
 
             if (latestMessage != null)
             {
-                chatRoomInfo.LatestMessage.Id = latestMessage.Id;
-                chatRoomInfo.LatestMessage.SenderId = latestMessage.SenderId;
-                chatRoomInfo.LatestMessage.DateSent = latestMessage.DateSent;
+                var lm = chatRoomInfo.LatestMessage;
 
-                chatRoomInfo.LatestMessage.ShortBody =
+                lm.Id = latestMessage.Id;
+                lm.SenderId = latestMessage.SenderId;
+                lm.DateSent = latestMessage.DateSent;
+                lm.MessageType = latestMessage.MessageType;
+
+                lm.ShortBody =
                     (latestMessage.Body != null && latestMessage.Body.Length > 200) ?
                     latestMessage.Body.Substring(0, 200) : latestMessage.Body;
 
@@ -122,8 +125,8 @@ namespace WebAPI.Controllers
                 int readCount = dbc.MessagesReceived.Where(x => x.MessageSentId == latestMessage.Id && x.DateRead != null).Count();
 
                 // Note: subtract 1 because the sender does not receive it's own message sent.
-                chatRoomInfo.LatestMessage.NotReceivedCount = totalMembers - 1 - receivedCount;
-                chatRoomInfo.LatestMessage.NotReadCount = totalMembers - 1 - readCount;
+                lm.NotReceivedCount = totalMembers - 1 - receivedCount;
+                lm.NotReadCount = totalMembers - 1 - readCount;
             }
             return chatRoomInfo;
         }
