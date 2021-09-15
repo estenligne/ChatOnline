@@ -26,21 +26,16 @@ namespace WebAPI.Services
             _logger = logger;
             _httpClient = new HttpClient();
 
-            string name = "FcmServerKey";
+            const string name = "FcmServerKey";
             string key = configuration.GetValue<string>(name);
 
             if (string.IsNullOrEmpty(key))
             {
-                key = Environment.GetEnvironmentVariable(name);
-            }
-
-            if (string.IsNullOrEmpty(key))
-            {
-                _logger.LogError($"Cannot find the {name} environment variable.");
+                _logger.LogError($"The app setting {name} was not found or is null or empty.");
             }
             else if (!_httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", "key=" + key))
             {
-                _logger.LogError($"Failed to add the {name} to the Authorization header.");
+                _logger.LogError($"Failed to add the {name} to the Authorization HTTP header.");
             }
         }
 
