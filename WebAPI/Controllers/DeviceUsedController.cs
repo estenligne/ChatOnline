@@ -28,9 +28,8 @@ namespace WebAPI.Controllers
         }
 
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [HttpGet]
-        [Route(nameof(GetOrCreate))]
-        public async Task<ActionResult<DeviceUsedDTO>> GetOrCreate([FromQuery] DevicePlatformEnum devicePlatform)
+        [HttpPut]
+        public async Task<ActionResult<DeviceUsedDTO>> PutDeviceUsed([FromQuery] DevicePlatformEnum devicePlatform)
         {
             try
             {
@@ -69,7 +68,7 @@ namespace WebAPI.Controllers
 
                 deviceUsed.UserProfile = userProfile;
                 var deviceUsedDto = _mapper.Map<DeviceUsedDTO>(deviceUsed);
-                return deviceUsedDto;
+                return Ok(deviceUsedDto);
             }
             catch (Exception ex)
             {
@@ -78,7 +77,7 @@ namespace WebAPI.Controllers
         }
 
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [HttpPost]
+        [HttpPatch]
         [Route(nameof(RegisterFcmToken))]
         public ActionResult RegisterFcmToken(long deviceUsedId, string fcmToken)
         {

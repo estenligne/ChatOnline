@@ -33,7 +33,7 @@ namespace XamApp
             long deviceUsedId = user == null ? 0 : user.DeviceUsedId;
             string url = "/api/Account/SignOut?deviceUsedId=" + deviceUsedId;
 
-            var response = await HTTPClient.PostAsync<string>(null, url, null);
+            var response = await HTTPClient.DeleteAsync(null, url);
             if (!response.IsSuccessStatusCode && response.StatusCode != System.Net.HttpStatusCode.Unauthorized)
             {
                 string message = await HTTPClient.GetResponseError(response);

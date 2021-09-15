@@ -46,27 +46,27 @@ namespace XamApp.Views
                 var userDto = new ApplicationUserDTO()
                 {
                     Email = vm.Email,
-                    Password = vm.Password,
                     PhoneNumber = vm.PhoneNumber,
+                    Password = vm.Password,
                     RememberMe = true,
                 };
 
                 var response = await HTTPClient.PostAsync(null, "/api/Account/SignIn", userDto);
                 if (response.IsSuccessStatusCode)
                 {
-                    userDto = await HTTPClient.ReadAsAsync<ApplicationUserDTO>(response);
+                    var result = await HTTPClient.ReadAsAsync<ApplicationUserDTO>(response);
 
                     var user = new User()
                     {
-                        UserId = userDto.Id,
+                        UserId = result.Id,
                         Email = userDto.Email,
                         PhoneNumber = userDto.PhoneNumber,
-                        Password = vm.Password,
+                        Password = userDto.Password,
                         RememberMe = userDto.RememberMe,
                     };
 
-                    var url = "/api/DeviceUsed/GetOrCreate?devicePlatform=" + DevicePlatformEnum.Unknown;
-                    response = await HTTPClient.GetAsync(null, url);
+                    var url = "/api/DeviceUsed?devicePlatform=" + DevicePlatformEnum.Unknown;
+                    response = await HTTPClient.PutAsync<string>(null, url, null);
 
                     if (response.IsSuccessStatusCode)
                     {

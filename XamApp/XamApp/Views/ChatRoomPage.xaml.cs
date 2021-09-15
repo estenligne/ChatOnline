@@ -1,11 +1,10 @@
 ﻿using Xamarin.Forms;
 using XamApp.ViewModels;
+using XamApp.Services;
 using Xamarin.Forms.Xaml;
 using Xamarin.Essentials;
 using System;
 using System.IO;
-using System.Net.Http;
-using XamApp.Services;
 using Global.Models;
 using Global.Enums;
 
@@ -42,15 +41,10 @@ namespace XamApp.Views
             try
             {
                 FileResult file = await FilePicker.PickAsync();
-
                 if (file != null)
                 {
                     Stream stream = await file.OpenReadAsync();
-                    var streamContent = new StreamContent(stream);
-                    var fileContent = new MultipartFormDataContent();
-                    fileContent.Add(streamContent, "file", file.FileName);
-
-                    var response = await HTTPClient.PostOrPut(true, null, "/api/File", fileContent);
+                    var response = await HTTPClient.PostFile(null, "file", file.FileName, stream);
                     if (response.IsSuccessStatusCode)
                     {
                         FileDTO fileDto = await HTTPClient.ReadAsAsync<FileDTO>(response);            

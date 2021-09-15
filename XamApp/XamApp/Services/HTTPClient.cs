@@ -72,78 +72,87 @@ namespace XamApp.Services
             return httpClient;
         }
 
-        private static HttpResponseMessage OnException(Exception ex)
+        private enum Method
         {
-            var response = new HttpResponseMessage(HttpStatusCode.GatewayTimeout);
-            response.ReasonPhrase = ex.Message;
-            response.Content = new StringContent(ex.StackTrace);
-            return response;
+            Get,
+            Post,
+            Put,
+            Patch,
+            Delete
         }
 
-        public static async Task<HttpResponseMessage> GetAsync(HttpClient client, string requestUri)
+        private static Task<HttpResponseMessage> Send(Method method, HttpClient client, string requestUri, HttpContent content)
+        {
+            switch (method)
+            {
+                case Method.Get: return client.GetAsync(requestUri);
+                case Method.Post: return client.PostAsync(requestUri, content);
+                case Method.Put: return client.PutAsync(requestUri, content);
+                case Method.Patch: return client.PatchAsync(requestUri, content);
+                case Method.Delete: return client.DeleteAsync(requestUri);
+                default: throw new NotImplementedException($"Method {method} not supported");
+            }
+        }
+
+        private static async Task<HttpResponseMessage> Request(Method method, HttpClient client, string requestUri, HttpContent content)
         {
             try
             {
                 if (client == null)
                     client = await Client();
 
-                var response = await client.GetAsync(requestUri);
+                HttpResponseMessage response = await Send(method, client, requestUri, content);
 
                 if (response.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     response = await LoginAsync(client, response);
                     if (response.IsSuccessStatusCode)
                     {
-                        response = await client.GetAsync(requestUri);
+                        response = await Send(method, client, requestUri, content);
                     }
                 }
                 return response;
             }
             catch (Exception ex)
             {
-                return OnException(ex);
+                var response = new HttpResponseMessage(HttpStatusCode.GatewayTimeout);
+                response.ReasonPhrase = ex.Message;
+                response.Content = new StringContent(ex.StackTrace);
+                return response;
             }
         }
 
-        public static async Task<HttpResponseMessage> PostOrPut(bool post, HttpClient client, string requestUri, HttpContent content)
+        public static Task<HttpResponseMessage> GetAsync(HttpClient client, string requestUri)
         {
-            try
-            {
-                if (client == null)
-                    client = await Client();
-
-                HttpResponseMessage response;
-
-                if (post)
-                    response = await client.PostAsync(requestUri, content);
-                else response = await client.PutAsync(requestUri, content);
-
-                if (response.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    response = await LoginAsync(client, response);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        if (post)
-                            response = await client.PostAsync(requestUri, content);
-                        else response = await client.PutAsync(requestUri, content);
-                    }
-                }
-                return response;
-            }
-            catch (Exception ex)
-            {
-                return OnException(ex);
-            }
+            return Request(Method.Get, client, requestUri, null);
         }
 
         public static Task<HttpResponseMessage> PostAsync<T>(HttpClient client, string requestUri, T model)
         {
-            return PostOrPut(true, client, requestUri, GetStringContent(model));
+            return Request(Method.Post, client, requestUri, GetStringContent(model));
         }
 
         public static Task<HttpResponseMessage> PutAsync<T>(HttpClient client, string requestUri, T model)
         {
-            return PostOrPut(false, client, requestUri, GetStringContent(model));
+            return Request(Method.Put, client, requestUri, GetStringContent(model));
+        }
+
+        public static Task<HttpResponseMessage> PatchAsync<T>(HttpClient client, string requestUri, T model)
+        {
+            return Request(Method.Patch, client, requestUri, GetStringContent(model));
+        }
+
+        public static Task<HttpResponseMessage> DeleteAsync(HttpClient client, string requestUri)
+        {
+            return Request(Method.Delete, client, requestUri, null);
+        }
+
+        public static Task<HttpResponseMessage> PostFile(HttpClient client, string parameterName, string fileName, System.IO.Stream content)
+        {
+            var streamContent = new StreamContent(content);
+            var fileContent = new MultipartFormDataContent();
+            fileContent.Add(streamContent, parameterName, fileName);
+            return Request(Method.Post, client, "/api/File", fileContent);
         }
 
         private static StringContent GetStringContent<T>(T model)
@@ -218,7 +227,7 @@ namespace XamApp.Services
                     var args = $"?deviceUsedId={deviceUsedId}&fcmToken={fcmToken}";
                     var url = "/api/DeviceUsed/RegisterFcmToken" + args;
 
-                    var response = await PostAsync<string>(null, url, null);
+                    var response = await PatchAsync<string>(null, url, null);
 
                     if (!response.IsSuccessStatusCode)
                         error = await GetResponseError(response);

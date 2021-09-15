@@ -362,7 +362,7 @@ namespace WebAPI.Controllers
         }
 
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [HttpPost]
+        [HttpPatch]
         [Route(nameof(Read))]
         public async Task<ActionResult<MessageSentDTO>> Read(long messageSentId, DateTimeOffset dateRead)
         {

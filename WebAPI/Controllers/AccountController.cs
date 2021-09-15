@@ -227,7 +227,7 @@ namespace WebAPI.Controllers
         }
 
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [HttpPost]
+        [HttpDelete]
         [Route(nameof(SignOut))]
         public async Task<ActionResult> SignOut(long deviceUsedId)
         {
