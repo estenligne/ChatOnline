@@ -30,7 +30,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetFile(long id)
+        public ActionResult<FileDTO> GetFile(long id)
         {
             File file = dbc.Files.Find(id);
 
@@ -43,7 +43,7 @@ namespace WebAPI.Controllers
 
         [ProducesResponseType(typeof(FileDTO), (int)HttpStatusCode.Created)]
         [HttpPost]
-        public async Task<IActionResult> PostFile(IFormFile file)
+        public async Task<ActionResult<FileDTO>> PostFile(IFormFile file)
         {
             try
             {
@@ -81,11 +81,10 @@ namespace WebAPI.Controllers
             }
         }
 
-
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [HttpPut]
-        public async Task<IActionResult> PutFileAsync(long id, IFormFile file)
+        public async Task<ActionResult> PutFileAsync(long id, IFormFile file)
         {
             try
             {
@@ -119,9 +118,9 @@ namespace WebAPI.Controllers
             }
         }
 
-
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [HttpDelete]
-        public async Task<IActionResult> DeleteConfirmed(long id)
+        public async Task<ActionResult> DeleteConfirmed(long id)
         {
             File file = await dbc.Files.FindAsync(id);
 
@@ -139,7 +138,7 @@ namespace WebAPI.Controllers
         [HttpGet]
         [AllowAnonymous]
         [Route(nameof(Download))]
-        public IActionResult Download(string fileName)
+        public ActionResult Download(string fileName)
         {
             try
             {

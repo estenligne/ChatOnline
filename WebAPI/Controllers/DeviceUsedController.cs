@@ -27,6 +27,7 @@ namespace WebAPI.Controllers
             _pushNotificationService = pushNotificationService;
         }
 
+        [ProducesResponseType(typeof(DeviceUsedDTO), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [HttpPut]
         public async Task<ActionResult<DeviceUsedDTO>> PutDeviceUsed([FromQuery] DevicePlatformEnum devicePlatform)

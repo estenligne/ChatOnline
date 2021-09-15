@@ -21,21 +21,25 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<UserProfileDTO>> GetUserProfile()
+        public async Task<ActionResult<UserProfileDTO>> GetUserProfile(long id)
         {
             try
             {
                 var userProfile = await dbc.UserProfiles
-                                            .Include(x => x.PhotoFile)
-                                            .Include(x => x.WallpaperFile)
-                                            .Where(x => x.Identity == UserIdentity)
-                                            .FirstOrDefaultAsync();
+                                            .Include(u => u.PhotoFile)
+                                            .FirstOrDefaultAsync(u => u.Id == id);
 
                 if (userProfile == null)
-                    return NotFound("User profile not found.");
+                    return NotFound($"User profile {id} not found.");
+
+                if (userProfile.PhotoFile?.DateDeleted != null)
+                {
+                    userProfile.PhotoFileId = null;
+                    userProfile.PhotoFile = null;
+                }
 
                 var userProfileDto = _mapper.Map<UserProfileDTO>(userProfile);
-                return userProfileDto;
+                return Ok(userProfileDto);
             }
             catch (Exception ex)
             {
