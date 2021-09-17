@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +12,7 @@ using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using MySql.EntityFrameworkCore.Extensions;
 using WebAPI.Models;
+using WebAPI.Setup;
 using System;
 using System.Net;
 using System.Threading.Tasks;
@@ -74,8 +76,13 @@ namespace WebAPI
 
             services.ConfigureApplicationCookie(options =>
             {
-                // Cookie settings
-                //options.Cookie.HttpOnly = true;
+                // Cookie settings: https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies
+                // https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+                // https://stackoverflow.com/questions/46288437/set-cookies-for-cross-origin-requests
+                options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+                options.Cookie.SameSite = SameSiteMode.None;
+                options.Cookie.HttpOnly = true;
+
                 //options.ExpireTimeSpan = TimeSpan.MaxValue;
                 options.SlidingExpiration = true;
 
@@ -112,6 +119,8 @@ namespace WebAPI
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseMiddleware<OptionsMiddleware>();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
