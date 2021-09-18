@@ -1,33 +1,12 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
+	<title>ChatOnline General Information</title>
 	<meta charset="utf-8" />
+	<link href="tool/numbered-headings.css" rel="stylesheet">
 	<style>
 		body {
 			margin: 2% 1cm;
-		}
-
-		.numbered {
-			counter-reset: section; /* Set "section" */
-		}
-
-			.numbered h1, .appendix h1 {
-				counter-reset: subsection; /* Set "subsection" */
-			}
-
-				.numbered h1::before {
-					counter-increment: section;
-					content: counter(section) " ";
-				}
-
-			.numbered h2::before {
-				counter-increment: subsection;
-				content: counter(section) "." counter(subsection) '\00A0' " ";
-			}
-
-		.appendix h2::before {
-			counter-increment: subsection;
-			content: counter(subsection, upper-alpha) '\00A0' " ";
 		}
 
 		.separate > li {

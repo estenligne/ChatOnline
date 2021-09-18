@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ChatOnline API calls for basic usage</title>
+    <meta charset="utf-8" />
+    <link href="../tool/numbered-headings.css" rel="stylesheet">
+    <style>
+    </style>
+</head>
+<body class="numbered">
+    <h1>API calls for basic usage</h1>
+    <p>Below are the basic usage steps from registering to sending a message, tested with <a href="https://estenligne.com:44364/swagger/index.html">the swagger page</a>.</p>
+
+    <h2>Register</h2>
+    <pre>
+    Request method: HTTP Post
+    Request endpoint: /api/Account/Register
+    Request headers: (not needed)
+    Request body:
+    {
+      "phoneNumber": "+237987654321",
+      "password": "Password_1"
+    }
+
+    Response code: 201
+    Response headers: (not needed)
+    Response body:
+    {
+      "id": 11,
+      "email": null,
+      "phoneNumber": "+237987654321",
+      "userName": "+237987654321",
+      "password": null,
+      "rememberMe": false
+    }</pre>
+
+    <p>Registering with a phone number currently does not ask for account confirmation.</p>
+
+    <h2>Sign In</h2>
+    <pre>
+    Request method: HTTP Post
+    Request endpoint: /api/Account/SignIn
+    Request headers: (not needed)
+    Request body:
+    {
+      "phoneNumber": "+237987654321",
+      "password": "Password_1"
+    }
+
+    Response code: 200
+    Response headers: (see comment below)
+    Response body:
+    {
+      "id": 11,
+      "email": null,
+      "phoneNumber": "+237987654321",
+      "userName": "+237987654321",
+      "password": null,
+      "rememberMe": false
+    }</pre>
+
+    <p>Should extract the Cookie from the Set-Cookie response header if using something like cURL or Postman, otherwise more setup details are needed.</p>
+
+    <h2>Create user profile and get the userProfileId</h2>
+    <pre>
+    Request method: HTTP Post
+    Request endpoint: /api/UserProfile
+    Request headers: (provide Cookie)
+    Request body:
+    {
+      "identity": "+237987654321",
+      "username": "Instructions",
+      "about": null
+    }
+
+    Response code: 201
+    Response headers: (not needed)
+    Response body:
+    {
+      "id": 6,
+      "identity": "+237987654321",
+      "username": "Instructions",
+      "about": null,
+      "availability": 0,
+      "photoFileId": null,
+      "photoFile": null,
+      "wallpaperFileId": null,
+      "wallpaperFile": null,
+      "dateCreated": "2021-09-17T13:11:06.9015638+00:00",
+      "dateDeleted": null
+    }</pre>
+
+    <p>The userProfileId is the id value in the JSON response body.</p>
+
+    <h2>Register device used and get the deviceUsedId</h2>
+    <pre>
+    Request method: HTTP Put
+    Request endpoint: /api/DeviceUsed?devicePlatform=4
+    Request headers: (provide Cookie)
+    Request body: (empty)
+
+    Response code: 200
+    Response headers: (not needed)
+    Response body:
+    {
+      "id": 6,
+      "userProfileId": 6,
+      "userProfile": {
+        "id": 6,
+        "identity": "+237987654321",
+        "username": "Instructions",
+        "about": null,
+        "availability": 0,
+        "photoFileId": null,
+        "photoFile": null,
+        "wallpaperFileId": null,
+        "wallpaperFile": null,
+        "dateCreated": "2021-09-17T13:11:07+00:00",
+        "dateDeleted": null
+      },
+      "devicePlatform": 4,
+      "dateCreated": "2021-09-17T13:32:39.1697011+00:00",
+      "dateDeleted": null,
+      "pushNotificationToken": null,
+      "dateTokenProvided": null
+    }</pre>
+
+    <p>The deviceUsedId is the top-level id value in the JSON response body.</p>
+    <p>The userProfileId can also be obtained from here. <b>This is the recommended way to check whether the user profile exists or not.</b> During normal execution flow, one should use this step 4 right after signing-in, then use step 3 if a HTTP 404 NotFound failure response is returned.</p>
+
+    <h2>Register the push notification token</h2>
+    <pre>
+    Request method: HTTP Patch
+    Request endpoint: /api/DeviceUsed/RegisterFcmToken?deviceUsedId=6&fcmToken=to_be_figured_out
+    Request headers: (provide Cookie)
+    Request body: (empty)
+
+    Response code: 204
+    Response headers: (not needed)
+    Response body: (empty)
+    </pre>
+
+    <p>More setup information is required for the web-based push notification functionality.</p>
+
+    <h2>Create a private chat room with another user, and obtain the userChatRoomId</h2>
+    <pre>
+    Request method: HTTP Post
+    Request endpoint: /api/ChatRoom/CreatePrivate?userProfileId=6&emailAddress=yemelitc@estenligne.com
+    Request headers: (provide Cookie)
+    Request body: (empty)
+
+    Response code: 201
+    Response headers: (not needed)
+    Response body:
+    {
+      "id": 9,
+      "userProfileId": 6,
+      "userProfile": {
+        "id": 6,
+        "identity": "+237987654321",
+        "username": "Instructions",
+        "about": null,
+        "availability": 0,
+        "photoFileId": null,
+        "photoFile": null,
+        "wallpaperFileId": null,
+        "wallpaperFile": null,
+        "dateCreated": "2021-09-17T13:11:07+00:00",
+        "dateDeleted": null
+      },
+      "chatRoomId": 5,
+      "chatRoom": {
+        "id": 5,
+        "type": 1,
+        "groupProfileId": null,
+        "groupProfile": null,
+        "dateCreated": "2021-09-17T14:36:44.2288696+00:00"
+      },
+      "userRole": 1,
+      "adderId": null,
+      "blockerId": null,
+      "dateAdded": "2021-09-17T14:36:44.2288696+00:00",
+      "dateBlocked": null,
+      "dateDeleted": null,
+      "dateExited": null,
+      "dateMuted": null,
+      "datePinned": null
+    }</pre>
+
+    <p>The userChatRoomId is the top-level id value in the JSON response body.</p>
+    <p>Note: the chatRoomId can also be obtained from here.</p>
+
+    <h2>Send a message in the chat room and obtain the messageSentId</h2>
+    <pre>
+    Request method: HTTP Post
+    Request endpoint: /api/Message
+    Request headers: (provide Cookie)
+    Request body:
+    {
+      "senderId": 9,
+      "messageTag": {
+        "name": null,
+        "chatRoomId": 5
+      },
+      "body": "First message!",
+      "dateSent": "2021-09-18T08:40:00Z"
+    }
+
+    Response code: 201
+    Response headers: (not needed)
+    Response body:
+    {
+      "id": 37,
+      "senderId": 9,
+      "senderName": "Instructions",
+      "receiverId": 0,
+      "messageTagId": 5,
+      "messageTag": null,
+      "messageType": 0,
+      "linkedId": null,
+      "authorId": null,
+      "fileId": null,
+      "file": null,
+      "body": "First message!",
+      "dateSent": "2021-09-18T08:40:00+00:00",
+      "dateReceived": null,
+      "dateRead": null,
+      "dateDeleted": null,
+      "dateStarred": null,
+      "reaction": 0
+    }</pre>
+
+    <p>The messageSentId is the id value in the JSON response body.</p>
+    <p>The senderId is the userChatRoomId that was obtained earlier.</p>
+
+    <h2>Mark a message as received</h2>
+    <pre>
+    Request method: HTTP Post
+    Request endpoint: /api/Message/Received?messageSentId=37&dateReceived=2021-09-18T08:50:00Z
+    Request headers: (provide Cookie)
+    Request body: (empty)
+
+    Response code: 200
+    Response headers: (not needed)
+    Response body:
+    {
+      "id": 37,
+      "senderId": 9,
+      "senderName": "Instructions",
+      "receiverId": 10,
+      "messageTagId": 5,
+      "messageTag": {
+        "id": 5,
+        "name": null,
+        "chatRoomId": 5,
+        "creatorId": 6,
+        "dateCreated": "2021-09-18T08:45:51+00:00"
+      },
+      "messageType": 0,
+      "linkedId": null,
+      "authorId": null,
+      "fileId": null,
+      "file": null,
+      "body": "First message!",
+      "dateSent": "2021-09-18T08:40:00+00:00",
+      "dateReceived": "2021-09-18T08:50:00+00:00",
+      "dateRead": null,
+      "dateDeleted": null,
+      "dateStarred": null,
+      "reaction": 0
+    }</pre>
+
+    <p>This is on the receiving side, receiving from a push notification. You cannot receive your own message.</p>
+
+    <h2>Get all messages in a chat room</h2>
+    <pre>
+    Request method: HTTP Get
+    Request endpoint: /api/Message/GetMany?userChatRoomId=9
+    Request headers: (provide Cookie)
+    Request body: (empty)
+
+    Response code: 200
+    Response headers: (not needed)
+    Response body:
+    [
+      {
+        "id": 37,
+        "senderId": 9,
+        "senderName": "Instructions",
+        "receiverId": 0,
+        "messageTagId": 5,
+        "messageTag": {
+          "id": 5,
+          "name": null,
+          "chatRoomId": 5,
+          "creatorId": 6,
+          "dateCreated": "2021-09-18T08:45:51+00:00"
+        },
+        "messageType": 0,
+        "linkedId": null,
+        "authorId": null,
+        "fileId": null,
+        "file": null,
+        "body": "First message!",
+        "dateSent": "2021-09-18T08:40:00+00:00",
+        "dateReceived": null,
+        "dateRead": null,
+        "dateDeleted": null,
+        "dateStarred": null,
+        "reaction": 0
+      }
+    ]</pre>
+
+    <p>The result is a list of individual messages sent in the chat room.</p>
+
+    <h2>Get all chat rooms that user is in</h2>
+    <pre>
+    Request method: HTTP Get
+    Request endpoint: /api/ChatRoom/GetAll?userProfileId=6
+    Request headers: (provide Cookie)
+    Request body: (empty)
+
+    Response code: 200
+    Response headers: (not needed)
+    Response body:
+    [
+      {
+        "id": 5,
+        "type": 1,
+        "name": "yemelitc",
+        "photoFileName": null,
+        "userChatRoomId": 9,
+        "userBlocked": false,
+        "userExited": false,
+        "userMuted": false,
+        "userPinned": false,
+        "latestMessage": {
+          "id": 37,
+          "senderId": 9,
+          "shortBody": "First message!",
+          "dateSent": "2021-09-18T08:40:00+00:00",
+          "messageType": 0,
+          "notReceivedCount": 0,
+          "notReadCount": 1
+        }
+      }
+    ]</pre>
+
+    <p>Notice that each item (chat room information) in the list contains information about the latest message sent in the chat room.</p>
+
+</body>
+</html>
