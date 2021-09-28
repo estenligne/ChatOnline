@@ -91,8 +91,18 @@ namespace XamApp.ViewModels
             }
         }
 
-        public bool ShowSendButton => !IsBusy;
+        private Message _linked;
+        public void SetLinkedMessage(Message linked)
+        {
+            _linked = linked;
+            OnPropertyChanged(nameof(LinkedMessageBody));
+            OnPropertyChanged(nameof(HasLinkedMessage));
+        }
 
+        public string LinkedMessageBody => _linked?.ShortBody;
+        public bool HasLinkedMessage => _linked != null;
+
+        public bool ShowSendButton => !IsBusy;
         public bool CanSendMessage => ShowSendButton && !string.IsNullOrEmpty(Body);
 
         public CollectionView MessagesView;
@@ -107,6 +117,7 @@ namespace XamApp.ViewModels
         public async Task SendMessage(FileDTO file)
         {
             SetBusy(true);
+
             var messageSent = new MessageSentDTO()
             {
                 SenderId = _room.UserChatRoomId,
@@ -114,8 +125,10 @@ namespace XamApp.ViewModels
                 Body = Body,
                 FileId = file?.Id,
                 MessageType = file == null ? MessageTypeEnum.Text : MessageTypeEnum.File,
+                LinkedId = _linked?.Id,
                 DateSent = DateTimeOffset.Now,
             };
+
             var response = await HTTPClient.PostAsync(null, "/api/Message", messageSent);
             if (response.IsSuccessStatusCode)
             {
@@ -126,7 +139,9 @@ namespace XamApp.ViewModels
                 ScrollTo(-1);
             }
             else await DisplayAlert("Error", await HTTPClient.GetResponseError(response), "Ok");
+
             Body = null;
+            SetLinkedMessage(null);
             SetBusy(false);
         }
 

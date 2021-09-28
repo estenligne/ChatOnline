@@ -36,11 +36,11 @@ namespace XamApp.Views
             vm.OnDisappearing();
         }
 
-        private async void OnSwipedRight(object sender, SwipedEventArgs e)
+        private void OnSwipedRight(object sender, SwipedEventArgs e)
         {
             StackLayout stackLayout = (StackLayout)sender;
             Message message = (Message)stackLayout.BindingContext;
-            await DisplayAlert("Success", message.Body, "Ok");
+            vm.SetLinkedMessage(message);
         }
 
         private async void SendFile(object sender, EventArgs e)

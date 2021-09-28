@@ -73,6 +73,13 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
 
+        <Label Text="{Binding LinkedMessageBody}"
+            IsVisible="{Binding HasLinkedMessage}"
+            BackgroundColor="#EEEEEE"
+            Padding="10"
+            VerticalOptions="Center"
+            HorizontalOptions="FillAndExpand" />
+
         <StackLayout Orientation="Horizontal" Margin="6,0,6,6">
             <Button
                 Text="File"
