@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using WebAPI.Models;
 using Global.Models;
 using Global.Enums;
+using Global.Helpers;
 using AutoMapper;
 
 namespace WebAPI.Controllers
@@ -116,9 +117,7 @@ namespace WebAPI.Controllers
                 lm.DateSent = latestMessage.DateSent;
                 lm.MessageType = latestMessage.MessageType;
 
-                lm.ShortBody =
-                    (latestMessage.Body != null && latestMessage.Body.Length > 200) ?
-                    latestMessage.Body.Substring(0, 200) : latestMessage.Body;
+                lm.ShortBody = BasicHelpers.GetShortBody(latestMessage.Body, 100);
 
                 int totalMembers = dbc.UserChatRooms.Where(x => x.ChatRoomId == userChatRoom.ChatRoomId).Count();
                 int receivedCount = dbc.MessagesReceived.Where(x => x.MessageSentId == latestMessage.Id).Count();

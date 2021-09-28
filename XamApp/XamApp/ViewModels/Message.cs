@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Global.Enums;
+using Global.Helpers;
 using Global.Models;
 using XamApp.Services;
 using Xamarin.Forms;
@@ -51,8 +52,11 @@ namespace XamApp.ViewModels
         public bool AmNotSender => !IamSender;
         public bool IsGroupChat => _room.Type == ChatRoomTypeEnum.Group;
 
+        public long Id => _message.Id;
         public string Sender => _message.SenderName;
+
         public string Body => _message.Body;
+        public string ShortBody => BasicHelpers.GetShortBody(Body, 100);
         public bool HasBody => !string.IsNullOrEmpty(Body);
     }
 }
