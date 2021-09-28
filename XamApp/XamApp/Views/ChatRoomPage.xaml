@@ -64,6 +64,10 @@
                             </StackLayout>
                         </Frame>
 
+                        <StackLayout.GestureRecognizers>
+                            <SwipeGestureRecognizer Direction="Right" Swiped="OnSwipedRight" />
+                        </StackLayout.GestureRecognizers>
+
                     </StackLayout>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
