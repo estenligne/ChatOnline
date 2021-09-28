@@ -14,68 +14,69 @@
 
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                        <StackLayout x:DataType="local:Message" Padding="6">
+                    <StackLayout x:DataType="local:Message" Padding="6">
 
-                            <Frame Padding="6"
-                                CornerRadius="6"
-                                WidthRequest="300"
-                                HorizontalOptions="Start"
-                                BackgroundColor="LightGreen"
-                                IsVisible="{Binding IamSender}">
+                        <Frame Padding="6"
+                            CornerRadius="6"
+                            WidthRequest="300"
+                            HorizontalOptions="Start"
+                            BackgroundColor="LightGreen"
+                            IsVisible="{Binding IamSender}">
 
-                                <StackLayout Orientation="Vertical">
-                                    <Label Text="{Binding Sender}"
-                                        TextColor="Black"
-                                        FontAttributes="Bold"
-                                        IsVisible="{Binding IsGroupChat}" />
+                            <StackLayout Orientation="Vertical">
+                                <Label Text="{Binding Sender}"
+                                    TextColor="Black"
+                                    FontAttributes="Bold"
+                                    IsVisible="{Binding IsGroupChat}" />
 
-                                    <Image
-                                        Source="{Binding ImageFile}"
-                                        IsVisible="{Binding HasImage}"
-                                        BackgroundColor="Transparent" />
+                                <Image
+                                    Source="{Binding ImageFile}"
+                                    IsVisible="{Binding HasImage}"
+                                    BackgroundColor="Transparent" />
 
-                                    <Label Text="{Binding Body}"
-                                        TextColor="Black" />
-                                </StackLayout>
-                            </Frame>
+                                <Label Text="{Binding Body}"
+                                    IsVisible="{Binding HasBody}"
+                                    TextColor="Black" />
+                            </StackLayout>
+                        </Frame>
 
-                            <Frame Padding="6"
-                                CornerRadius="6"
-                                WidthRequest="300"
-                                HorizontalOptions="End"
-                                BackgroundColor="Pink"
-                                IsVisible="{Binding AmNotSender}">
+                        <Frame Padding="6"
+                            CornerRadius="6"
+                            WidthRequest="300"
+                            HorizontalOptions="End"
+                            BackgroundColor="Pink"
+                            IsVisible="{Binding AmNotSender}">
 
-                                <StackLayout Orientation="Vertical">
-                                    <Label Text="{Binding Sender}"
-                                        TextColor="Black"
-                                        FontAttributes="Bold"
-                                        IsVisible="{Binding IsGroupChat}" />
+                            <StackLayout Orientation="Vertical">
+                                <Label Text="{Binding Sender}"
+                                    TextColor="Black"
+                                    FontAttributes="Bold"
+                                    IsVisible="{Binding IsGroupChat}" />
 
-                                    <Image
-                                        Source="{Binding ImageFile}"
-                                        IsVisible="{Binding HasImage}"
-                                        BackgroundColor="Transparent" />
+                                <Image
+                                    Source="{Binding ImageFile}"
+                                    IsVisible="{Binding HasImage}"
+                                    BackgroundColor="Transparent" />
 
-                                    <Label Text="{Binding Body}"
-                                        TextColor="Black" />
-                                </StackLayout>
-                            </Frame>
+                                <Label Text="{Binding Body}"
+                                    IsVisible="{Binding HasBody}"
+                                    TextColor="Black" />
+                            </StackLayout>
+                        </Frame>
 
-                        </StackLayout>
+                    </StackLayout>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
 
         <StackLayout Orientation="Horizontal" Margin="6,0,6,6">
-
             <Button
                 Text="File"
                 WidthRequest="60"
                 HeightRequest="65"
                 VerticalOptions="EndAndExpand"
                 Clicked="SendFile" />
- 
+
             <Frame Padding="3"
                 CornerRadius="6"
                 HorizontalOptions="FillAndExpand"

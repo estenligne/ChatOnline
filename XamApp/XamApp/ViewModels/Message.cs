@@ -53,5 +53,6 @@ namespace XamApp.ViewModels
 
         public string Sender => _message.SenderName;
         public string Body => _message.Body;
+        public bool HasBody => !string.IsNullOrEmpty(Body);
     }
 }

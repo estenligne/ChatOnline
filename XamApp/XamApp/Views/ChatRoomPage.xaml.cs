@@ -5,6 +5,7 @@ using Xamarin.Forms.Xaml;
 using Xamarin.Essentials;
 using System;
 using System.IO;
+using System.Diagnostics;
 using Global.Models;
 using Global.Enums;
 
@@ -35,7 +36,7 @@ namespace XamApp.Views
             vm.OnDisappearing();
         }
 
-        private async void SendFile(object sender, System.EventArgs e)
+        private async void SendFile(object sender, EventArgs e)
         {
             ((Button)sender).IsEnabled = false;
             try
@@ -47,12 +48,12 @@ namespace XamApp.Views
                     var response = await HTTPClient.PostFile(null, "file", file.FileName, stream);
                     if (response.IsSuccessStatusCode)
                     {
-                        FileDTO fileDto = await HTTPClient.ReadAsAsync<FileDTO>(response);            
+                        FileDTO fileDto = await HTTPClient.ReadAsAsync<FileDTO>(response);
                         await vm.SendMessage(fileDto);
                     }
                     else await DisplayAlert("Error", await HTTPClient.GetResponseError(response), "Ok");
                 }
-                else System.Diagnostics.Trace.TraceInformation("No file chosen");
+                else Trace.TraceInformation("No file chosen");
             }
             catch (Exception ex)
             {
