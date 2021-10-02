@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Global.Models
 {
@@ -7,19 +8,28 @@ namespace Global.Models
     {
         public long Id { get; set; }
 
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         [EmailAddress]
         public string Email { get; set; }
 
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         [Phone]
         public string PhoneNumber { get; set; }
 
-        public string UserName => string.IsNullOrEmpty(PhoneNumber) ? Email : PhoneNumber;
-
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        [DataType(DataType.Password)]
         public string Password { get; set; }
 
         /// <summary>
-        /// Used only on sign in
+        /// Used only on SignIn HTTP Request
         /// </summary>
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public bool RememberMe { get; set; }
+
+        /// <summary>
+        /// Used only on SignIn HTTP Response
+        /// </summary>
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public string Token { get; set; }
     }
 }

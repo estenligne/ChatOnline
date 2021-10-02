@@ -64,7 +64,10 @@ namespace WebAPI.Controllers
         {
             try
             {
-                string userName = userDto.UserName;
+                string userName = GetUserName(userDto);
+
+                if (!ModelState.IsValid)
+                    return BadRequest(new ValidationProblemDetails(ModelState));
 
                 var user = await _userManager.FindByNameAsync(userName);
                 if (user != null)
@@ -105,6 +108,18 @@ namespace WebAPI.Controllers
             {
                 return InternalServerError(ex);
             }
+        }
+
+        private string GetUserName(ApplicationUserDTO userDto)
+        {
+            string userName = string.IsNullOrEmpty(userDto.PhoneNumber) ? userDto.Email : userDto.PhoneNumber;
+
+            if (string.IsNullOrEmpty(userName))
+            {
+                ModelState.AddModelError(nameof(userDto.Email), "Provide an email address or a phone number");
+                ModelState.AddModelError(nameof(userDto.PhoneNumber), "Provide a phone number or an email address");
+            }
+            return userName;
         }
 
         private async Task SendConfirmationOTP(ApplicationUser user)
@@ -159,7 +174,7 @@ namespace WebAPI.Controllers
             }
         }
 
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ApplicationUserDTO), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
@@ -170,7 +185,10 @@ namespace WebAPI.Controllers
         {
             try
             {
-                string userName = userDto.UserName;
+                string userName = GetUserName(userDto);
+
+                if (!ModelState.IsValid)
+                    return BadRequest(new ValidationProblemDetails(ModelState));
 
                 var user = await _userManager.FindByNameAsync(userName);
                 if (user == null)
@@ -220,8 +238,10 @@ namespace WebAPI.Controllers
                         expires: DateTime.UtcNow.AddHours(24),
                         signingCredentials: signingCredentials);
 
-                    string jwt = new JwtSecurityTokenHandler().WriteToken(token);
-                    return Ok(jwt);
+                    userDto = _mapper.Map<ApplicationUserDTO>(user);
+                    userDto.Token = new JwtSecurityTokenHandler().WriteToken(token);
+
+                    return Ok(userDto);
                 }
                 else if (result.RequiresTwoFactor)
                 {
