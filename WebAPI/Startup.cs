@@ -1,21 +1,18 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using MySql.EntityFrameworkCore.Extensions;
 using WebAPI.Models;
 using WebAPI.Setup;
 using System;
-using System.Net;
-using System.Threading.Tasks;
 
 namespace WebAPI
 {
@@ -76,33 +73,23 @@ namespace WebAPI
                 options.SignIn.RequireConfirmedAccount = true;
             });
 
-            services.ConfigureApplicationCookie(options =>
+            services.AddAuthentication(options =>
             {
-                // Cookie settings: https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies
-                // https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
-                // https://stackoverflow.com/questions/46288437/set-cookies-for-cross-origin-requests
-                options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
-                options.Cookie.SameSite = SameSiteMode.None;
-                options.Cookie.HttpOnly = true;
-
-                //options.ExpireTimeSpan = TimeSpan.MaxValue;
-                options.SlidingExpiration = true;
-
-                options.Events = new CookieAuthenticationEvents
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.SaveToken = true;
+                options.RequireHttpsMetadata = !_env.IsDevelopment();
+                options.TokenValidationParameters = new TokenValidationParameters()
                 {
-                    OnRedirectToAccessDenied = ctx => {
-                        if (ctx.Request.Path.StartsWithSegments("/api"))
-                            ctx.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-                        else ctx.Response.Redirect(ctx.RedirectUri);
-                        return Task.CompletedTask;
-                    },
-
-                    OnRedirectToLogin = ctx => {
-                        if (ctx.Request.Path.StartsWithSegments("/api"))
-                            ctx.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                        else ctx.Response.Redirect(ctx.RedirectUri);
-                        return Task.CompletedTask;
-                    }
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidAudience = _configuration["URLS"],
+                    ValidIssuer = _configuration["JwtSecurity:Issuer"],
+                    IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_configuration["JwtSecurity:Key"]))
                 };
             });
 
