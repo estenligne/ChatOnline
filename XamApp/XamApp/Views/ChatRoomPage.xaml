@@ -92,6 +92,12 @@
                             <SwipeGestureRecognizer Direction="Right" Swiped="OnSwipedRight" />
                         </StackLayout.GestureRecognizers>
 
+                        <StackLayout.GestureRecognizers>
+                            <TapGestureRecognizer
+                                Tapped="OnMessageDoubleTapped"
+                                NumberOfTapsRequired="2"/>  
+                        </StackLayout.GestureRecognizers>
+
                     </StackLayout>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
