@@ -21,12 +21,14 @@ namespace WebAPI
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
-            Configuration = configuration;
+            _configuration = configuration;
+            _env = env;
         }
 
-        public IConfiguration Configuration { get; }
+        private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _env;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -34,18 +36,18 @@ namespace WebAPI
             if (Migrations.DataType.UseMySQL)
             {
                 services.AddDbContext<AccountDbContext>(options => options
-                    .UseMySQL(Configuration.GetConnectionString("Account_MySQL_Connection")));
+                    .UseMySQL(_configuration.GetConnectionString("Account_MySQL_Connection")));
 
                 services.AddDbContext<ApplicationDbContext>(options => options
-                    .UseMySQL(Configuration.GetConnectionString("ChatOnline_MySQL_Connection")));
+                    .UseMySQL(_configuration.GetConnectionString("ChatOnline_MySQL_Connection")));
             }
             else
             {
                 services.AddDbContext<AccountDbContext>(options => options
-                    .UseSqlServer(Configuration.GetConnectionString("Account_SQLServer_Connection")));
+                    .UseSqlServer(_configuration.GetConnectionString("Account_SQLServer_Connection")));
 
                 services.AddDbContext<ApplicationDbContext>(options => options
-                    .UseSqlServer(Configuration.GetConnectionString("ChatOnline_SQLServer_Connection")));
+                    .UseSqlServer(_configuration.GetConnectionString("ChatOnline_SQLServer_Connection")));
             }
 
             services.AddIdentity<ApplicationUser, ApplicationRole>()
@@ -117,11 +119,11 @@ namespace WebAPI
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
             app.UseMiddleware<OptionsMiddleware>();
 
-            if (env.IsDevelopment())
+            if (_env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
