@@ -29,6 +29,55 @@ namespace WebAPI
         private readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _env;
 
+        private void ConfigureDatabase(IServiceCollection services)
+        {
+            if (Migrations.DataType.UseMySQL)
+            {
+                services.AddDbContext<AccountDbContext>(options => options
+                    .UseMySQL(_configuration.GetConnectionString("Account_MySQL_Connection")));
+
+                services.AddDbContext<ApplicationDbContext>(options => options
+                    .UseMySQL(_configuration.GetConnectionString("ChatOnline_MySQL_Connection")));
+            }
+            else
+            {
+                services.AddDbContext<AccountDbContext>(options => options
+                    .UseSqlServer(_configuration.GetConnectionString("Account_SQLServer_Connection")));
+
+                services.AddDbContext<ApplicationDbContext>(options => options
+                    .UseSqlServer(_configuration.GetConnectionString("ChatOnline_SQLServer_Connection")));
+            }
+        }
+
+        private void ConfigureIdentity(IServiceCollection services)
+        {
+            services.AddIdentity<ApplicationUser, ApplicationRole>()
+                .AddEntityFrameworkStores<AccountDbContext>()
+                .AddDefaultTokenProviders();
+
+            services.Configure<IdentityOptions>(options =>
+            {
+                // Password settings.
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequiredLength = 6;
+                options.Password.RequiredUniqueChars = 1;
+
+                // Lockout settings.
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.AllowedForNewUsers = true;
+
+                // User settings.
+                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+
+                // SignIn settings.
+                options.SignIn.RequireConfirmedAccount = true;
+            });
+        }
+
         private void ConfigureAuthentication(IServiceCollection services)
         {
             string publicKey = _configuration["JwtSecurity:PublicKey"];
@@ -94,48 +143,9 @@ namespace WebAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            if (Migrations.DataType.UseMySQL)
-            {
-                services.AddDbContext<AccountDbContext>(options => options
-                    .UseMySQL(_configuration.GetConnectionString("Account_MySQL_Connection")));
+            ConfigureDatabase(services);
 
-                services.AddDbContext<ApplicationDbContext>(options => options
-                    .UseMySQL(_configuration.GetConnectionString("ChatOnline_MySQL_Connection")));
-            }
-            else
-            {
-                services.AddDbContext<AccountDbContext>(options => options
-                    .UseSqlServer(_configuration.GetConnectionString("Account_SQLServer_Connection")));
-
-                services.AddDbContext<ApplicationDbContext>(options => options
-                    .UseSqlServer(_configuration.GetConnectionString("ChatOnline_SQLServer_Connection")));
-            }
-
-            services.AddIdentity<ApplicationUser, ApplicationRole>()
-                .AddEntityFrameworkStores<AccountDbContext>()
-                .AddDefaultTokenProviders();
-
-            services.Configure<IdentityOptions>(options =>
-            {
-                // Password settings.
-                options.Password.RequireDigit = true;
-                options.Password.RequireLowercase = true;
-                options.Password.RequireUppercase = true;
-                options.Password.RequireNonAlphanumeric = true;
-                options.Password.RequiredLength = 6;
-                options.Password.RequiredUniqueChars = 1;
-
-                // Lockout settings.
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-                options.Lockout.MaxFailedAccessAttempts = 5;
-                options.Lockout.AllowedForNewUsers = true;
-
-                // User settings.
-                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-
-                // SignIn settings.
-                options.SignIn.RequireConfirmedAccount = true;
-            });
+            ConfigureIdentity(services);
 
             ConfigureAuthentication(services);
 
