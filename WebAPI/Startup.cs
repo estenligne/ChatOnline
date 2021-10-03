@@ -13,6 +13,7 @@ using MySql.EntityFrameworkCore.Extensions;
 using WebAPI.Models;
 using WebAPI.Setup;
 using System;
+using System.Collections.Generic;
 using System.Security.Cryptography;
 
 namespace WebAPI
@@ -55,6 +56,38 @@ namespace WebAPI
                     IssuerSigningKey = new RsaSecurityKey(rsa),
                     CryptoProviderFactory = new CryptoProviderFactory() { CacheSignatureProviders = false }
                 };
+            });
+        }
+
+        private void ConfigureSwagger(IServiceCollection services)
+        {
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAPI", Version = "v1" });
+
+                var jwtSecurityScheme = new OpenApiSecurityScheme
+                {
+                    Scheme = JwtBearerDefaults.AuthenticationScheme,
+                    BearerFormat = "JWT",
+                    Name = "Authorization",
+
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Description = "Enter your bearer token below, which you obtain from signing-in",
+
+                    Reference = new OpenApiReference
+                    {
+                        Id = JwtBearerDefaults.AuthenticationScheme,
+                        Type = ReferenceType.SecurityScheme
+                    }
+                };
+
+                c.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    { jwtSecurityScheme, Array.Empty<string>() }
+                });
             });
         }
 
@@ -108,9 +141,7 @@ namespace WebAPI
 
             services.AddControllers();
 
-            services.AddSwaggerGen(c => {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAPI", Version = "v1" });
-            });
+            ConfigureSwagger(services);
 
             services.AddAutoMapper(c => c.AddProfile<MappingProfile>(), typeof(Startup));
 
