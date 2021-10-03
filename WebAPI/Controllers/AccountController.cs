@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using WebAPI.Models;
 using Global.Models;
 using Global.Enums;
@@ -221,25 +222,8 @@ namespace WebAPI.Controllers
                     user.DateSignedIn = DateTimeOffset.UtcNow;
                     await _userManager.UpdateAsync(user);
 
-                    var claims = new Claim[]
-                    {
-                        new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
-                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-                    };
-
-                    var signingCredentials = new SigningCredentials(
-                        new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_configuration["JwtSecurity:Key"])),
-                        SecurityAlgorithms.HmacSha256Signature);
-
-                    var token = new JwtSecurityToken(
-                        issuer: _configuration["URLS"],
-                        audience: _configuration["URLS"],
-                        claims: claims,
-                        expires: DateTime.UtcNow.AddHours(24),
-                        signingCredentials: signingCredentials);
-
                     userDto = _mapper.Map<ApplicationUserDTO>(user);
-                    userDto.Token = new JwtSecurityTokenHandler().WriteToken(token);
+                    userDto.Token = BuildJWT(user);
 
                     return Ok(userDto);
                 }
@@ -268,6 +252,31 @@ namespace WebAPI.Controllers
             {
                 return InternalServerError(ex);
             }
+        }
+
+        private string BuildJWT(ApplicationUser user)
+        {
+            var claims = new Claim[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+
+            string privateKey = _configuration["JwtSecurity:PrivateKey"];
+            using RSA rsa = RSA.Create();
+            rsa.ImportRSAPrivateKey(Convert.FromBase64String(privateKey), out _);
+            var signingCredentials = new SigningCredentials(new RsaSecurityKey(rsa), SecurityAlgorithms.RsaSha256Signature);
+            signingCredentials.CryptoProviderFactory = new CryptoProviderFactory { CacheSignatureProviders = false };
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["URLS"],
+                audience: _configuration["URLS"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddHours(24),
+                signingCredentials: signingCredentials);
+
+            string jwt = new JwtSecurityTokenHandler().WriteToken(token);
+            return jwt;
         }
 
         [ProducesResponseType((int)HttpStatusCode.NoContent)]

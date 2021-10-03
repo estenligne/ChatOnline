@@ -13,6 +13,7 @@ using MySql.EntityFrameworkCore.Extensions;
 using WebAPI.Models;
 using WebAPI.Setup;
 using System;
+using System.Security.Cryptography;
 
 namespace WebAPI
 {
@@ -26,6 +27,36 @@ namespace WebAPI
 
         private readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _env;
+
+        private void ConfigureAuthentication(IServiceCollection services)
+        {
+            string publicKey = _configuration["JwtSecurity:PublicKey"];
+            RSA rsa = RSA.Create(); // note: must not use 'using' here.
+            rsa.ImportRSAPublicKey(Convert.FromBase64String(publicKey), out _);
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.SaveToken = true;
+                options.RequireHttpsMetadata = !_env.IsDevelopment();
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidAudience = _configuration["URLS"],
+                    ValidIssuer = _configuration["JwtSecurity:Issuer"],
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new RsaSecurityKey(rsa),
+                    CryptoProviderFactory = new CryptoProviderFactory() { CacheSignatureProviders = false }
+                };
+            });
+        }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -73,25 +104,7 @@ namespace WebAPI
                 options.SignIn.RequireConfirmedAccount = true;
             });
 
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-                options.SaveToken = true;
-                options.RequireHttpsMetadata = !_env.IsDevelopment();
-                options.TokenValidationParameters = new TokenValidationParameters()
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidAudience = _configuration["URLS"],
-                    ValidIssuer = _configuration["JwtSecurity:Issuer"],
-                    IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_configuration["JwtSecurity:Key"]))
-                };
-            });
+            ConfigureAuthentication(services);
 
             services.AddControllers();
 
