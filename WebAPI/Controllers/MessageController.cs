@@ -409,5 +409,27 @@ namespace WebAPI.Controllers
                 return InternalServerError(ex);
             }
         }
+
+        [HttpDelete]
+        public async Task<IActionResult> Delete(long messageSentId)
+        {
+            MessageSent message = await dbc.MessagesSent
+                .Include(x => x.Sender)
+                .FirstOrDefaultAsync(x => x.Id == messageSentId);
+           
+            var user = dbc.UserProfiles.First(u => u.Identity == UserIdentity);
+            var utcNow = DateTimeOffset.UtcNow;
+
+            if (message.Sender.UserProfileId != user.Id)
+                return Forbid("This message doesn't belong to you!");
+
+            if (utcNow - message.DateSent >= TimeSpan.FromMinutes(30))
+                return Forbid("Can't delete the massage at this time!");
+             
+            message.DateDeleted = DateTimeOffset.UtcNow;
+            await dbc.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }
