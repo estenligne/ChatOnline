@@ -39,6 +39,14 @@ namespace WebAPI
                 services.AddDbContext<ApplicationDbContext>(options => options
                     .UseMySQL(_configuration.GetConnectionString("ChatOnline_MySQL_Connection")));
             }
+            else if (Migrations.DataType.UseSQLite)
+            {
+                services.AddDbContext<AccountDbContext>(options => options
+                    .UseSqlite(_configuration.GetConnectionString("Account_SQLite_Connection")));
+
+                services.AddDbContext<ApplicationDbContext>(options => options
+                    .UseSqlite(_configuration.GetConnectionString("ChatOnline_SQLite_Connection")));
+            }
             else
             {
                 services.AddDbContext<AccountDbContext>(options => options

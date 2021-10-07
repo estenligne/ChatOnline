@@ -1,4 +1,4 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
 
 namespace WebAPI.Migrations
 {
@@ -7,7 +7,31 @@ namespace WebAPI.Migrations
     /// </summary>
     public static class DataType
     {
-        public static bool UseMySQL => RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+        private enum DBMS
+        {
+            Unknown,
+            SQLServer,
+            SQLite,
+            MySQL,
+        }
+
+        private static DBMS dbms;
+
+        private static DBMS GetDBMS()
+        {
+            if (dbms == DBMS.Unknown)
+            {
+                string value = Environment.GetEnvironmentVariable("ChatOnlineDBMS");
+                Enum.TryParse<DBMS>(value, out dbms);
+
+                if (dbms == DBMS.Unknown)
+                    dbms = DBMS.SQLServer;
+            }
+            return dbms;
+        }
+
+        public static bool UseSQLite => GetDBMS() == DBMS.SQLite;
+        public static bool UseMySQL => GetDBMS() == DBMS.MySQL;
 
         public static string Bool => UseMySQL ? "tinyint(1)" : "bit";
 
