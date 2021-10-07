@@ -88,9 +88,20 @@ namespace WebAPI
 
         private void ConfigureAuthentication(IServiceCollection services)
         {
+            SecurityKey securityKey = null;
+            string secretKey = _configuration["JwtSecurity:SecretKey"];
             string publicKey = _configuration["JwtSecurity:PublicKey"];
-            RSA rsa = RSA.Create(); // note: must not use 'using' here.
-            rsa.ImportRSAPublicKey(Convert.FromBase64String(publicKey), out _);
+
+            if (!string.IsNullOrEmpty(secretKey))
+            {
+                securityKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(secretKey));
+            }
+            else if (!string.IsNullOrEmpty(publicKey))
+            {
+                RSA rsa = RSA.Create(); // note: must not use 'using', must not dispose.
+                rsa.ImportRSAPublicKey(Convert.FromBase64String(publicKey), out _);
+                securityKey = new RsaSecurityKey(rsa);
+            }
 
             services.AddAuthentication(options =>
             {
@@ -110,9 +121,12 @@ namespace WebAPI
                     ValidIssuer = _configuration["JwtSecurity:Issuer"],
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new RsaSecurityKey(rsa),
-                    CryptoProviderFactory = new CryptoProviderFactory() { CacheSignatureProviders = false }
+                    IssuerSigningKey = securityKey
                 };
+
+                if (string.IsNullOrEmpty(secretKey))
+                    options.TokenValidationParameters.CryptoProviderFactory =
+                        new CryptoProviderFactory() { CacheSignatureProviders = false };
             });
         }
 

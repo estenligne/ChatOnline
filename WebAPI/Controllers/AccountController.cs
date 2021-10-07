@@ -262,11 +262,24 @@ namespace WebAPI.Controllers
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
+            SecurityKey securityKey;
+            SigningCredentials signingCredentials = null;
+            string secretKey = _configuration["JwtSecurity:SecretKey"];
             string privateKey = _configuration["JwtSecurity:PrivateKey"];
             using RSA rsa = RSA.Create();
-            rsa.ImportRSAPrivateKey(Convert.FromBase64String(privateKey), out _);
-            var signingCredentials = new SigningCredentials(new RsaSecurityKey(rsa), SecurityAlgorithms.RsaSha256Signature);
-            signingCredentials.CryptoProviderFactory = new CryptoProviderFactory { CacheSignatureProviders = false };
+
+            if (!string.IsNullOrEmpty(secretKey))
+            {
+                securityKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(secretKey));
+                signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
+            }
+            else if (!string.IsNullOrEmpty(privateKey))
+            {
+                rsa.ImportRSAPrivateKey(Convert.FromBase64String(privateKey), out _);
+                securityKey = new RsaSecurityKey(rsa);
+                signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.RsaSha256Signature);
+                signingCredentials.CryptoProviderFactory = new CryptoProviderFactory { CacheSignatureProviders = false };
+            }
 
             var token = new JwtSecurityToken(
                 issuer: _configuration["URLS"],
