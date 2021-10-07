@@ -16,7 +16,7 @@ namespace XamApp.ViewModels
 
         public RoomsViewModel()
         {
-            Title = "Chat Rooms";
+            Title = "ChatOnline";
             LoadRoomsCommand = new Command(LoadRooms);
             AddChatRoomCommand = new Command(AddChatRoom);
             RoomSelectedCommand = new Command<RoomInfo>(OnRoomSelected);

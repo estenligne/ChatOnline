@@ -23,7 +23,7 @@
                         FontSize="Title"
                         Margin="0,0,0,15" />
 
-                <Label Text="Use either email or phone" TextColor="Brown" HorizontalOptions="Center" />
+                <Label Text="Use either email or phone" TextColor="OrangeRed" HorizontalOptions="Center" />
 
                 <Entry Text="{Binding Email, Mode=TwoWay}"
                         Placeholder="Email address"
@@ -57,7 +57,8 @@
                         Margin="0,20,0,0" />
 
                     <Label Text="Forgot Password"
-                        TextColor="Blue"
+                        TextColor="Black"
+                        TextDecorations="Underline"
                         HorizontalOptions="Center"
                         Margin="0,20,0,0" >
                         <Label.GestureRecognizers>
