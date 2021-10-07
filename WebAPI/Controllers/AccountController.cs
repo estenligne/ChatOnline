@@ -223,7 +223,7 @@ namespace WebAPI.Controllers
                     await _userManager.UpdateAsync(user);
 
                     userDto = _mapper.Map<ApplicationUserDTO>(user);
-                    userDto.Token = BuildJWT(user);
+                    userDto.Authorization = "Bearer " + BuildJWT(user);
 
                     return Ok(userDto);
                 }
@@ -320,7 +320,7 @@ namespace WebAPI.Controllers
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType((int)HttpStatusCode.NotImplemented)]
         [AllowAnonymous]
-        [HttpGet]
+        [HttpPatch]
         [Route(nameof(ForgotPassword))]
         public ActionResult ForgotPassword(string emailAddress, string phoneNumber)
         {

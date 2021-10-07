@@ -58,12 +58,14 @@ namespace XamApp.Views
 
                     var user = new User()
                     {
-                        UserId = result.Id,
+                        Id = result.Id,
                         Email = userDto.Email,
                         PhoneNumber = userDto.PhoneNumber,
                         Password = userDto.Password,
                         RememberMe = userDto.RememberMe,
+                        Authorization = result.Authorization,
                     };
+                    HTTPClient.SetAuthorization(null, user.Authorization);
 
                     var url = "/api/DeviceUsed?devicePlatform=" + DevicePlatformEnum.Unknown;
                     response = await HTTPClient.PutAsync<string>(null, url, null);
@@ -102,7 +104,7 @@ namespace XamApp.Views
                 SetBusy(true);
 
                 string args = $"?emailAddress={vm.Email}&phoneNumber={vm.PhoneNumber}";
-                var response = await HTTPClient.GetAsync(null, "/api/Account/ForgotPassword" + args);
+                var response = await HTTPClient.PatchAsync(null, "/api/Account/ForgotPassword" + args, (string)null);
                 if (response.IsSuccessStatusCode)
                 {
                     await DisplayAlert("Success", await response.Content.ReadAsStringAsync(), "Ok");

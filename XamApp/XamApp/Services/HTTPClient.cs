@@ -20,18 +20,28 @@ namespace XamApp.Services
         public const string WebAPIBaseURL = "https://estenligne.com:44364";
 #endif
 
-        public static async Task<HttpClient> NewClient(bool doLogin = true, int timeout = 60)
+        public static async Task<HttpClient> NewClient(bool doSignIn = true, int timeout = 60)
         {
             var client = new HttpClient();
             client.BaseAddress = new Uri(WebAPIBaseURL);
             client.Timeout = TimeSpan.FromSeconds(timeout);
-            if (doLogin) await LoginAsync(client, null);
+            if (doSignIn) await SignIn(client, null);
             return client;
         }
 
-        private static async Task<HttpResponseMessage> LoginAsync(HttpClient client, HttpResponseMessage oldResponse)
+        public static void SetAuthorization(HttpClient client, string authorization)
         {
-            var user = await Models.DataStore.Instance.GetUserAsync();
+            if (client == null)
+                client = httpClient;
+
+            if (client != null)
+                client.DefaultRequestHeaders.Add("Authorization", authorization);
+        }
+
+        private static async Task<HttpResponseMessage> SignIn(HttpClient client, HttpResponseMessage oldResponse)
+        {
+            var dataStore = Models.DataStore.Instance;
+            var user = await dataStore.GetUserAsync();
             if (user != null && user.Password != null)
             {
                 var userDto = new ApplicationUserDTO
@@ -42,6 +52,13 @@ namespace XamApp.Services
                     RememberMe = user.RememberMe,
                 };
                 var response = await PostAsync(client, "/api/Account/SignIn", userDto);
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await HTTPClient.ReadAsAsync<ApplicationUserDTO>(response);
+                    user.Authorization = result.Authorization;
+                    await dataStore.UpdateUserAsync(user);
+                    SetAuthorization(client, user.Authorization);
+                }
                 return response;
             }
             else if (oldResponse != null)
@@ -51,7 +68,7 @@ namespace XamApp.Services
             else
             {
                 var response = new HttpResponseMessage(HttpStatusCode.BadRequest);
-                response.Content = new StringContent("There is no prior login done on this app.");
+                response.Content = new StringContent("There is no prior sign in done on this app.");
                 return response;
             }
         }
@@ -105,7 +122,7 @@ namespace XamApp.Services
 
                 if (response.StatusCode == HttpStatusCode.Unauthorized)
                 {
-                    response = await LoginAsync(client, response);
+                    response = await SignIn(client, response);
                     if (response.IsSuccessStatusCode)
                     {
                         response = await Send(method, client, requestUri, content);

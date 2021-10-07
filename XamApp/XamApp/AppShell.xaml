@@ -96,7 +96,7 @@
         the flyout menu won't be available. This is useful for creating areas of the application where 
         you don't want users to be able to navigate away from. If you would like to navigate to this 
         content you can do so by calling 
-        await Shell.Current.GoToAsync("//LoginPage");
+        await Shell.Current.GoToAsync("//SignInPage");
     -->
     <TabBar>
         <ShellContent Route="SignInPage" ContentTemplate="{DataTemplate local:SignInPage}" />

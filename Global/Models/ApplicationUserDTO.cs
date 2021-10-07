@@ -30,6 +30,6 @@ namespace Global.Models
         /// Used only on SignIn HTTP Response
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public string Token { get; set; }
+        public string Authorization { get; set; }
     }
 }
