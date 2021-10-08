@@ -1,4 +1,5 @@
 ﻿using System;
+using Global.Enums;
 using Global.Models;
 using Xamarin.Forms;
 
@@ -14,7 +15,10 @@ namespace XamApp.ViewModels
             {
                 if (profilePhoto == null)
                 {
-                    profilePhoto = ImageSource.FromFile("icon_about.png");
+                    profilePhoto =
+                        Type == ChatRoomTypeEnum.Private ?
+                        ImageSource.FromFile("icon_person.png") :
+                        ImageSource.FromFile("icon_group.png");
                 }
                 return profilePhoto;
             }
@@ -56,7 +60,7 @@ namespace XamApp.ViewModels
             var dateLocal = message.DateSent.ToLocalTime();
             var diff = DateTimeOffset.Now - dateLocal;
             if (diff >= TimeSpan.FromDays(1))
-                return dateLocal.ToString("yyyy-MM-dd");
+                return dateLocal.ToString("dd/MM/yyyy");
             else return dateLocal.ToString("HH:mm");
         }
 

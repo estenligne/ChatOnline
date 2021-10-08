@@ -83,7 +83,7 @@
         <ShellContent Route="AboutPage" ContentTemplate="{DataTemplate local:AboutPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Chat Rooms" Icon="icon_feed.png">
+    <FlyoutItem Title="Chat Rooms" Icon="icon_logo.png">
         <ShellContent Route="RoomsPage" ContentTemplate="{DataTemplate local:RoomsPage}" />
     </FlyoutItem>
 

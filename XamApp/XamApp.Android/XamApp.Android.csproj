@@ -96,9 +96,11 @@
     <AndroidResource Include="Resources\mipmap-xhdpi\icon.png" />
     <AndroidResource Include="Resources\mipmap-xxhdpi\icon.png" />
     <AndroidResource Include="Resources\mipmap-xxxhdpi\icon.png" />
-    <AndroidResource Include="Resources\drawable\icon_logo.png" />
     <AndroidResource Include="Resources\drawable\icon_about.png" />
-    <AndroidResource Include="Resources\drawable\icon_feed.png" />
+    <AndroidResource Include="Resources\drawable\icon_group.png" />
+    <AndroidResource Include="Resources\drawable\icon_person.png" />
+    <AndroidResource Include="Resources\drawable-mdpi\icon_logo.png" />
+    <AndroidResource Include="Resources\drawable-xxxhdpi\icon_logo.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Global\Global.csproj">
