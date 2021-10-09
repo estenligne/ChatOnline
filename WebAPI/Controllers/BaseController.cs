@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -34,7 +35,7 @@ namespace WebAPI.Controllers
             _mapper = mapper;
         }
 
-        protected string UserIdentity => User.Identity.Name;
+        protected string UserIdentity => User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         protected ActionResult Forbid(string message)
         {

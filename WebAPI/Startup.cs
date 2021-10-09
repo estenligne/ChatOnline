@@ -1,53 +1,64 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using MySql.EntityFrameworkCore.Extensions;
 using WebAPI.Models;
 using WebAPI.Setup;
 using System;
-using System.Net;
-using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Security.Cryptography;
 
 namespace WebAPI
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
-            Configuration = configuration;
+            _configuration = configuration;
+            _env = env;
         }
 
-        public IConfiguration Configuration { get; }
+        private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _env;
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        private void ConfigureDatabase(IServiceCollection services)
         {
             if (Migrations.DataType.UseMySQL)
             {
                 services.AddDbContext<AccountDbContext>(options => options
-                    .UseMySQL(Configuration.GetConnectionString("Account_MySQL_Connection")));
+                    .UseMySQL(_configuration.GetConnectionString("Account_MySQL_Connection")));
 
                 services.AddDbContext<ApplicationDbContext>(options => options
-                    .UseMySQL(Configuration.GetConnectionString("ChatOnline_MySQL_Connection")));
+                    .UseMySQL(_configuration.GetConnectionString("ChatOnline_MySQL_Connection")));
+            }
+            else if (Migrations.DataType.UseSQLite)
+            {
+                services.AddDbContext<AccountDbContext>(options => options
+                    .UseSqlite(_configuration.GetConnectionString("Account_SQLite_Connection")));
+
+                services.AddDbContext<ApplicationDbContext>(options => options
+                    .UseSqlite(_configuration.GetConnectionString("ChatOnline_SQLite_Connection")));
             }
             else
             {
                 services.AddDbContext<AccountDbContext>(options => options
-                    .UseSqlServer(Configuration.GetConnectionString("Account_SQLServer_Connection")));
+                    .UseSqlServer(_configuration.GetConnectionString("Account_SQLServer_Connection")));
 
                 services.AddDbContext<ApplicationDbContext>(options => options
-                    .UseSqlServer(Configuration.GetConnectionString("ChatOnline_SQLServer_Connection")));
+                    .UseSqlServer(_configuration.GetConnectionString("ChatOnline_SQLServer_Connection")));
             }
+        }
 
+        private void ConfigureIdentity(IServiceCollection services)
+        {
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddEntityFrameworkStores<AccountDbContext>()
                 .AddDefaultTokenProviders();
@@ -73,42 +84,96 @@ namespace WebAPI
                 // SignIn settings.
                 options.SignIn.RequireConfirmedAccount = true;
             });
+        }
 
-            services.ConfigureApplicationCookie(options =>
+        private void ConfigureAuthentication(IServiceCollection services)
+        {
+            SecurityKey securityKey = null;
+            string secretKey = _configuration["JwtSecurity:SecretKey"];
+            string publicKey = _configuration["JwtSecurity:PublicKey"];
+
+            if (!string.IsNullOrEmpty(secretKey))
             {
-                // Cookie settings: https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies
-                // https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
-                // https://stackoverflow.com/questions/46288437/set-cookies-for-cross-origin-requests
-                options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
-                options.Cookie.SameSite = SameSiteMode.None;
-                options.Cookie.HttpOnly = true;
+                securityKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(secretKey));
+            }
+            else if (!string.IsNullOrEmpty(publicKey))
+            {
+                RSA rsa = RSA.Create(); // note: must not use 'using', must not dispose.
+                rsa.ImportRSAPublicKey(Convert.FromBase64String(publicKey), out _);
+                securityKey = new RsaSecurityKey(rsa);
+            }
 
-                //options.ExpireTimeSpan = TimeSpan.MaxValue;
-                options.SlidingExpiration = true;
-
-                options.Events = new CookieAuthenticationEvents
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.SaveToken = true;
+                options.RequireHttpsMetadata = !_env.IsDevelopment();
+                options.TokenValidationParameters = new TokenValidationParameters()
                 {
-                    OnRedirectToAccessDenied = ctx => {
-                        if (ctx.Request.Path.StartsWithSegments("/api"))
-                            ctx.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-                        else ctx.Response.Redirect(ctx.RedirectUri);
-                        return Task.CompletedTask;
-                    },
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidAudience = _configuration["URLS"],
+                    ValidIssuer = _configuration["JwtSecurity:Issuer"],
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = securityKey
+                };
 
-                    OnRedirectToLogin = ctx => {
-                        if (ctx.Request.Path.StartsWithSegments("/api"))
-                            ctx.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                        else ctx.Response.Redirect(ctx.RedirectUri);
-                        return Task.CompletedTask;
+                if (string.IsNullOrEmpty(secretKey))
+                    options.TokenValidationParameters.CryptoProviderFactory =
+                        new CryptoProviderFactory() { CacheSignatureProviders = false };
+            });
+        }
+
+        private void ConfigureSwagger(IServiceCollection services)
+        {
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAPI", Version = "v1" });
+
+                var jwtSecurityScheme = new OpenApiSecurityScheme
+                {
+                    Scheme = JwtBearerDefaults.AuthenticationScheme,
+                    BearerFormat = "JWT",
+                    Name = "Authorization",
+
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Description = "Enter your bearer token below, which you obtain from signing-in",
+
+                    Reference = new OpenApiReference
+                    {
+                        Id = JwtBearerDefaults.AuthenticationScheme,
+                        Type = ReferenceType.SecurityScheme
                     }
                 };
+
+                c.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    { jwtSecurityScheme, Array.Empty<string>() }
+                });
             });
+        }
+
+        // This method gets called by the runtime. Use this method to add services to the container.
+        public void ConfigureServices(IServiceCollection services)
+        {
+            ConfigureDatabase(services);
+
+            ConfigureIdentity(services);
+
+            ConfigureAuthentication(services);
 
             services.AddControllers();
 
-            services.AddSwaggerGen(c => {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAPI", Version = "v1" });
-            });
+            ConfigureSwagger(services);
 
             services.AddAutoMapper(c => c.AddProfile<MappingProfile>(), typeof(Startup));
 
@@ -117,11 +182,11 @@ namespace WebAPI
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
             app.UseMiddleware<OptionsMiddleware>();
 
-            if (env.IsDevelopment())
+            if (_env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();

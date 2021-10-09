@@ -1,12 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Net;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Security.Cryptography;
 using WebAPI.Models;
 using Global.Models;
 using Global.Enums;
@@ -17,11 +22,13 @@ namespace WebAPI.Controllers
 {
     public class AccountController : BaseController<AccountController>
     {
+        private readonly IConfiguration _configuration;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly Services.EmailService _emailService;
 
         public AccountController(
+            IConfiguration configuration,
             SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager,
             Services.EmailService emailService,
@@ -29,6 +36,7 @@ namespace WebAPI.Controllers
             ILogger<AccountController> logger,
             IMapper mapper) : base(context, logger, mapper)
         {
+            _configuration = configuration;
             _signInManager = signInManager;
             _userManager = userManager;
             _emailService = emailService;
@@ -41,7 +49,8 @@ namespace WebAPI.Controllers
         [Route(nameof(GetUser))]
         public async Task<ActionResult<ApplicationUserDTO>> GetUser()
         {
-            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            string userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByNameAsync(userName);
             var userDto = _mapper.Map<ApplicationUserDTO>(user);
             return userDto;
         }
@@ -56,7 +65,10 @@ namespace WebAPI.Controllers
         {
             try
             {
-                string userName = userDto.UserName;
+                string userName = GetUserName(userDto);
+
+                if (!ModelState.IsValid)
+                    return BadRequest(new ValidationProblemDetails(ModelState));
 
                 var user = await _userManager.FindByNameAsync(userName);
                 if (user != null)
@@ -97,6 +109,18 @@ namespace WebAPI.Controllers
             {
                 return InternalServerError(ex);
             }
+        }
+
+        private string GetUserName(ApplicationUserDTO userDto)
+        {
+            string userName = string.IsNullOrEmpty(userDto.PhoneNumber) ? userDto.Email : userDto.PhoneNumber;
+
+            if (string.IsNullOrEmpty(userName))
+            {
+                ModelState.AddModelError(nameof(userDto.Email), "Provide an email address or a phone number");
+                ModelState.AddModelError(nameof(userDto.PhoneNumber), "Provide a phone number or an email address");
+            }
+            return userName;
         }
 
         private async Task SendConfirmationOTP(ApplicationUser user)
@@ -162,7 +186,10 @@ namespace WebAPI.Controllers
         {
             try
             {
-                string userName = userDto.UserName;
+                string userName = GetUserName(userDto);
+
+                if (!ModelState.IsValid)
+                    return BadRequest(new ValidationProblemDetails(ModelState));
 
                 var user = await _userManager.FindByNameAsync(userName);
                 if (user == null)
@@ -195,8 +222,9 @@ namespace WebAPI.Controllers
                     user.DateSignedIn = DateTimeOffset.UtcNow;
                     await _userManager.UpdateAsync(user);
 
-                    _logger.LogInformation($"User account {userName} has signed in.");
                     userDto = _mapper.Map<ApplicationUserDTO>(user);
+                    userDto.Token = BuildJWT(user);
+
                     return Ok(userDto);
                 }
                 else if (result.RequiresTwoFactor)
@@ -224,6 +252,44 @@ namespace WebAPI.Controllers
             {
                 return InternalServerError(ex);
             }
+        }
+
+        private string BuildJWT(ApplicationUser user)
+        {
+            var claims = new Claim[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+
+            SecurityKey securityKey;
+            SigningCredentials signingCredentials = null;
+            string secretKey = _configuration["JwtSecurity:SecretKey"];
+            string privateKey = _configuration["JwtSecurity:PrivateKey"];
+            using RSA rsa = RSA.Create();
+
+            if (!string.IsNullOrEmpty(secretKey))
+            {
+                securityKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(secretKey));
+                signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
+            }
+            else if (!string.IsNullOrEmpty(privateKey))
+            {
+                rsa.ImportRSAPrivateKey(Convert.FromBase64String(privateKey), out _);
+                securityKey = new RsaSecurityKey(rsa);
+                signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.RsaSha256Signature);
+                signingCredentials.CryptoProviderFactory = new CryptoProviderFactory { CacheSignatureProviders = false };
+            }
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["URLS"],
+                audience: _configuration["URLS"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddHours(24),
+                signingCredentials: signingCredentials);
+
+            string jwt = new JwtSecurityTokenHandler().WriteToken(token);
+            return jwt;
         }
 
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
