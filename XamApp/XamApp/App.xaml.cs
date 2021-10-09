@@ -117,8 +117,7 @@ namespace XamApp
                             Trace.TraceInformation($"ProcessNotificationReceived() ReceiverId: {message.ReceiverId}");
 
                             if (source == NotificationSource.OnForeground &&
-                                ChatRoomViewModel.Appearing != null &&
-                                ChatRoomViewModel.Appearing.AddMessage(message))
+                                ChatRoomViewModel.AddMessageFromPushNotification(message))
                             {
                                 Vibrate(500);
                             }

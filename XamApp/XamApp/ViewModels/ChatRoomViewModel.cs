@@ -11,18 +11,20 @@ namespace XamApp.ViewModels
 {
     public class ChatRoomViewModel : BaseViewModel
     {
-        public static ChatRoomViewModel Appearing = null;
+        private static ChatRoomViewModel Appearing = null;
         public static RoomInfo Room;
         private RoomInfo _room;
         private string _body;
 
         public Command SendMessageCommand { get; }
         public ObservableCollection<Message> Messages { get; }
+        private Dictionary<long, Message> MessageDict { get; }
 
         public ChatRoomViewModel()
         {
             SendMessageCommand = new Command(SendMessage);
             Messages = new ObservableCollection<Message>();
+            MessageDict = new Dictionary<long, Message>();
         }
 
         private void SetBusy(bool busy)
@@ -31,12 +33,20 @@ namespace XamApp.ViewModels
             OnPropertyChanged(nameof(ShowSendButton));
         }
 
-        public bool AddMessage(MessageSentDTO message)
+        private void AddMessage(MessageSentDTO message)
         {
-            if (_room != null && message.MessageTag.ChatRoomId == _room.Id)
+            Message msg = new Message(this, _room, message);
+            Messages.Add(msg);
+            MessageDict[msg.Id] = msg;
+        }
+
+        public static bool AddMessageFromPushNotification(MessageSentDTO message)
+        {
+            var vm = Appearing;
+            if (vm != null && vm._room != null && vm._room.Id == message.MessageTag.ChatRoomId)
             {
-                Messages.Add(new Message(_room, message));
-                ScrollTo(-1);
+                vm.AddMessage(message);
+                vm.ScrollTo(-1);
                 return true;
             }
             else return false;
@@ -69,14 +79,29 @@ namespace XamApp.ViewModels
                 if (response.IsSuccessStatusCode)
                 {
                     var messages = await HTTPClient.ReadAsAsync<List<MessageSentDTO>>(response);
+
                     Messages.Clear();
+                    MessageDict.Clear();
+
                     foreach (var message in messages)
-                        Messages.Add(new Message(_room, message));
+                        AddMessage(message);
+
                     ScrollTo(-1);
                 }
                 else await DisplayAlert("Error", await HTTPClient.GetResponseError(response), "Ok");
                 SetBusy(false);
             }
+        }
+
+        public Message GetMessageById(long? id)
+        {
+            Message message = null;
+            if (id != null)
+            {
+                if (!MessageDict.TryGetValue(id.Value, out message))
+                    System.Diagnostics.Trace.TraceError($"Message {id} not found");
+            }
+            return message;
         }
 
         public string Body
@@ -91,8 +116,20 @@ namespace XamApp.ViewModels
             }
         }
 
-        public bool ShowSendButton => !IsBusy;
+        private Message _linked;
+        public void SetLinkedMessage(Message linked)
+        {
+            _linked = linked;
+            OnPropertyChanged(nameof(LinkedMessageSender));
+            OnPropertyChanged(nameof(LinkedMessageBody));
+            OnPropertyChanged(nameof(HasLinkedMessage));
+        }
 
+        public string LinkedMessageSender => _linked?.Sender;
+        public string LinkedMessageBody => _linked?.ShortBody;
+        public bool HasLinkedMessage => _linked != null;
+
+        public bool ShowSendButton => !IsBusy;
         public bool CanSendMessage => ShowSendButton && !string.IsNullOrEmpty(Body);
 
         public CollectionView MessagesView;
@@ -107,6 +144,7 @@ namespace XamApp.ViewModels
         public async Task SendMessage(FileDTO file)
         {
             SetBusy(true);
+
             var messageSent = new MessageSentDTO()
             {
                 SenderId = _room.UserChatRoomId,
@@ -114,19 +152,23 @@ namespace XamApp.ViewModels
                 Body = Body,
                 FileId = file?.Id,
                 MessageType = file == null ? MessageTypeEnum.Text : MessageTypeEnum.File,
+                LinkedId = _linked?.Id,
                 DateSent = DateTimeOffset.Now,
             };
+
             var response = await HTTPClient.PostAsync(null, "/api/Message", messageSent);
             if (response.IsSuccessStatusCode)
             {
                 var message = await HTTPClient.ReadAsAsync<MessageSentDTO>(response);
                 message.File = file;
 
-                Messages.Add(new Message(_room, message));
+                AddMessage(message);
                 ScrollTo(-1);
             }
             else await DisplayAlert("Error", await HTTPClient.GetResponseError(response), "Ok");
+
             Body = null;
+            SetLinkedMessage(null);
             SetBusy(false);
         }
 
