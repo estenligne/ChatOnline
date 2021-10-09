@@ -260,16 +260,7 @@ namespace WebAPI.Controllers
                     Priority = true,
                 };
 
-                var userProfileIds = await dbc.UserChatRooms
-                                            .Where(x => x.Id != userChatRoom.Id &&
-                                                x.ChatRoomId == userChatRoom.ChatRoomId &&
-                                                x.DateBlocked == null &&
-                                                x.DateDeleted == null &&
-                                                x.DateExited == null)
-                                            .Select(x => x.UserProfileId)
-                                            .ToListAsync();
-
-                var outcomes = await _pushNotificationService.SendAsync(dbc, userProfileIds, pushNotificationDto);
+                await SendPushNotificationToEveryone(userChatRoom, pushNotificationDto);
 
                 messageSentDto.SenderName = userChatRoom.UserProfile.Username;
                 messageSentDto.Id = messageSent.Id;
@@ -410,13 +401,27 @@ namespace WebAPI.Controllers
             }
         }
 
+        private async Task SendPushNotificationToEveryone(UserChatRoom userChatRoom, PushNotificationDTO pushNotificationDto)
+        {
+            var userProfileIds = await dbc.UserChatRooms
+                                          .Where(x => x.Id != userChatRoom.Id &&
+                                              x.ChatRoomId == userChatRoom.ChatRoomId &&
+                                              x.DateBlocked == null &&
+                                              x.DateDeleted == null &&
+                                              x.DateExited == null)
+                                          .Select(x => x.UserProfileId)
+                                          .ToListAsync();
+
+            var outcomes = await _pushNotificationService.SendAsync(dbc, userProfileIds, pushNotificationDto);
+        }
+
         [HttpDelete]
         public async Task<IActionResult> Delete(long messageSentId)
         {
             MessageSent message = await dbc.MessagesSent
                 .Include(x => x.Sender)
                 .FirstOrDefaultAsync(x => x.Id == messageSentId);
-           
+
             var user = dbc.UserProfiles.First(u => u.Identity == UserIdentity);
             var utcNow = DateTimeOffset.UtcNow;
 
@@ -425,7 +430,17 @@ namespace WebAPI.Controllers
 
             if (utcNow - message.DateSent >= TimeSpan.FromMinutes(30))
                 return Forbid("Can't delete the massage at this time!");
-             
+
+            var pushNotificationDto = new PushNotificationDTO()
+            {
+                Topic = PushNotificationTopic.MessageDeleted,
+                DateCreated = utcNow,
+                UserChatRoomId = message.SenderId,
+                MessageSentId = message.Id,
+            };
+
+            await SendPushNotificationToEveryone(message.Sender, pushNotificationDto);
+
             message.DateDeleted = DateTimeOffset.UtcNow;
             await dbc.SaveChangesAsync();
 

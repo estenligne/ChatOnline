@@ -6,5 +6,6 @@
         MessageSent,
         MessageReceived,
         MessageRead,
+        MessageDeleted,
     }
 }
