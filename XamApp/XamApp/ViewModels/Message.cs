@@ -12,11 +12,13 @@ namespace XamApp.ViewModels
     {
         private readonly RoomInfo _room;
         private readonly MessageSentDTO _message;
+        private readonly Message _linked;
 
-        public Message(RoomInfo room, MessageSentDTO message)
+        public Message(ChatRoomViewModel chatRoomVM, RoomInfo room, MessageSentDTO message)
         {
             _room = room;
             _message = message;
+            _linked = chatRoomVM.GetMessageById(message.LinkedId);
         }
 
         private ImageSource imageFile;
