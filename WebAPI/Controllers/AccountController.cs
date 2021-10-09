@@ -222,8 +222,9 @@ namespace WebAPI.Controllers
                     user.DateSignedIn = DateTimeOffset.UtcNow;
                     await _userManager.UpdateAsync(user);
 
+                    string jwt = BuildJWT(user.UserName, userDto.Authorization);
                     userDto = _mapper.Map<ApplicationUserDTO>(user);
-                    userDto.Authorization = "Bearer " + BuildJWT(user);
+                    userDto.Authorization = "Bearer " + jwt;
 
                     return Ok(userDto);
                 }
@@ -254,37 +255,41 @@ namespace WebAPI.Controllers
             }
         }
 
-        private string BuildJWT(ApplicationUser user)
+        private string BuildJWT(string sub, string key)
         {
-            var claims = new Claim[]
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
-
-            SecurityKey securityKey;
-            SigningCredentials signingCredentials = null;
-            string secretKey = _configuration["JwtSecurity:SecretKey"];
-            string privateKey = _configuration["JwtSecurity:PrivateKey"];
+            SigningCredentials signingCredentials;
             using RSA rsa = RSA.Create();
 
-            if (!string.IsNullOrEmpty(secretKey))
+            if (key == null || key.Length < 16)
+                key = _configuration["JwtSecurity:SecretKey"];
+            bool isRSA = string.IsNullOrEmpty(key);
+            if (isRSA)
+                key = _configuration["JwtSecurity:PrivateKey"];
+
+            if (!isRSA)
             {
-                securityKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(secretKey));
-                signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
+                var securityKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(key));
+                signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
             }
-            else if (!string.IsNullOrEmpty(privateKey))
+            else
             {
-                rsa.ImportRSAPrivateKey(Convert.FromBase64String(privateKey), out _);
-                securityKey = new RsaSecurityKey(rsa);
-                signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.RsaSha256Signature);
+                rsa.ImportRSAPrivateKey(Convert.FromBase64String(key), out _);
+                var securityKey = new RsaSecurityKey(rsa);
+                signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.RsaSha256);
                 signingCredentials.CryptoProviderFactory = new CryptoProviderFactory { CacheSignatureProviders = false };
             }
 
-            var token = new JwtSecurityToken(
-                issuer: _configuration["URLS"],
-                audience: _configuration["URLS"],
-                claims: claims,
+            var claims = new List<Claim>();
+            claims.Add(new Claim(JwtRegisteredClaimNames.Sub, sub));
+
+            if (!_configuration.GetValue<bool>("JwtSecurity:Shorten"))
+            {
+                claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
+                claims.Add(new Claim(JwtRegisteredClaimNames.Iss, _configuration["URLS"]));
+                claims.Add(new Claim(JwtRegisteredClaimNames.Aud, _configuration["URLS"]));
+            }
+
+            var token = new JwtSecurityToken(claims: claims,
                 expires: DateTime.UtcNow.AddHours(24),
                 signingCredentials: signingCredentials);
 

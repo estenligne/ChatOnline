@@ -111,12 +111,14 @@ namespace WebAPI
             })
             .AddJwtBearer(options =>
             {
+                bool validate = !_configuration.GetValue<bool>("JwtSecurity:Shorten");
+
                 options.SaveToken = true;
                 options.RequireHttpsMetadata = !_env.IsDevelopment();
                 options.TokenValidationParameters = new TokenValidationParameters()
                 {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
+                    ValidateIssuer = validate,
+                    ValidateAudience = validate,
                     ValidAudience = _configuration["URLS"],
                     ValidIssuer = _configuration["JwtSecurity:Issuer"],
                     ValidateLifetime = true,
@@ -124,7 +126,7 @@ namespace WebAPI
                     IssuerSigningKey = securityKey
                 };
 
-                if (string.IsNullOrEmpty(secretKey))
+                if (string.IsNullOrEmpty(secretKey)) // if using RSA
                     options.TokenValidationParameters.CryptoProviderFactory =
                         new CryptoProviderFactory() { CacheSignatureProviders = false };
             });
