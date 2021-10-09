@@ -30,9 +30,10 @@
 
                         <ImageButton
                             Source="{Binding ProfilePhoto}"
-                            BackgroundColor="Yellow"
+                            BackgroundColor="LightSalmon"
                             WidthRequest="55"
                             HeightRequest="55"
+                            Padding="2"
                             Margin="0,0,4,0" />
 
                         <StackLayout
@@ -44,7 +45,7 @@
 
                                 <Label Text="{Binding Name}"
                                     TextColor="Black"
-                                    FontAttributes="Bold"
+                                    FontSize="Medium"
                                     LineBreakMode="NoWrap"
                                     HorizontalOptions="StartAndExpand" />
 

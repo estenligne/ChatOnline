@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web;
 using Global.Models;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -81,14 +82,14 @@ namespace XamApp.Views
                     url = "/api/GroupProfile/JoinGroup";
                     url += "?userProfileId=" + user.UserProfileId;
                     url += "&groupProfileId=" + groupProfileId;
-                    url += "&joinToken=" + joinToken;
+                    url += "&joinToken=" + HttpUtility.UrlEncode(joinToken);
                 }
                 else // if creating a private chat room with another user
                 {
                     url = "/api/ChatRoom/CreatePrivate";
                     url += "?userProfileId=" + user.UserProfileId;
                     url += "&emailAddress=" + vm.Email;
-                    url += "&phoneNumber=" + vm.PhoneNumber;
+                    url += "&phoneNumber=" + HttpUtility.UrlEncode(vm.PhoneNumber);
                 }
 
                 var response = await HTTPClient.PostAsync(null, url, model);
