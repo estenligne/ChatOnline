@@ -60,5 +60,10 @@ namespace XamApp.ViewModels
         public string Body => _message.Body;
         public string ShortBody => BasicHelpers.GetShortBody(Body, 100);
         public bool HasBody => !string.IsNullOrEmpty(Body);
+
+        public string LinkedMessageSender => _linked?.Sender;
+        public string LinkedMessageBody => _linked?.ShortBody;
+        public bool HasLinkedMessage => _linked != null;
+
     }
 }

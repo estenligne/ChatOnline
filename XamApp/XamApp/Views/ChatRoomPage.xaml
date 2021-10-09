@@ -5,7 +5,7 @@
              xmlns:local="clr-namespace:XamApp.ViewModels"
              Title="{Binding Title}">
 
-    <StackLayout Orientation="Vertical" BackgroundColor="LightYellow">
+    <StackLayout Orientation="Vertical" x:DataType="local:ChatRoomViewModel" BackgroundColor="LightYellow">
 
         <CollectionView x:Name="MessagesView"
             ItemsSource="{Binding Messages}"
@@ -29,7 +29,19 @@
                                     FontAttributes="Bold"
                                     IsVisible="{Binding IsGroupChat}" />
 
-                                <Image
+                                <StackLayout
+                                    Orientation="Vertical"
+                                    BackgroundColor="#EEEEEE"
+                                    Padding="10"
+                                    VerticalOptions="Center"
+                                    HorizontalOptions="FillAndExpand"
+                                    IsVisible="{Binding HasLinkedMessage}">
+
+                                    <Label Text="{Binding LinkedMessageSender}" TextColor="Brown" />
+                                    <Label Text="{Binding LinkedMessageBody}" TextColor="#333333" />
+                                </StackLayout>
+                                
+                                 <Image
                                     Source="{Binding ImageFile}"
                                     IsVisible="{Binding HasImage}"
                                     BackgroundColor="Transparent" />
@@ -53,6 +65,18 @@
                                     FontAttributes="Bold"
                                     IsVisible="{Binding IsGroupChat}" />
 
+                                <StackLayout
+                                    Orientation="Vertical"
+                                    BackgroundColor="#EEEEEE"
+                                    Padding="10"
+                                    VerticalOptions="Center"
+                                    HorizontalOptions="FillAndExpand"
+                                    IsVisible="{Binding HasLinkedMessage}">
+
+                                    <Label Text="{Binding LinkedMessageSender}" TextColor="Brown" />
+                                    <Label Text="{Binding LinkedMessageBody}" TextColor="#333333" />
+                                </StackLayout>
+
                                 <Image
                                     Source="{Binding ImageFile}"
                                     IsVisible="{Binding HasImage}"
@@ -73,12 +97,17 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
 
-        <Label Text="{Binding LinkedMessageBody}"
-            IsVisible="{Binding HasLinkedMessage}"
+        <StackLayout
+            Orientation="Vertical"
             BackgroundColor="#EEEEEE"
             Padding="10"
             VerticalOptions="Center"
-            HorizontalOptions="FillAndExpand" />
+            HorizontalOptions="FillAndExpand"
+            IsVisible="{Binding HasLinkedMessage}">
+
+            <Label Text="{Binding LinkedMessageSender}" TextColor="Brown" />
+            <Label Text="{Binding LinkedMessageBody}" TextColor="#333333" />
+        </StackLayout>
 
         <StackLayout Orientation="Horizontal" Margin="6,0,6,6">
             <Button

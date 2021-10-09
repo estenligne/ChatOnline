@@ -120,10 +120,12 @@ namespace XamApp.ViewModels
         public void SetLinkedMessage(Message linked)
         {
             _linked = linked;
+            OnPropertyChanged(nameof(LinkedMessageSender));
             OnPropertyChanged(nameof(LinkedMessageBody));
             OnPropertyChanged(nameof(HasLinkedMessage));
         }
 
+        public string LinkedMessageSender => _linked?.Sender;
         public string LinkedMessageBody => _linked?.ShortBody;
         public bool HasLinkedMessage => _linked != null;
 
