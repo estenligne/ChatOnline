@@ -40,8 +40,8 @@
                                     <Label Text="{Binding LinkedMessageSender}" TextColor="Brown" />
                                     <Label Text="{Binding LinkedMessageBody}" TextColor="#333333" />
                                 </StackLayout>
-                                
-                                 <Image
+
+                                <Image
                                     Source="{Binding ImageFile}"
                                     IsVisible="{Binding HasImage}"
                                     BackgroundColor="Transparent" />
@@ -90,12 +90,7 @@
 
                         <StackLayout.GestureRecognizers>
                             <SwipeGestureRecognizer Direction="Right" Swiped="OnSwipedRight" />
-                        </StackLayout.GestureRecognizers>
-
-                        <StackLayout.GestureRecognizers>
-                            <TapGestureRecognizer
-                                Tapped="OnMessageDoubleTapped"
-                                NumberOfTapsRequired="2"/>  
+                            <TapGestureRecognizer Tapped="OnMessageDoubleTapped" NumberOfTapsRequired="2" />
                         </StackLayout.GestureRecognizers>
 
                     </StackLayout>
