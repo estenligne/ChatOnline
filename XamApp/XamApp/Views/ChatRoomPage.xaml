@@ -5,6 +5,14 @@
              xmlns:local="clr-namespace:XamApp.ViewModels"
              Title="{Binding Title}">
 
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="LinkedMessageBackground">#EEEEEE</Color>
+            <Color x:Key="LinkedMessageSender">Brown</Color>
+            <Color x:Key="LinkedMessageBody">#333333</Color>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
     <StackLayout Orientation="Vertical" x:DataType="local:ChatRoomViewModel" BackgroundColor="LightYellow">
 
         <CollectionView x:Name="MessagesView"
@@ -31,17 +39,17 @@
 
                                 <StackLayout
                                     Orientation="Vertical"
-                                    BackgroundColor="#EEEEEE"
+                                    BackgroundColor="{StaticResource LinkedMessageBackground}"
                                     Padding="10"
                                     VerticalOptions="Center"
                                     HorizontalOptions="FillAndExpand"
                                     IsVisible="{Binding HasLinkedMessage}">
 
-                                    <Label Text="{Binding LinkedMessageSender}" TextColor="Brown" />
-                                    <Label Text="{Binding LinkedMessageBody}" TextColor="#333333" />
+                                    <Label Text="{Binding LinkedMessageSender}" TextColor="{StaticResource LinkedMessageSender}" />
+                                    <Label Text="{Binding LinkedMessageBody}" TextColor="{StaticResource LinkedMessageBody}" />
                                 </StackLayout>
-                                
-                                 <Image
+
+                                <Image
                                     Source="{Binding ImageFile}"
                                     IsVisible="{Binding HasImage}"
                                     BackgroundColor="Transparent" />
@@ -67,14 +75,14 @@
 
                                 <StackLayout
                                     Orientation="Vertical"
-                                    BackgroundColor="#EEEEEE"
+                                    BackgroundColor="{StaticResource LinkedMessageBackground}"
                                     Padding="10"
                                     VerticalOptions="Center"
                                     HorizontalOptions="FillAndExpand"
                                     IsVisible="{Binding HasLinkedMessage}">
 
-                                    <Label Text="{Binding LinkedMessageSender}" TextColor="Brown" />
-                                    <Label Text="{Binding LinkedMessageBody}" TextColor="#333333" />
+                                    <Label Text="{Binding LinkedMessageSender}" TextColor="{StaticResource LinkedMessageSender}" />
+                                    <Label Text="{Binding LinkedMessageBody}" TextColor="{StaticResource LinkedMessageBody}" />
                                 </StackLayout>
 
                                 <Image
@@ -99,14 +107,14 @@
 
         <StackLayout
             Orientation="Vertical"
-            BackgroundColor="#EEEEEE"
+            BackgroundColor="{StaticResource LinkedMessageBackground}"
             Padding="10"
             VerticalOptions="Center"
             HorizontalOptions="FillAndExpand"
             IsVisible="{Binding HasLinkedMessage}">
 
-            <Label Text="{Binding LinkedMessageSender}" TextColor="Brown" />
-            <Label Text="{Binding LinkedMessageBody}" TextColor="#333333" />
+            <Label Text="{Binding LinkedMessageSender}" TextColor="{StaticResource LinkedMessageSender}" />
+            <Label Text="{Binding LinkedMessageBody}" TextColor="{StaticResource LinkedMessageBody}" />
         </StackLayout>
 
         <StackLayout Orientation="Horizontal" Margin="6,0,6,6">
