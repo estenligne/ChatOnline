@@ -113,14 +113,19 @@ namespace WebAPI
             {
                 bool validate = !_configuration.GetValue<bool>("JwtSecurity:Shorten");
 
+                string issuer = _configuration["JwtSecurity:Issuer"];
+                string audience = _configuration["URLS"];
+                if (string.IsNullOrEmpty(audience))
+                    audience = issuer;
+
                 options.SaveToken = true;
                 options.RequireHttpsMetadata = !_env.IsDevelopment();
                 options.TokenValidationParameters = new TokenValidationParameters()
                 {
                     ValidateIssuer = validate,
                     ValidateAudience = validate,
-                    ValidAudience = _configuration["URLS"],
-                    ValidIssuer = _configuration["JwtSecurity:Issuer"],
+                    ValidAudience = audience,
+                    ValidIssuer = issuer,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = securityKey

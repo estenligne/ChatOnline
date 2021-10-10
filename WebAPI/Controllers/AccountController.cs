@@ -284,9 +284,14 @@ namespace WebAPI.Controllers
 
             if (!_configuration.GetValue<bool>("JwtSecurity:Shorten"))
             {
+                string issuer = _configuration["JwtSecurity:Issuer"];
+                string audience = Request.Headers["Origin"];
+                if (string.IsNullOrEmpty(audience))
+                    audience = issuer;
+
                 claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
-                claims.Add(new Claim(JwtRegisteredClaimNames.Iss, _configuration["URLS"]));
-                claims.Add(new Claim(JwtRegisteredClaimNames.Aud, _configuration["URLS"]));
+                claims.Add(new Claim(JwtRegisteredClaimNames.Iss, issuer));
+                claims.Add(new Claim(JwtRegisteredClaimNames.Aud, audience));
             }
 
             var token = new JwtSecurityToken(claims: claims,

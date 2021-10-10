@@ -16,14 +16,14 @@ namespace WebAPI.Setup
 
         public Task Invoke(HttpContext context)
         {
-            string origin = (string)context.Request.Headers["Origin"];
-            context.Response.Headers.Add("Access-Control-Allow-Origin", new[] { origin });
-            context.Response.Headers.Add("Access-Control-Allow-Credentials", new[] { "true" });
+            string origin = context.Request.Headers["Origin"];
+            context.Response.Headers.Add("Access-Control-Allow-Origin", origin);
+            context.Response.Headers.Add("Access-Control-Allow-Credentials", "true");
 
             if (context.Request.Method == "OPTIONS")
             {
-                context.Response.Headers.Add("Access-Control-Allow-Headers", new[] { "Origin, Host, Content-Type, Accept, Authorization, Cookie, X-Requested-With" });
-                context.Response.Headers.Add("Access-Control-Allow-Methods", new[] { "GET, POST, PUT, PATCH, DELETE" });
+                context.Response.Headers.Add("Access-Control-Allow-Headers", "Origin, Host, Content-Type, Accept, Authorization, Cookie, X-Requested-With");
+                context.Response.Headers.Add("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE");
                 context.Response.StatusCode = (int)HttpStatusCode.NoContent;
                 return Task.CompletedTask;
             }
