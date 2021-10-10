@@ -3,46 +3,41 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="XamApp.Views.AboutPage"
              Title="About">
-    
+
     <ContentPage.Resources>
         <ResourceDictionary>
-            <Color x:Key="Accent">#3F51B5F3</Color>
+            <Style TargetType="Label">
+                <Setter Property="TextType" Value="Html" />
+                <Setter Property="TextColor" Value="#444444" />
+            </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <StackLayout BackgroundColor="{StaticResource Accent}" VerticalOptions="FillAndExpand" HorizontalOptions="Fill">
-            <StackLayout Orientation="Horizontal" HorizontalOptions="Center" VerticalOptions="Center">
-                <ContentView Padding="0,40,0,40" VerticalOptions="FillAndExpand">
-                    <Image Source="icon_logo.png" VerticalOptions="Center" HeightRequest="64" />
-                </ContentView>
+    <ScrollView>
+        <StackLayout>
+            <ContentView BackgroundColor="{StaticResource LightPrimary}" Padding="30">
+                <Image Source="icon_logo.png" VerticalOptions="Center" HeightRequest="50" />
+            </ContentView>
+
+            <StackLayout Orientation="Vertical" Padding="24"  Spacing="20">
+
+                <Label Text="Welcome to ChatOnline" TextColor="Black"
+                       FontSize="Title" />
+                
+                <Label Text="This, is the revolutionary messaging application you have been waiting for... An app that will seamlessly bring your real life conversation experiences online."
+                       FontSize="16" />
+
+                <Label Text="You will now be able to keep in touch with the people you know even when far apart, yet with as much energy and excitement as you would have if close. ChatOnline's motto is that &lt;i&gt;Not even space-time can separate us!&lt;/i&gt;"
+                       FontSize="16" />
+
+                <Label Text="ChatOnline is built with &lt;strong&gt;Rhyscitlema&lt;/strong&gt;'s quality motto in mind, which is to provide products and services that are USERFOIL: Useful, Secure, Efficient, Robust, Flexible, Original, Interesting and Lasting."
+                       FontSize="16" />
+
+                <Label FontSize="16" Text="{Binding .}" />
+
+                <Button Text="Learn more" Clicked="LearnMoreClicked" Margin="0,10,0,0" />
             </StackLayout>
         </StackLayout>
-        <ScrollView Grid.Row="1">
-            <StackLayout Orientation="Vertical" Padding="30,24,30,24" Spacing="10">
-                <Label Text="Welcome to ChatOnline" FontSize="Title"/>
-                <Label Text="A new messaging mobile application to replace WhatsApp and its competitors, as part of a large scale initiative to start consuming home made products. " FontSize="16" />
-                <Label FontSize="16" Padding="0,24,0,0">
-                    <Label.FormattedText>
-                        <FormattedString>
-                            <FormattedString.Spans>
-                                <Span Text="Learn more at "/>
-                                <Span Text="{Binding .}" FontAttributes="Bold"/>
-                            </FormattedString.Spans>
-                        </FormattedString>
-                    </Label.FormattedText>
-                </Label>
-                <Button Margin="0,10,0,0"
-                        Text="Learn more"
-                        Clicked="LearnMoreClicked"
-                        BackgroundColor="{StaticResource Primary}"
-                        TextColor="White" />
-            </StackLayout>
-        </ScrollView>
-    </Grid>
+    </ScrollView>
 
 </ContentPage>

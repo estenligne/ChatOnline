@@ -11,7 +11,7 @@ namespace XamApp.Views
         public AboutPage()
         {
             InitializeComponent();
-            BindingContext = url;
+            BindingContext = $"Learn more about the open-source project at <strong>{url}</strong>";
         }
 
         private async void LearnMoreClicked(object sender, EventArgs e)
