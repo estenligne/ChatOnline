@@ -50,8 +50,10 @@ namespace XamApp.ViewModels
             }
         }
 
-        public bool IamSender => _message.DateReceived == null;
-        public bool AmNotSender => !IamSender;
+        public Color BackgroundColor => IamSender ? Color.LightGreen : Color.LightPink;
+        public LayoutOptions HorizontalOptions => IamSender ? LayoutOptions.Start : LayoutOptions.End;
+
+        private bool IamSender => _message.DateReceived == null;
         public bool IsGroupChat => _room.Type == ChatRoomTypeEnum.Group;
 
         public long Id => _message.Id;
