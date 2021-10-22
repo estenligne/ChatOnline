@@ -36,10 +36,10 @@ namespace XamApp.Views
             vm.OnDisappearing();
         }
 
-        private void OnSwipedRight(object sender, SwipedEventArgs e)
+        private void OnSwipedRight(object sender, EventArgs e)
         {
-            StackLayout stackLayout = (StackLayout)sender;
-            Message message = (Message)stackLayout.BindingContext;
+            Element element = (Element)sender;
+            Message message = (Message)element.BindingContext;
             vm.SetLinkedMessage(message);
         }
 

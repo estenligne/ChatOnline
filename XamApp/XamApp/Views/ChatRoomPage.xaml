@@ -24,81 +24,93 @@
                 <DataTemplate>
                     <StackLayout x:DataType="local:Message" Padding="6">
 
-                        <Frame Padding="6"
-                            CornerRadius="6"
-                            WidthRequest="300"
-                            HorizontalOptions="Start"
-                            BackgroundColor="LightGreen"
-                            IsVisible="{Binding IamSender}">
+                        <SwipeView Threshold="100" BackgroundColor="Transparent" IsVisible="{Binding IamSender}">
 
-                            <StackLayout Orientation="Vertical">
-                                <Label Text="{Binding Sender}"
-                                    TextColor="Black"
-                                    FontAttributes="Bold"
-                                    IsVisible="{Binding IsGroupChat}" />
+                            <SwipeView.LeftItems>
+                                <SwipeItems Mode="Execute">
+                                    <SwipeItem Invoked="OnSwipedRight"/>
+                                </SwipeItems>
+                            </SwipeView.LeftItems>
 
-                                <StackLayout
-                                    Orientation="Vertical"
-                                    BackgroundColor="{StaticResource LinkedMessageBackground}"
-                                    Padding="10"
-                                    VerticalOptions="Center"
-                                    HorizontalOptions="FillAndExpand"
-                                    IsVisible="{Binding HasLinkedMessage}">
+                            <Frame Padding="6"
+                                CornerRadius="6"
+                                WidthRequest="300"
+                                HorizontalOptions="Start"
+                                BackgroundColor="LightGreen">
 
-                                    <Label Text="{Binding LinkedMessageSender}" TextColor="{StaticResource LinkedMessageSender}" />
-                                    <Label Text="{Binding LinkedMessageBody}" TextColor="{StaticResource LinkedMessageBody}" />
+                                <StackLayout Orientation="Vertical">
+                                    <Label Text="{Binding Sender}"
+                                        TextColor="Black"
+                                        FontAttributes="Bold"
+                                        IsVisible="{Binding IsGroupChat}" />
+
+                                    <StackLayout
+                                        Orientation="Vertical"
+                                        BackgroundColor="{StaticResource LinkedMessageBackground}"
+                                        Padding="10"
+                                        VerticalOptions="Center"
+                                        HorizontalOptions="FillAndExpand"
+                                        IsVisible="{Binding HasLinkedMessage}">
+
+                                        <Label Text="{Binding LinkedMessageSender}" TextColor="{StaticResource LinkedMessageSender}" />
+                                        <Label Text="{Binding LinkedMessageBody}" TextColor="{StaticResource LinkedMessageBody}" />
+                                    </StackLayout>
+
+                                    <Image
+                                        Source="{Binding ImageFile}"
+                                        IsVisible="{Binding HasImage}"
+                                        BackgroundColor="Transparent" />
+
+                                    <Label Text="{Binding Body}"
+                                        IsVisible="{Binding HasBody}"
+                                        TextColor="Black" />
                                 </StackLayout>
+                            </Frame>
+                        </SwipeView>
 
-                                <Image
-                                    Source="{Binding ImageFile}"
-                                    IsVisible="{Binding HasImage}"
-                                    BackgroundColor="Transparent" />
+                        <SwipeView Threshold="100" BackgroundColor="Transparent" IsVisible="{Binding AmNotSender}">
 
-                                <Label Text="{Binding Body}"
-                                    IsVisible="{Binding HasBody}"
-                                    TextColor="Black" />
-                            </StackLayout>
-                        </Frame>
+                            <SwipeView.LeftItems>
+                                <SwipeItems Mode="Execute">
+                                    <SwipeItem Invoked="OnSwipedRight"/>
+                                </SwipeItems>
+                            </SwipeView.LeftItems>
 
-                        <Frame Padding="6"
-                            CornerRadius="6"
-                            WidthRequest="300"
-                            HorizontalOptions="End"
-                            BackgroundColor="Pink"
-                            IsVisible="{Binding AmNotSender}">
+                            <Frame Padding="6"
+                                CornerRadius="6"
+                                WidthRequest="300"
+                                HorizontalOptions="End"
+                                BackgroundColor="Pink">
 
-                            <StackLayout Orientation="Vertical">
-                                <Label Text="{Binding Sender}"
-                                    TextColor="Black"
-                                    FontAttributes="Bold"
-                                    IsVisible="{Binding IsGroupChat}" />
+                                <StackLayout Orientation="Vertical">
+                                    <Label Text="{Binding Sender}"
+                                        TextColor="Black"
+                                        FontAttributes="Bold"
+                                        IsVisible="{Binding IsGroupChat}" />
 
-                                <StackLayout
-                                    Orientation="Vertical"
-                                    BackgroundColor="{StaticResource LinkedMessageBackground}"
-                                    Padding="10"
-                                    VerticalOptions="Center"
-                                    HorizontalOptions="FillAndExpand"
-                                    IsVisible="{Binding HasLinkedMessage}">
+                                    <StackLayout
+                                        Orientation="Vertical"
+                                        BackgroundColor="{StaticResource LinkedMessageBackground}"
+                                        Padding="10"
+                                        VerticalOptions="Center"
+                                        HorizontalOptions="FillAndExpand"
+                                        IsVisible="{Binding HasLinkedMessage}">
 
-                                    <Label Text="{Binding LinkedMessageSender}" TextColor="{StaticResource LinkedMessageSender}" />
-                                    <Label Text="{Binding LinkedMessageBody}" TextColor="{StaticResource LinkedMessageBody}" />
+                                        <Label Text="{Binding LinkedMessageSender}" TextColor="{StaticResource LinkedMessageSender}" />
+                                        <Label Text="{Binding LinkedMessageBody}" TextColor="{StaticResource LinkedMessageBody}" />
+                                    </StackLayout>
+
+                                    <Image
+                                        Source="{Binding ImageFile}"
+                                        IsVisible="{Binding HasImage}"
+                                        BackgroundColor="Transparent" />
+
+                                    <Label Text="{Binding Body}"
+                                        IsVisible="{Binding HasBody}"
+                                        TextColor="Black" />
                                 </StackLayout>
-
-                                <Image
-                                    Source="{Binding ImageFile}"
-                                    IsVisible="{Binding HasImage}"
-                                    BackgroundColor="Transparent" />
-
-                                <Label Text="{Binding Body}"
-                                    IsVisible="{Binding HasBody}"
-                                    TextColor="Black" />
-                            </StackLayout>
-                        </Frame>
-
-                        <StackLayout.GestureRecognizers>
-                            <SwipeGestureRecognizer Direction="Right" Swiped="OnSwipedRight" />
-                        </StackLayout.GestureRecognizers>
+                            </Frame>
+                        </SwipeView>
 
                     </StackLayout>
                 </DataTemplate>
