@@ -43,6 +43,11 @@ namespace XamApp.Views
             vm.SetLinkedMessage(message);
         }
 
+        private void OnCloseReplyView(object sender, EventArgs e)
+        {
+            vm.SetLinkedMessage(null);
+        }
+
         private async void SendFile(object sender, EventArgs e)
         {
             ((Button)sender).IsEnabled = false;

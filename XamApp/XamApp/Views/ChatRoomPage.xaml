@@ -117,17 +117,29 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
 
-        <StackLayout
-            Orientation="Vertical"
+        <AbsoluteLayout
             BackgroundColor="{StaticResource LinkedMessageBackground}"
-            Padding="10"
-            VerticalOptions="Center"
             HorizontalOptions="FillAndExpand"
             IsVisible="{Binding HasLinkedMessage}">
 
-            <Label Text="{Binding LinkedMessageSender}" TextColor="{StaticResource LinkedMessageSender}" />
-            <Label Text="{Binding LinkedMessageBody}" TextColor="{StaticResource LinkedMessageBody}" />
-        </StackLayout>
+            <StackLayout Padding="10"
+                Orientation="Vertical"
+                VerticalOptions="Center">
+
+                <Label Text="{Binding LinkedMessageSender}" TextColor="{StaticResource LinkedMessageSender}" />
+                <Label Text="{Binding LinkedMessageBody}" TextColor="{StaticResource LinkedMessageBody}" />
+            </StackLayout>
+
+            <Button Text="X"
+                    Padding="0"
+                    TextColor="Black"
+                    BackgroundColor="Transparent"
+                    WidthRequest="20"
+                    HeightRequest="25"
+                    AbsoluteLayout.LayoutBounds="1,0"
+                    AbsoluteLayout.LayoutFlags="PositionProportional"
+                    Clicked="OnCloseReplyView" />
+        </AbsoluteLayout>
 
         <StackLayout Orientation="Horizontal" Margin="6,0,6,6">
             <Button
