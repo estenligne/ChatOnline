@@ -63,6 +63,12 @@
                                 <Label Text="{Binding Body}"
                                     IsVisible="{Binding HasBody}"
                                     TextColor="Black" />
+
+                                <Label Text="{Binding FooterInfo}"
+                                    FontSize="12"
+                                    TextType="Html"
+                                    LineBreakMode="NoWrap"
+                                    HorizontalOptions="End" />
                             </StackLayout>
                         </Frame>
                     </SwipeView>

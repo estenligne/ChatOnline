@@ -63,6 +63,15 @@ namespace XamApp.ViewModels
         public string ShortBody => BasicHelpers.GetShortBody(Body, 100);
         public bool HasBody => !string.IsNullOrEmpty(Body);
 
+        public string FooterInfo
+        {
+            get
+            {
+                string timeSent = _message.DateSent.ToLocalTime().ToString("HH:mm");
+                return timeSent;
+            }
+        }
+
         public string LinkedMessageSender => _linked?.Sender;
         public string LinkedMessageBody => _linked?.ShortBody;
         public bool HasLinkedMessage => _linked != null;
