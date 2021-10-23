@@ -34,10 +34,29 @@ namespace XamApp.ViewModels
             OnPropertyChanged(nameof(ShowSendButton));
         }
 
+        private int GetNextIndex(Message message)
+        {
+            int count = Messages.Count;
+            Message last = count != 0 ? Messages[count - 1] : null;
+
+            if (last == null || last.DateOccurred.ToUniversalTime().Date != message.DateOccurred.ToUniversalTime().Date)
+            {
+                var eventDto = new EventDTO
+                {
+                    Event = ChatRoomEventEnum.DateChanged,
+                    DateOccurred = message.DateOccurred,
+                    DateCreated = DateTimeOffset.Now
+                };
+                Messages.Add(new Message(eventDto));
+                count += 1;
+            }
+            return count;
+        }
+
         private void AddMessage(MessageSentDTO message)
         {
             Message msg = new Message(this, message);
-            MessageIndex[msg.Id] = Messages.Count;
+            MessageIndex[msg.Id] = GetNextIndex(msg);
             Messages.Add(msg);
         }
 

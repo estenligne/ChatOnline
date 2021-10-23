@@ -13,12 +13,36 @@ namespace XamApp.ViewModels
         private readonly ChatRoomViewModel _chatRoom;
         private readonly MessageSentDTO _message;
         private readonly Message _linked;
+        private readonly EventDTO _eventDto;
 
         public Message(ChatRoomViewModel chatRoom, MessageSentDTO message)
         {
             _chatRoom = chatRoom;
             _message = message;
             _linked = chatRoom.GetMessageById(message.LinkedId);
+        }
+
+        public Message(EventDTO eventDto)
+        {
+            _eventDto = eventDto;
+        }
+
+        public bool IsAnEvent => _message == null;
+        public bool NotAnEvent => !IsAnEvent;
+        public DateTimeOffset DateOccurred => IsAnEvent ? _eventDto.DateOccurred : _message.DateSent;
+
+        public string EventMessage
+        {
+            get
+            {
+                switch (_eventDto?.Event)
+                {
+                    case ChatRoomEventEnum.DateChanged:
+                        return DateOccurred.ToLocalTime().ToString("dd/MM/yyyy");
+
+                    default: return null;
+                }
+            }
         }
 
         private ImageSource imageFile;
