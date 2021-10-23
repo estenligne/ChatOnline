@@ -10,15 +10,15 @@ namespace XamApp.ViewModels
 {
     public class Message
     {
-        private readonly RoomInfo _room;
+        private readonly ChatRoomViewModel _chatRoom;
         private readonly MessageSentDTO _message;
         private readonly Message _linked;
 
-        public Message(ChatRoomViewModel chatRoomVM, RoomInfo room, MessageSentDTO message)
+        public Message(ChatRoomViewModel chatRoom, MessageSentDTO message)
         {
-            _room = room;
+            _chatRoom = chatRoom;
             _message = message;
-            _linked = chatRoomVM.GetMessageById(message.LinkedId);
+            _linked = chatRoom.GetMessageById(message.LinkedId);
         }
 
         private ImageSource imageFile;
@@ -54,7 +54,7 @@ namespace XamApp.ViewModels
         public LayoutOptions HorizontalOptions => IamSender ? LayoutOptions.Start : LayoutOptions.End;
 
         private bool IamSender => _message.DateReceived == null;
-        public bool IsGroupChat => _room.Type == ChatRoomTypeEnum.Group;
+        public bool IsGroupChat => _chatRoom.IsGroupChat;
 
         public long Id => _message.Id;
         public string Sender => _message.SenderName;

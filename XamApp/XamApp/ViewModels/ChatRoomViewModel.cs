@@ -1,11 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System;
+using Global.Enums;
 using Global.Models;
 using XamApp.Services;
 using Xamarin.Forms;
-using Global.Enums;
 
 namespace XamApp.ViewModels
 {
@@ -18,13 +19,13 @@ namespace XamApp.ViewModels
 
         public Command SendMessageCommand { get; }
         public ObservableCollection<Message> Messages { get; }
-        private Dictionary<long, Message> MessageDict { get; }
+        private Dictionary<long, int> MessageIndex { get; }
 
         public ChatRoomViewModel()
         {
             SendMessageCommand = new Command(SendMessage);
             Messages = new ObservableCollection<Message>();
-            MessageDict = new Dictionary<long, Message>();
+            MessageIndex = new Dictionary<long, int>();
         }
 
         private void SetBusy(bool busy)
@@ -35,9 +36,9 @@ namespace XamApp.ViewModels
 
         private void AddMessage(MessageSentDTO message)
         {
-            Message msg = new Message(this, _room, message);
+            Message msg = new Message(this, message);
+            MessageIndex[msg.Id] = Messages.Count;
             Messages.Add(msg);
-            MessageDict[msg.Id] = msg;
         }
 
         public static bool AddMessageFromPushNotification(MessageSentDTO message)
@@ -81,7 +82,7 @@ namespace XamApp.ViewModels
                     var messages = await HTTPClient.ReadAsAsync<List<MessageSentDTO>>(response);
 
                     Messages.Clear();
-                    MessageDict.Clear();
+                    MessageIndex.Clear();
 
                     foreach (var message in messages)
                         AddMessage(message);
@@ -98,8 +99,30 @@ namespace XamApp.ViewModels
             Message message = null;
             if (id != null)
             {
-                if (!MessageDict.TryGetValue(id.Value, out message))
-                    System.Diagnostics.Trace.TraceError($"Message {id} not found");
+                int index;
+                if (MessageIndex.TryGetValue(id.Value, out index))
+                {
+                    message = Messages[index];
+                }
+                else Trace.TraceError($"Message {id} not found");
+            }
+            return message;
+        }
+
+        public Message GetMessageAdjacent(long id, bool next)
+        {
+            Message message = null;
+            int index;
+            if (MessageIndex.TryGetValue(id, out index))
+            {
+                if (next && index + 1 < Messages.Count)
+                {
+                    message = Messages[index + 1];
+                }
+                else if (!next && index > 0)
+                {
+                    message = Messages[index - 1];
+                }
             }
             return message;
         }
@@ -128,6 +151,8 @@ namespace XamApp.ViewModels
         public string LinkedMessageSender => _linked?.Sender;
         public string LinkedMessageBody => _linked?.ShortBody;
         public bool HasLinkedMessage => _linked != null;
+
+        public bool IsGroupChat => _room.Type == ChatRoomTypeEnum.Group;
 
         public bool ShowSendButton => !IsBusy;
         public bool CanSendMessage => ShowSendButton && !string.IsNullOrEmpty(Body);
