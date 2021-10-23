@@ -75,10 +75,16 @@ namespace XamApp.Views
             var message = (Message)stackLayout.BindingContext;
 
             string action = await DisplayActionSheet(null, "Cancel", null, "Copy", "Reply", "Star", "Infos", "Delete", "Modify");
+            
 
             if(action == "Copy")
             {
                 await Clipboard.SetTextAsync(message.Body);
+            }
+            else if (action == "Delete")
+            {
+                await HTTPClient.DeleteAsync(null ,$"/api/Message?messageSentId={message.Id}");
+                vm.Messages.Remove(message);               
             }
             else if (!string.IsNullOrEmpty(action))
             {
