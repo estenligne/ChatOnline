@@ -10,6 +10,76 @@
             <Color x:Key="LinkedMessageBackground">#EEEEEE</Color>
             <Color x:Key="LinkedMessageSender">Brown</Color>
             <Color x:Key="LinkedMessageBody">#333333</Color>
+
+            <DataTemplate x:Key="MessageDataTemplate" x:DataType="local:Message">
+                <SwipeView Padding="6" Threshold="100" BackgroundColor="Transparent">
+
+                    <SwipeView.LeftItems>
+                        <SwipeItems Mode="Execute">
+                            <SwipeItem Invoked="OnSwipedRight"/>
+                        </SwipeItems>
+                    </SwipeView.LeftItems>
+
+                    <Frame Padding="6"
+                        CornerRadius="6"
+                        WidthRequest="300"
+                        BackgroundColor="{Binding BackgroundColor}"
+                        HorizontalOptions="{Binding HorizontalOptions}">
+
+                        <StackLayout Orientation="Vertical">
+                            <Label Text="{Binding Sender}"
+                                TextColor="Black"
+                                FontAttributes="Bold"
+                                IsVisible="{Binding IsGroupChat}" />
+
+                            <StackLayout
+                                Orientation="Vertical"
+                                BackgroundColor="{StaticResource LinkedMessageBackground}"
+                                Padding="10"
+                                VerticalOptions="Center"
+                                HorizontalOptions="FillAndExpand"
+                                IsVisible="{Binding HasLinkedMessage}">
+
+                                <Label Text="{Binding LinkedMessageSender}" TextColor="{StaticResource LinkedMessageSender}" />
+                                <Label Text="{Binding LinkedMessageBody}" TextColor="{StaticResource LinkedMessageBody}" />
+                            </StackLayout>
+
+                            <Image
+                                Source="{Binding ImageFile}"
+                                IsVisible="{Binding HasImage}"
+                                BackgroundColor="Transparent" />
+
+                            <Label Text="{Binding Body}"
+                                IsVisible="{Binding HasBody}"
+                                TextColor="Black" />
+
+                            <Label Text="{Binding FooterInfo}"
+                                FontSize="12"
+                                TextType="Html"
+                                LineBreakMode="NoWrap"
+                                HorizontalOptions="End" />
+                        </StackLayout>
+                    </Frame>
+                </SwipeView>
+            </DataTemplate>
+
+            <DataTemplate x:Key="EventDataTemplate" x:DataType="local:Message">
+                <ContentView Padding="0,6,0,0">
+                    <Frame
+                        Padding="6"
+                        CornerRadius="6"
+                        HorizontalOptions="Center"
+                        BackgroundColor="DarkCyan">
+
+                        <Label TextColor="White" Text="{Binding EventMessage}" />
+                    </Frame>
+                </ContentView>
+            </DataTemplate>
+
+            <local:MessageTemplateSelector x:Key="MessageTemplateSelector"
+                EventDataTemplate="{StaticResource EventDataTemplate}"
+                MessageDataTemplate="{StaticResource MessageDataTemplate}"/>
+
         </ResourceDictionary>
     </ContentPage.Resources>
 
@@ -17,65 +87,9 @@
 
         <CollectionView x:Name="MessagesView"
             ItemsSource="{Binding Messages}"
+            ItemTemplate="{StaticResource MessageTemplateSelector}"
             VerticalOptions="StartAndExpand"
-            VerticalScrollBarVisibility="Always">
-
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="local:Message">
-
-                    <SwipeView Padding="6" Threshold="100" BackgroundColor="Transparent">
-
-                        <SwipeView.LeftItems>
-                            <SwipeItems Mode="Execute">
-                                <SwipeItem Invoked="OnSwipedRight"/>
-                            </SwipeItems>
-                        </SwipeView.LeftItems>
-
-                        <Frame Padding="6"
-                            CornerRadius="6"
-                            WidthRequest="300"
-                            BackgroundColor="{Binding BackgroundColor}"
-                            HorizontalOptions="{Binding HorizontalOptions}">
-
-                            <StackLayout Orientation="Vertical">
-                                <Label Text="{Binding Sender}"
-                                    TextColor="Black"
-                                    FontAttributes="Bold"
-                                    IsVisible="{Binding IsGroupChat}" />
-
-                                <StackLayout
-                                    Orientation="Vertical"
-                                    BackgroundColor="{StaticResource LinkedMessageBackground}"
-                                    Padding="10"
-                                    VerticalOptions="Center"
-                                    HorizontalOptions="FillAndExpand"
-                                    IsVisible="{Binding HasLinkedMessage}">
-
-                                    <Label Text="{Binding LinkedMessageSender}" TextColor="{StaticResource LinkedMessageSender}" />
-                                    <Label Text="{Binding LinkedMessageBody}" TextColor="{StaticResource LinkedMessageBody}" />
-                                </StackLayout>
-
-                                <Image
-                                    Source="{Binding ImageFile}"
-                                    IsVisible="{Binding HasImage}"
-                                    BackgroundColor="Transparent" />
-
-                                <Label Text="{Binding Body}"
-                                    IsVisible="{Binding HasBody}"
-                                    TextColor="Black" />
-
-                                <Label Text="{Binding FooterInfo}"
-                                    FontSize="12"
-                                    TextType="Html"
-                                    LineBreakMode="NoWrap"
-                                    HorizontalOptions="End" />
-                            </StackLayout>
-                        </Frame>
-                    </SwipeView>
-
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+            VerticalScrollBarVisibility="Always" />
 
         <AbsoluteLayout
             BackgroundColor="{StaticResource LinkedMessageBackground}"
