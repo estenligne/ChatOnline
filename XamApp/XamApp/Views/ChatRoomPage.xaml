@@ -60,6 +60,10 @@
                                 HorizontalOptions="End" />
                         </StackLayout>
                     </Frame>
+
+                    <SwipeView.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnMessageDoubleTapped" NumberOfTapsRequired="2" />
+                    </SwipeView.GestureRecognizers>
                 </SwipeView>
             </DataTemplate>
 
