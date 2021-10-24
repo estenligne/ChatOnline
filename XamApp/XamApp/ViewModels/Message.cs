@@ -19,7 +19,7 @@ namespace XamApp.ViewModels
         {
             _chatRoom = chatRoom;
             _message = message;
-            _linked = chatRoom.GetMessageById(message.LinkedId);
+            _linked = chatRoom.GetMessage(message.LinkedId);
         }
 
         public Message(EventDTO eventDto)

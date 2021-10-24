@@ -113,37 +113,26 @@ namespace XamApp.ViewModels
             }
         }
 
-        public Message GetMessageById(long? id)
+        public int GetMessageIndex(long? id)
         {
-            Message message = null;
-            if (id != null)
+            int index = -1;
+            if (id != null && !MessageIndex.TryGetValue(id.Value, out index))
             {
-                int index;
-                if (MessageIndex.TryGetValue(id.Value, out index))
-                {
-                    message = Messages[index];
-                }
-                else Trace.TraceError($"Message {id} not found");
+                Trace.TraceError($"Message {id} not found");
             }
-            return message;
+            return index;
         }
 
-        public Message GetMessageAdjacent(long id, bool next)
+        public Message GetMessage(long? id, int offset = 0)
         {
-            Message message = null;
-            int index;
-            if (MessageIndex.TryGetValue(id, out index))
+            int index = GetMessageIndex(id);
+            if (index >= 0)
             {
-                if (next && index + 1 < Messages.Count)
-                {
-                    message = Messages[index + 1];
-                }
-                else if (!next && index > 0)
-                {
-                    message = Messages[index - 1];
-                }
+                index += offset;
+                if (0 <= index && index < Messages.Count)
+                    return Messages[index];
             }
-            return message;
+            return null;
         }
 
         public string Body
