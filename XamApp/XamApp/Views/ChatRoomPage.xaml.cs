@@ -73,5 +73,28 @@ namespace XamApp.Views
             }
             ((Button)sender).IsEnabled = true;
         }
+
+        private async void OnMessageDoubleTapped(object sender, EventArgs e)
+        {
+            var stackLayout = (StackLayout)sender;
+            var message = (Message)stackLayout.BindingContext;
+
+            string action = await DisplayActionSheet(null, "Cancel", null, "Copy", "Reply", "Star", "Infos", "Delete", "Modify");
+            
+
+            if(action == "Copy")
+            {
+                await Clipboard.SetTextAsync(message.Body);
+            }
+            else if (action == "Delete")
+            {
+                await HTTPClient.DeleteAsync(null ,$"/api/Message?messageSentId={message.Id}");
+                vm.Messages.Remove(message);               
+            }
+            else if (!string.IsNullOrEmpty(action))
+            {
+                await DisplayAlert("Sorry", $"{action} not yet implemented!", "Ok");
+            }
+        }
     }
 }
