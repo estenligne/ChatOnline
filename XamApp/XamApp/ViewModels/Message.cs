@@ -27,18 +27,41 @@ namespace XamApp.ViewModels
             _eventDto = eventDto;
         }
 
-        public bool IsAnEvent => _message == null;
-        public bool NotAnEvent => !IsAnEvent;
+        public bool IsAnEvent => _message == null || _message.DateDeleted != null;
         public DateTimeOffset DateOccurred => IsAnEvent ? _eventDto.DateOccurred : _message.DateSent;
+
+        private ChatRoomEventEnum Event => _eventDto != null ? _eventDto.Event :
+            _message?.DateDeleted != null ? ChatRoomEventEnum.MessageDeleted :
+            ChatRoomEventEnum.None;
+
+        public Color EventBackgroundColor
+        {
+            get
+            {
+                switch (Event)
+                {
+                    case ChatRoomEventEnum.DateChanged:
+                        return Color.DarkCyan;
+
+                    case ChatRoomEventEnum.MessageDeleted:
+                        return Color.LightGray;
+
+                    default: return Color.Black;
+                }
+            }
+        }
 
         public string EventMessage
         {
             get
             {
-                switch (_eventDto?.Event)
+                switch (Event)
                 {
                     case ChatRoomEventEnum.DateChanged:
                         return DateOccurred.ToLocalTime().ToString("dd/MM/yyyy");
+
+                    case ChatRoomEventEnum.MessageDeleted:
+                        return "Message deleted at " + _message.DateDeleted.Value.ToString("HH:mm");
 
                     default: return null;
                 }
@@ -100,5 +123,11 @@ namespace XamApp.ViewModels
         public string LinkedMessageBody => _linked?.ShortBody;
         public bool HasLinkedMessage => _linked != null;
 
+        public void Delete(DateTimeOffset dateDeleted)
+        {
+            _message.DateDeleted = dateDeleted;
+            int index = _chatRoom.GetMessageIndex(Id);
+            _chatRoom.Messages[index] = this; // update
+        }
     }
 }

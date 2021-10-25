@@ -73,7 +73,7 @@
                         Padding="6"
                         CornerRadius="6"
                         HorizontalOptions="Center"
-                        BackgroundColor="DarkCyan">
+                        BackgroundColor="{Binding EventBackgroundColor}">
 
                         <Label TextColor="White" Text="{Binding EventMessage}" />
                     </Frame>

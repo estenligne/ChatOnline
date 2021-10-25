@@ -5,6 +5,7 @@ using Xamarin.Forms.Xaml;
 using Xamarin.Essentials;
 using System;
 using System.IO;
+using System.Web;
 using System.Diagnostics;
 using Global.Models;
 using Global.Enums;
@@ -87,8 +88,17 @@ namespace XamApp.Views
             }
             else if (action == "Delete")
             {
-                await HTTPClient.DeleteAsync(null, $"/api/Message?messageSentId={message.Id}");
-                vm.Messages.Remove(message);
+                DateTimeOffset now = DateTimeOffset.Now;
+
+                string dateDeleted = HttpUtility.UrlEncode(now.ToString("O"));
+                string args = $"/api/Message?messageSentId={message.Id}&dateDeleted={dateDeleted}";
+
+                var response = await HTTPClient.DeleteAsync(null, args);
+                if (response.IsSuccessStatusCode)
+                {
+                    message.Delete(now);
+                }
+                else await DisplayAlert("Error", await HTTPClient.GetResponseError(response), "Ok");
             }
             else if (!string.IsNullOrEmpty(action))
             {
