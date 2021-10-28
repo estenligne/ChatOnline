@@ -80,11 +80,15 @@ namespace XamApp.Views
             Element element = (Element)sender;
             Message message = (Message)element.BindingContext;
 
-            string action = await DisplayActionSheet(null, "Cancel", null, "Copy", "Reply", "Star", "Infos", "Delete", "Modify");
+            string action = await DisplayActionSheet(null, null, null, "Copy", "Reply", "Star", "Infos", "Delete", "Modify");
 
             if (action == "Copy")
             {
                 await Clipboard.SetTextAsync(message.Body);
+            }
+            else if (action == "Reply")
+            {
+                OnSwipedRight(sender, e);
             }
             else if (action == "Delete")
             {

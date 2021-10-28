@@ -27,8 +27,8 @@ namespace XamApp.ViewModels
             _eventDto = eventDto;
         }
 
-        public bool IsAnEvent => _message == null || _message.DateDeleted != null;
-        public DateTimeOffset DateOccurred => IsAnEvent ? _eventDto.DateOccurred : _message.DateSent;
+        public bool IsAnEvent => _eventDto != null || _message.DateDeleted != null;
+        public DateTimeOffset DateOccurred => _eventDto != null ? _eventDto.DateOccurred : _message.DateSent;
 
         private ChatRoomEventEnum Event => _eventDto != null ? _eventDto.Event :
             _message?.DateDeleted != null ? ChatRoomEventEnum.MessageDeleted :
@@ -44,7 +44,7 @@ namespace XamApp.ViewModels
                         return Color.DarkCyan;
 
                     case ChatRoomEventEnum.MessageDeleted:
-                        return Color.LightGray;
+                        return Color.Gray;
 
                     default: return Color.Black;
                 }

@@ -6,6 +6,7 @@
         Like,
         Love,
         Laugh,
+        Suspicious,
         Surprised,
         Confused,
         Dislike,

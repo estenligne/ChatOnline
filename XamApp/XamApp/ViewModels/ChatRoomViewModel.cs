@@ -39,7 +39,9 @@ namespace XamApp.ViewModels
             int count = Messages.Count;
             Message last = count != 0 ? Messages[count - 1] : null;
 
-            if (last == null || last.DateOccurred.ToUniversalTime().Date != message.DateOccurred.ToUniversalTime().Date)
+            if (last == null ||
+                (last.DateOccurred.ToUniversalTime().Date !=
+                message.DateOccurred.ToUniversalTime().Date))
             {
                 var eventDto = new EventDTO
                 {

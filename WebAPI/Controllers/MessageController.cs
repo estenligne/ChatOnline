@@ -54,9 +54,11 @@ namespace WebAPI.Controllers
                 messageSentDto.ReceiverId = messageReceived.ReceiverId;
                 messageSentDto.DateReceived = messageReceived.DateReceived;
                 messageSentDto.DateRead = messageReceived.DateRead;
-                messageSentDto.DateDeleted = messageReceived.DateDeleted;
                 messageSentDto.DateStarred = messageReceived.DateStarred;
                 messageSentDto.Reaction = messageReceived.Reaction;
+
+                if (messageReceived.DateDeleted != null)
+                    messageSentDto.DateDeleted = messageReceived.DateDeleted;
             }
 
             if (messageSentDto.DateDeleted != null) // if a deleted message
@@ -416,7 +418,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> Delete(long messageSentId)
+        public async Task<IActionResult> Delete(long messageSentId, DateTimeOffset dateDeleted)
         {
             MessageSent message = await dbc.MessagesSent
                 .Include(x => x.Sender)
@@ -428,8 +430,14 @@ namespace WebAPI.Controllers
             if (message.Sender.UserProfileId != user.Id)
                 return Forbid("This message doesn't belong to you!");
 
+            if (!LesserTime(dateDeleted, utcNow))
+                return BadRequest("Date deleted cannot be in the future!");
+
+            if (!LesserTime(message.DateSent, dateDeleted))
+                return BadRequest("Date deleted cannot be before date sent!");
+
             if (utcNow - message.DateSent >= TimeSpan.FromMinutes(30))
-                return Forbid("Can't delete the massage at this time!");
+                return Forbid("Can't delete the message at this time!");
 
             var pushNotificationDto = new PushNotificationDTO()
             {
@@ -441,7 +449,7 @@ namespace WebAPI.Controllers
 
             await SendPushNotificationToEveryone(message.Sender, pushNotificationDto);
 
-            message.DateDeleted = DateTimeOffset.UtcNow;
+            message.DateDeleted = dateDeleted;
             await dbc.SaveChangesAsync();
 
             return NoContent();
