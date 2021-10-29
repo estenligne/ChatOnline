@@ -122,6 +122,7 @@ namespace XamApp.ViewModels
         public string LinkedMessageSender => _linked?.Sender;
         public string LinkedMessageBody => _linked?.ShortBody;
         public bool HasLinkedMessage => _linked != null;
+        public long LinkedId => _linked.Id;
 
         public void Delete(DateTimeOffset dateDeleted)
         {

@@ -109,5 +109,12 @@ namespace XamApp.Views
                 await DisplayAlert("Sorry", $"{action} not yet implemented!", "Ok");
             }
         }
+
+        private void OnLinkedMessageTapped(object sender, EventArgs e)
+        {
+            Element element = (Element)sender;
+            Message message = (Message)element.BindingContext;
+            vm.ScrollToMessage(message.LinkedId);
+        }
     }
 }

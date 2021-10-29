@@ -68,7 +68,7 @@ namespace XamApp.ViewModels
             if (vm != null && vm._room != null && vm._room.Id == message.MessageTag.ChatRoomId)
             {
                 vm.AddMessage(message);
-                vm.ScrollTo(-1);
+                vm.ScrollToIndex(-1);
                 return true;
             }
             else return false;
@@ -108,7 +108,7 @@ namespace XamApp.ViewModels
                     foreach (var message in messages)
                         AddMessage(message);
 
-                    ScrollTo(-1);
+                    ScrollToIndex(-1);
                 }
                 else await DisplayAlert("Error", await HTTPClient.GetResponseError(response), "Ok");
                 SetBusy(false);
@@ -168,12 +168,16 @@ namespace XamApp.ViewModels
         public bool CanSendMessage => ShowSendButton && !string.IsNullOrEmpty(Body);
 
         public CollectionView MessagesView;
-        private void ScrollTo(int index)
+        private void ScrollToIndex(int index)
         {
             if (index < 0)
                 index += Messages.Count;
             if (index >= 0)
                 MessagesView.ScrollTo(index);
+        }
+        public void ScrollToMessage(long id)
+        {
+            MessagesView.ScrollTo(GetMessageIndex(id), position: ScrollToPosition.Center);
         }
 
         public async Task SendMessage(FileDTO file)
@@ -198,7 +202,7 @@ namespace XamApp.ViewModels
                 message.File = file;
 
                 AddMessage(message);
-                ScrollTo(-1);
+                ScrollToIndex(-1);
             }
             else await DisplayAlert("Error", await HTTPClient.GetResponseError(response), "Ok");
 

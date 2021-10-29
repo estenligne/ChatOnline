@@ -42,6 +42,10 @@
 
                                 <Label Text="{Binding LinkedMessageSender}" TextColor="{StaticResource LinkedMessageSender}" />
                                 <Label Text="{Binding LinkedMessageBody}" TextColor="{StaticResource LinkedMessageBody}" />
+
+                                <StackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnLinkedMessageTapped" />
+                                </StackLayout.GestureRecognizers>
                             </StackLayout>
 
                             <Image
