@@ -76,8 +76,8 @@ namespace XamApp.Views
 
         private async Task GotoRoomsPage(User user)
         {
-            var url = "/api/DeviceUsed/GetOrCreate?devicePlatform=" + DevicePlatformEnum.Unknown;
-            var response = await HTTPClient.GetAsync(null, url);
+            var url = "/api/DeviceUsed?devicePlatform=" + App.DevicePlatform();
+            var response = await HTTPClient.PutAsync<string>(null, url, null);
 
             if (response.IsSuccessStatusCode)
             {

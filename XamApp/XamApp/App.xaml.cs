@@ -154,5 +154,14 @@ namespace XamApp
                 Trace.TraceError($"Vibrate() Error: {ex.Message}");
             }
         }
+
+        public static DevicePlatformEnum DevicePlatform()
+        {
+            var platform =
+                Device.RuntimePlatform == Device.Android ? DevicePlatformEnum.Android :
+                Device.RuntimePlatform == Device.iOS ? DevicePlatformEnum.AppleiOS :
+                DevicePlatformEnum.Unknown;
+            return platform;
+        }
     }
 }

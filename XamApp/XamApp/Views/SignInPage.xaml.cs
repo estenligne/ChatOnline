@@ -67,7 +67,7 @@ namespace XamApp.Views
                     };
                     HTTPClient.SetAuthorization(null, user.Authorization);
 
-                    var url = "/api/DeviceUsed?devicePlatform=" + DevicePlatformEnum.Unknown;
+                    var url = "/api/DeviceUsed?devicePlatform=" + App.DevicePlatform();
                     response = await HTTPClient.PutAsync<string>(null, url, null);
 
                     if (response.IsSuccessStatusCode)
@@ -149,7 +149,7 @@ namespace XamApp.Views
                 {
                     if (response.StatusCode == HttpStatusCode.NoContent)
                     {
-                        await DisplayAlert("Success", "Now, go sign in!", "Ok");
+                        await DisplayAlert("Success", "Now sign in!", "Ok");
                         vm.UpdateChoice(true);
                     }
                     else if (string.IsNullOrEmpty(vm.PhoneNumber))
