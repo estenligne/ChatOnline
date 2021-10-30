@@ -22,7 +22,6 @@
 
                     <Frame Padding="6"
                         CornerRadius="6"
-                        WidthRequest="300"
                         BackgroundColor="{Binding BackgroundColor}"
                         HorizontalOptions="{Binding HorizontalOptions}">
 
@@ -49,6 +48,7 @@
                             </StackLayout>
 
                             <Image
+                                HeightRequest="300"
                                 Source="{Binding ImageFile}"
                                 IsVisible="{Binding HasImage}"
                                 BackgroundColor="Transparent" />
@@ -72,11 +72,11 @@
             </DataTemplate>
 
             <DataTemplate x:Key="EventDataTemplate" x:DataType="local:Message">
-                <ContentView Padding="0,6,0,0">
+                <ContentView Padding="6,6,6,0">
                     <Frame
                         Padding="6"
                         CornerRadius="6"
-                        HorizontalOptions="Center"
+                        HorizontalOptions="{Binding HorizontalOptions}"
                         BackgroundColor="{Binding EventBackgroundColor}">
 
                         <Label TextColor="White" Text="{Binding EventMessage}" />

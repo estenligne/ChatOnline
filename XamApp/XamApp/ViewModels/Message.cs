@@ -61,7 +61,7 @@ namespace XamApp.ViewModels
                         return DateOccurred.ToLocalTime().ToString("dd/MM/yyyy");
 
                     case ChatRoomEventEnum.MessageDeleted:
-                        return "Message deleted at " + _message.DateDeleted.Value.ToString("HH:mm");
+                        return "Deleted at " + _message.DateDeleted.Value.ToString("HH:mm");
 
                     default: return null;
                 }
@@ -98,7 +98,9 @@ namespace XamApp.ViewModels
         }
 
         public Color BackgroundColor => IamSender ? Color.LightGreen : Color.LightPink;
-        public LayoutOptions HorizontalOptions => IamSender ? LayoutOptions.Start : LayoutOptions.End;
+        public LayoutOptions HorizontalOptions =>
+            _message == null ? LayoutOptions.Center :
+            IamSender ? LayoutOptions.End : LayoutOptions.Start;
 
         private bool IamSender => _message.DateReceived == null;
         public bool IsGroupChat => _chatRoom.IsGroupChat;
