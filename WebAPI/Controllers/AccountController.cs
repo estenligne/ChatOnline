@@ -85,17 +85,18 @@ namespace WebAPI.Controllers
                 var result = await _userManager.CreateAsync(user, userDto.Password);
                 if (result.Succeeded)
                 {
+                    _logger.LogInformation($"User account {userName} created successfully.");
+
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
                         if (userName == user.PhoneNumber)
                             await SendConfirmationOTP(user);
                         else await SendConfirmationEmail(user);
+
+                        userDto = _mapper.Map<ApplicationUserDTO>(user);
+                        return CreatedAtAction(nameof(SignIn), null, userDto);
                     }
-
-                    _logger.LogInformation($"User account {userName} created successfully.");
-
-                    userDto = _mapper.Map<ApplicationUserDTO>(user);
-                    return CreatedAtAction(nameof(SignIn), null, userDto);
+                    else return NoContent();
                 }
                 else
                 {
@@ -262,17 +263,15 @@ namespace WebAPI.Controllers
 
             if (key == null || key.Length < 16)
                 key = _configuration["JwtSecurity:SecretKey"];
-            bool isRSA = string.IsNullOrEmpty(key);
-            if (isRSA)
-                key = _configuration["JwtSecurity:PrivateKey"];
 
-            if (!isRSA)
+            if (!string.IsNullOrEmpty(key))
             {
                 var securityKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(key));
                 signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
             }
             else
             {
+                key = _configuration["JwtSecurity:PrivateKey"];
                 rsa.ImportRSAPrivateKey(Convert.FromBase64String(key), out _);
                 var securityKey = new RsaSecurityKey(rsa);
                 signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.RsaSha256);
@@ -285,6 +284,7 @@ namespace WebAPI.Controllers
             if (!_configuration.GetValue<bool>("JwtSecurity:Shorten"))
             {
                 string issuer = _configuration["JwtSecurity:Issuer"];
+
                 string audience = Request.Headers["Origin"];
                 if (string.IsNullOrEmpty(audience))
                     audience = issuer;

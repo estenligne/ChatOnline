@@ -147,7 +147,12 @@ namespace XamApp.Views
                 var response = await HTTPClient.PostAsync(null, "/api/Account/Register", userDto);
                 if (response.IsSuccessStatusCode)
                 {
-                    if (string.IsNullOrEmpty(vm.PhoneNumber))
+                    if (response.StatusCode == HttpStatusCode.NoContent)
+                    {
+                        await DisplayAlert("Success", "Now, go sign in!", "Ok");
+                        vm.UpdateChoice(true);
+                    }
+                    else if (string.IsNullOrEmpty(vm.PhoneNumber))
                     {
                         string message = $"A registration confirmation email has been sent to {vm.Email}.";
                         message += "\n\nPlease click on the link provided to confirm your account.";
@@ -156,7 +161,9 @@ namespace XamApp.Views
                     }
                     else
                     {
-                        await DisplayAlert("Success", "Now, go sign in!", "Ok");
+                        string message = $"A registration confirmation SMS has been sent to {vm.PhoneNumber}.";
+                        message += "\n\nPlease click on the link provided to confirm your account.";
+                        await DisplayAlert("Confirm Your Account", message, "Ok");
                     }
                     vm.UpdateChoice(true);
                 }
