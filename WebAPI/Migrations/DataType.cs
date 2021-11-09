@@ -21,7 +21,7 @@ namespace WebAPI.Migrations
         {
             if (dbms == DBMS.Unknown)
             {
-                string value = Environment.GetEnvironmentVariable("ChatOnlineDBMS");
+                string value = Environment.GetEnvironmentVariable("ASPNETCORE_DBMS");
                 Enum.TryParse<DBMS>(value, out dbms);
 
                 if (dbms == DBMS.Unknown)

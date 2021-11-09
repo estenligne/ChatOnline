@@ -18,6 +18,10 @@ Description=ChatOnline WebAPI
 [Service]
 Environment=ASPNETCORE_ENVIRONMENT=Production
 
+Environment=ASPNETCORE_LOGGER=NLog
+
+Environment=ASPNETCORE_DBMS=MySQL
+
 Environment=ASPNETCORE_URLS=https://estenligne.com:44364
 
 WorkingDirectory=/var/www/ChatOnline

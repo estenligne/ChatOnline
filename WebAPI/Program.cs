@@ -10,37 +10,50 @@ namespace WebAPI
     {
         public static void Main(string[] args)
         {
-            var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+            string loggerType = Environment.GetEnvironmentVariable("ASPNETCORE_LOGGER");
+            var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                if (loggerType == "NLog")
+                {
+                    builder.AddNLog("nlog.config");
+                }
+                else builder.AddConsole();
+            });
+            ILogger logger = loggerFactory.CreateLogger<Program>();
+
             try
             {
-                logger.Debug("Program Main Started");
-                IHost host = CreateHostBuilder(args).Build();
+                logger.LogInformation("---------------------------------");
+
+                IHostBuilder hostBuilder = Host.CreateDefaultBuilder(args);
+                hostBuilder.ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
+
+                if (loggerType == "NLog")
+                {
+                    hostBuilder.ConfigureLogging(logging => logging.ClearProviders());
+                    hostBuilder.UseNLog();
+                }
+
+                IHost host = hostBuilder.Build();
                 Models.ApplicationDbSeed.Initialize(host);
                 host.Run();
             }
             catch (Exception exception)
             {
-                //NLog: catch setup errors
-                logger.Fatal(exception);
+                logger.LogCritical(exception, null);
                 throw;
             }
             finally
             {
-                // Ensure to flush and stop internal timers/threads before application-exit (Avoid segmentation fault on Linux)
-                NLog.LogManager.Shutdown();
+                if (loggerType == "NLog")
+                {
+                    // Ensure to flush and stop internal timers/threads before application-exit (Avoid segmentation fault on Linux)
+                    NLog.LogManager.Shutdown();
+                }
             }
         }
-
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                })
-                .ConfigureLogging(logging =>
-                {
-                    logging.ClearProviders();
-                })
-                .UseNLog();
     }
 }
