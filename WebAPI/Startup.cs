@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -24,10 +25,12 @@ namespace WebAPI
         {
             _configuration = configuration;
             _env = env;
+            _proxied = _configuration["PROXIED"];
         }
 
         private readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _env;
+        private string _proxied;
 
         private void ConfigureDatabase(IServiceCollection services)
         {
@@ -112,10 +115,12 @@ namespace WebAPI
             .AddJwtBearer(options =>
             {
                 bool validate = !_configuration.GetValue<bool>("JwtSecurity:Shorten");
-
                 string issuer = _configuration["JwtSecurity:Issuer"];
+
                 string audience = _configuration["URLS"];
-                if (string.IsNullOrEmpty(audience))
+                if (_proxied != null)
+                    audience += ";" + _proxied;
+                if (audience == null)
                     audience = issuer;
 
                 options.SaveToken = true;
@@ -124,7 +129,7 @@ namespace WebAPI
                 {
                     ValidateIssuer = validate,
                     ValidateAudience = validate,
-                    ValidAudience = audience,
+                    ValidAudiences = audience.Split(';'),
                     ValidIssuer = issuer,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
@@ -191,6 +196,14 @@ namespace WebAPI
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app)
         {
+            if (_proxied != null)
+            {
+                app.UseForwardedHeaders(new ForwardedHeadersOptions
+                {
+                    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+                });
+            }
+
             app.UseMiddleware<OptionsMiddleware>();
 
             if (_env.IsDevelopment())
@@ -199,7 +212,11 @@ namespace WebAPI
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebAPI v1"));
             }
-            else app.UseHttpsRedirection();
+            else
+            {
+                app.UseHsts();
+                app.UseHttpsRedirection();
+            }
 
             app.UseRouting();
 

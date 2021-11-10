@@ -17,7 +17,7 @@ namespace XamApp.Services
 #if DEBUG
         public const string WebAPIBaseURL = "http://172.20.10.3:44363";
 #else
-        public const string WebAPIBaseURL = "https://estenligne.com:44364";
+        public const string WebAPIBaseURL = "https://api.chatonline.estenligne.com";
 #endif
 
         public static async Task<HttpClient> NewClient(bool doSignIn = true, int timeout = 60)

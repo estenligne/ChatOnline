@@ -22,7 +22,9 @@ Environment=ASPNETCORE_LOGGER=NLog
 
 Environment=ASPNETCORE_DBMS=MySQL
 
-Environment=ASPNETCORE_URLS=https://estenligne.com:44364
+Environment=ASPNETCORE_PROXIED=https://api.chatonline.estenligne.com
+
+Environment=ASPNETCORE_URLS=http://localhost:44363
 
 WorkingDirectory=/var/www/ChatOnline
 
