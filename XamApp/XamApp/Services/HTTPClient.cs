@@ -2,6 +2,7 @@
 using System.Text;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Newtonsoft.Json;
@@ -35,7 +36,7 @@ namespace XamApp.Services
                 client = httpClient;
 
             if (client != null)
-                client.DefaultRequestHeaders.Add("Authorization", authorization);
+                client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(authorization);
         }
 
         private static async Task<HttpResponseMessage> SignIn(HttpClient client, HttpResponseMessage oldResponse)

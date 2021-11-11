@@ -97,7 +97,7 @@ namespace XamApp.ViewModels
             }
         }
 
-        public Color BackgroundColor => IamSender ? Color.LightGreen : Color.LightPink;
+        public Color BackgroundColor => IamSender ? Color.LightGreen : Color.White;
         public LayoutOptions HorizontalOptions =>
             _message == null ? LayoutOptions.Center :
             IamSender ? LayoutOptions.End : LayoutOptions.Start;

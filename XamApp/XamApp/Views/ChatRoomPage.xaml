@@ -3,6 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="XamApp.Views.ChatRoomPage"
              xmlns:local="clr-namespace:XamApp.ViewModels"
+             x:DataType="local:ChatRoomViewModel"
+             BackgroundColor="LightYellow"
              Title="{Binding Title}">
 
     <ContentPage.Resources>
@@ -55,7 +57,8 @@
 
                             <Label Text="{Binding Body}"
                                 IsVisible="{Binding HasBody}"
-                                TextColor="Black" />
+                                TextColor="Black"
+                                FontSize="Body" />
 
                             <Label Text="{Binding FooterInfo}"
                                 FontSize="12"
@@ -91,7 +94,7 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <StackLayout Orientation="Vertical" x:DataType="local:ChatRoomViewModel" BackgroundColor="LightYellow">
+    <StackLayout Orientation="Vertical">
 
         <CollectionView x:Name="MessagesView"
             ItemsSource="{Binding Messages}"
@@ -136,6 +139,7 @@
                 HorizontalOptions="FillAndExpand"
                 BorderColor="Magenta">
                 <Editor
+                    x:Name="MessageEditor"
                     Keyboard="Chat"
                     Text="{Binding Body, Mode=TwoWay}"
                     BackgroundColor="White"

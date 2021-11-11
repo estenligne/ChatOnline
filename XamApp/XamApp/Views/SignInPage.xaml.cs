@@ -20,7 +20,7 @@ namespace XamApp.Views
         {
             InitializeComponent();
             vm = new SignInViewModel();
-            vm.UpdateChoice(true);
+            vm.UpdateChoice(false);
             BindingContext = vm;
         }
 

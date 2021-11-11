@@ -42,6 +42,7 @@ namespace XamApp.Views
             Element element = (Element)sender;
             Message message = (Message)element.BindingContext;
             vm.SetLinkedMessage(message);
+            MessageEditor.Focus();
         }
 
         private void OnCloseReplyView(object sender, EventArgs e)
