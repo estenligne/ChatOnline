@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
-using MySql.EntityFrameworkCore.Extensions;
 using WebAPI.Models;
 using WebAPI.Setup;
 using System;
@@ -32,15 +31,19 @@ namespace WebAPI
         private readonly IWebHostEnvironment _env;
         private string _proxied;
 
+        private void ConfigureMySQL(DbContextOptionsBuilder options, string connectionName)
+        {
+            string connectionString = _configuration.GetConnectionString(connectionName);
+            ServerVersion serverVersion = new MySqlServerVersion("5.7.33");
+            options.UseMySql(connectionString, serverVersion);
+        }
+
         private void ConfigureDatabase(IServiceCollection services)
         {
             if (Migrations.DataType.UseMySQL)
             {
-                services.AddDbContext<AccountDbContext>(options => options
-                    .UseMySQL(_configuration.GetConnectionString("Account_MySQL_Connection")));
-
-                services.AddDbContext<ApplicationDbContext>(options => options
-                    .UseMySQL(_configuration.GetConnectionString("ChatOnline_MySQL_Connection")));
+                services.AddDbContext<AccountDbContext>(options => ConfigureMySQL(options, "Account_MySQL_Connection"));
+                services.AddDbContext<ApplicationDbContext>(options => ConfigureMySQL(options, "ChatOnline_MySQL_Connection"));
             }
             else if (Migrations.DataType.UseSQLite)
             {
