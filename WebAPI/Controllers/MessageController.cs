@@ -417,6 +417,32 @@ namespace WebAPI.Controllers
             var outcomes = await _pushNotificationService.SendAsync(dbc, userProfileIds, pushNotificationDto);
         }
 
+        [HttpPatch]
+        [Route(nameof(Starred))]
+        public async Task<IActionResult> Starred(long messageSentId, DateTimeOffset dateStarred)
+        {
+            MessageSent message = await dbc.MessagesSent
+                .Include(x => x.Sender)
+                .FirstOrDefaultAsync(x => x.Id == messageSentId);
+
+            var user = dbc.UserProfiles.First(u => u.Identity == UserIdentity);
+            var utcNow = DateTimeOffset.UtcNow;
+
+            if (message.Sender.UserProfileId != user.Id)
+                return Forbid("This message doesn't belong to you!");
+
+            if (!LesserTime(dateStarred, utcNow))
+                return BadRequest("Date starred cannot be in the future!");
+
+            if (!LesserTime(message.DateSent, dateStarred))
+                return BadRequest("Date starred cannot be before date sent!");
+
+            message.DateStarred = dateStarred;
+            await dbc.SaveChangesAsync();
+
+            return NoContent();
+        }
+
         [HttpDelete]
         public async Task<IActionResult> Delete(long messageSentId, DateTimeOffset dateDeleted)
         {

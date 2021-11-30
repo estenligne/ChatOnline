@@ -116,8 +116,13 @@ namespace XamApp.ViewModels
         {
             get
             {
-                string timeSent = _message.DateSent.ToLocalTime().ToString("HH:mm");
-                return timeSent;
+                string footerInfo = "";
+
+                if (_message.DateStarred != null)
+                    footerInfo += "star ";
+
+                footerInfo += _message.DateSent.ToLocalTime().ToString("HH:mm");
+                return footerInfo;
             }
         }
 
@@ -126,11 +131,16 @@ namespace XamApp.ViewModels
         public bool HasLinkedMessage => _linked != null;
         public long LinkedId => _linked.Id;
 
-        public void Delete(DateTimeOffset dateDeleted)
+        public void Deleted(DateTimeOffset dateDeleted)
         {
             _message.DateDeleted = dateDeleted;
-            int index = _chatRoom.GetMessageIndex(Id);
-            _chatRoom.Messages[index] = this; // update
+            _chatRoom.UpdateMessageView(this);
+        }
+
+        public void Starred(DateTimeOffset dateStarred)
+        {
+            _message.DateStarred = dateStarred;
+            _chatRoom.UpdateMessageView(this);
         }
     }
 }

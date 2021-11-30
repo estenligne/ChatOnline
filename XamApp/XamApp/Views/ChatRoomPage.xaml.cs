@@ -91,6 +91,21 @@ namespace XamApp.Views
             {
                 OnSwipedRight(sender, e);
             }
+            else if (action == "Star")
+            {
+                DateTimeOffset now = DateTimeOffset.Now;
+
+                string dateStarred = HttpUtility.UrlEncode(now.ToString("O"));
+
+                string args = $"/api/Message/Starred?messageSentId={message.Id}&dateStarred={dateStarred}";
+
+                var response = await HTTPClient.PatchAsync(null, args, (string)null);
+                if (response.IsSuccessStatusCode)
+                {
+                    message.Starred(now);
+                }
+                else await DisplayAlert("Error", await HTTPClient.GetResponseError(response), "Ok");
+            }
             else if (action == "Delete")
             {
                 DateTimeOffset now = DateTimeOffset.Now;
@@ -101,7 +116,7 @@ namespace XamApp.Views
                 var response = await HTTPClient.DeleteAsync(null, args);
                 if (response.IsSuccessStatusCode)
                 {
-                    message.Delete(now);
+                    message.Deleted(now);
                 }
                 else await DisplayAlert("Error", await HTTPClient.GetResponseError(response), "Ok");
             }
