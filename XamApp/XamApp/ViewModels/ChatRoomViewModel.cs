@@ -115,6 +115,12 @@ namespace XamApp.ViewModels
             }
         }
 
+        public void UpdateMessageView(Message message)
+        {
+            int index = GetMessageIndex(message.Id);
+            Messages[index] = message; // trigger update
+        }
+
         public int GetMessageIndex(long? id)
         {
             int index = -1;
