@@ -25,11 +25,12 @@ namespace WebAPI.Migrations
                 Enum.TryParse<DBMS>(value, out dbms);
 
                 if (dbms == DBMS.Unknown)
-                    dbms = DBMS.SQLServer;
+                    dbms = DBMS.SQLite;
             }
             return dbms;
         }
 
+        public static bool UseSQLServer => GetDBMS() == DBMS.SQLServer;
         public static bool UseSQLite => GetDBMS() == DBMS.SQLite;
         public static bool UseMySQL => GetDBMS() == DBMS.MySQL;
 

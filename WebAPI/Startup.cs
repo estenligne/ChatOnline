@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
+using WebAPI.Migrations;
 using WebAPI.Models;
 using WebAPI.Setup;
 using System;
@@ -40,12 +41,12 @@ namespace WebAPI
 
         private void ConfigureDatabase(IServiceCollection services)
         {
-            if (Migrations.DataType.UseMySQL)
+            if (DataType.UseMySQL)
             {
                 services.AddDbContext<AccountDbContext>(options => ConfigureMySQL(options, "Account_MySQL_Connection"));
                 services.AddDbContext<ApplicationDbContext>(options => ConfigureMySQL(options, "ChatOnline_MySQL_Connection"));
             }
-            else if (Migrations.DataType.UseSQLite)
+            else if (DataType.UseSQLite)
             {
                 services.AddDbContext<AccountDbContext>(options => options
                     .UseSqlite(_configuration.GetConnectionString("Account_SQLite_Connection")));
@@ -53,7 +54,7 @@ namespace WebAPI
                 services.AddDbContext<ApplicationDbContext>(options => options
                     .UseSqlite(_configuration.GetConnectionString("ChatOnline_SQLite_Connection")));
             }
-            else
+            else if (DataType.UseSQLServer)
             {
                 services.AddDbContext<AccountDbContext>(options => options
                     .UseSqlServer(_configuration.GetConnectionString("Account_SQLServer_Connection")));
@@ -61,6 +62,7 @@ namespace WebAPI
                 services.AddDbContext<ApplicationDbContext>(options => options
                     .UseSqlServer(_configuration.GetConnectionString("ChatOnline_SQLServer_Connection")));
             }
+            else throw new SystemException("No DBMS specified!");
         }
 
         private void ConfigureIdentity(IServiceCollection services)
