@@ -10,7 +10,7 @@ namespace Global.Models
         /// </summary>
         public long Id { get; set; }
 
-        public long SenderId { get; set; }
+        public long? SenderId { get; set; }
 
         public string ShortBody { get; set; }
 

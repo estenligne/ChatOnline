@@ -29,19 +29,22 @@ namespace WebAPI.Controllers
 
         private MessageSentDTO GetMessage(MessageSent messageSent, MessageReceived messageReceived)
         {
-            // First check whether the caller did the necessary .Include() for extra data:
-
-            if (messageSent.MessageTag == null) // MessageTag is needed by app
-                _logger.LogError("In GetMessage(): messageSent.MessageTag == null");
-
-            if (messageSent.File == null && messageSent.FileId != null) // File is needed by app
-                _logger.LogError("In GetMessage(): messageSent.File == null");
-
-            if (messageSent.Sender?.UserProfile == null) // UserProfile needed below
-                _logger.LogError("In GetMessage(): messageSent.Sender?.UserProfile == null");
-
             var messageSentDto = _mapper.Map<MessageSentDTO>(messageSent);
+
             messageSentDto.SenderName = messageSent.Sender?.UserProfile?.Username;
+
+            if (messageSentDto.MessageTag == null)
+            {
+                if (messageSent.Sender != null)
+                {
+                    messageSentDto.MessageTag = new MessageTagDTO
+                    {
+                        Id = messageSent.MessageTagId,
+                        ChatRoomId = messageSent.Sender.ChatRoomId // needed by app
+                    };
+                }
+                else throw new ArgumentException("MessageTag == null and Sender == null");
+            }
 
             if (messageReceived != null)
             {
@@ -61,7 +64,7 @@ namespace WebAPI.Controllers
                     messageSentDto.DateDeleted = messageReceived.DateDeleted;
             }
 
-            if (messageSentDto.DateDeleted != null) // if a deleted message
+            if (messageSentDto.DateDeleted != null)
             {
                 messageSentDto.Body = null; // then reduce payload size a bit!
                 messageSentDto.File = null; // reduce payload size some more!
@@ -116,10 +119,10 @@ namespace WebAPI.Controllers
                     if (messageReceived == null && messageSent.SenderId != userChatRoomId)
                     {
                         _logger.LogWarning($"GetMany({userChatRoomId}): user did not receive message {messageSent.Id}.");
-                        messageReceived = await AddMessageReceived(messageSent, userChatRoom.Id, utcNow, utcNow);
+                        var messageSentDto = await AddMessageReceived(messageSent, userChatRoom.Id, utcNow, utcNow);
+                        messages.Add(messageSentDto);
                     }
-
-                    messages.Add(GetMessage(messageSent, messageReceived));
+                    else messages.Add(GetMessage(messageSent, messageReceived));
                 }
                 return messages;
             }
@@ -154,6 +157,7 @@ namespace WebAPI.Controllers
                     return BadRequest("No linked message provided for the forwarded message.");
 
                 var dateCreated = DateTimeOffset.UtcNow;
+
                 if (!LesserTime(messageSentDto.DateSent, dateCreated))
                     return BadRequest("The date sent cannot be in the future!");
 
@@ -177,9 +181,12 @@ namespace WebAPI.Controllers
 
                     if (linked.AuthorId == null)
                     {
-                        var linkedSender = dbc.UserChatRooms.Find(linked.SenderId);
+                        long linkedSenderProfileId = dbc.UserChatRooms
+                            .Where(x => x.Id == linked.SenderId)
+                            .Select(x => x.UserProfileId)
+                            .First();
 
-                        if (messageSentDto.AuthorId != null && messageSentDto.AuthorId != linkedSender.UserProfileId)
+                        if (messageSentDto.AuthorId != null && messageSentDto.AuthorId != linkedSenderProfileId)
                             return Forbid("The author of this forwarded message is incorrect!");
                     }
                     else
@@ -201,8 +208,8 @@ namespace WebAPI.Controllers
                 var tag = messageSentDto.MessageTag;
                 if (tag != null) // will always be true, here just as an excuse to indent!
                 {
-                    if (tag.Name == "")
-                        tag.Name = null;
+                    if (tag.Name == null)
+                        tag.Name = "";
 
                     if (tag.ChatRoomId != userChatRoom.ChatRoomId)
                         return BadRequest($"tag.ChatRoomId {tag.ChatRoomId} != ChatRoomId {userChatRoom.ChatRoomId}");
@@ -232,16 +239,19 @@ namespace WebAPI.Controllers
 
                     tag.Id = messageTag.Id;
                 }
-
                 messageSentDto.MessageTagId = tag.Id; // prepare for mapper
-                messageSentDto.MessageTag = null; // do not update database data
-                messageSentDto.File = null; // do not update file database data
 
                 var messageSent = _mapper.Map<MessageSent>(messageSentDto);
                 messageSent.DateCreated = dateCreated;
 
+                messageSent.MessageTag = null; // do not update database data
+                messageSent.File = null; // do not update file database data
+
                 dbc.MessagesSent.Add(messageSent);
                 await dbc.SaveChangesAsync();
+
+                messageSentDto.Id = messageSent.Id;
+                messageSentDto.SenderName = userChatRoom.UserProfile.Username;
 
                 string title = userChatRoom.UserProfile.Username;
                 string group = userChatRoom.ChatRoom.GroupProfile?.GroupName;
@@ -253,10 +263,9 @@ namespace WebAPI.Controllers
                 {
                     Topic = PushNotificationTopic.MessageSent,
                     DateCreated = dateCreated,
-                    UserChatRoomId = userChatRoom.Id,
-                    MessageSentId = messageSent.Id,
+                    MessageSent = messageSentDto,
 
-                    Id = (int)DateTimeOffset.UtcNow.Ticks,
+                    Id = dateCreated.Ticks,
                     Title = title,
                     Body = messageSentDto.Body,
                     Priority = true,
@@ -264,8 +273,6 @@ namespace WebAPI.Controllers
 
                 await SendPushNotificationToEveryone(userChatRoom, pushNotificationDto);
 
-                messageSentDto.SenderName = userChatRoom.UserProfile.Username;
-                messageSentDto.Id = messageSent.Id;
                 return CreatedAtAction(nameof(GetMany), null, messageSentDto);
             }
             catch (Exception ex)
@@ -282,13 +289,15 @@ namespace WebAPI.Controllers
             try
             {
                 var messageSent = await dbc.MessagesSent
-                                            .Include(x => x.Sender.UserProfile)
-                                            .Include(x => x.MessageTag)
-                                            .Include(x => x.File)
-                                            .FirstOrDefaultAsync(x => x.Id == messageSentId);
+                                            .Include(x => x.Sender)
+                                            .Where(x => x.Id == messageSentId)
+                                            .FirstOrDefaultAsync();
 
                 if (messageSent == null)
                     return NotFound($"messageSentId {messageSentId} not found.");
+
+                if (messageSent.Sender == null)
+                    return BadRequest($"messageSentId {messageSentId} has no sender.");
 
                 if (!LesserTime(messageSent.DateCreated, dateReceived))
                     return BadRequest("Date user received cannot be before date server received!");
@@ -315,9 +324,8 @@ namespace WebAPI.Controllers
                 if (messageReceived != null)
                     return Conflict("Message already received.");
 
-                messageReceived = await AddMessageReceived(messageSent, userChatRoom.Id, dateCreated, dateReceived);
+                var messageSentDto = await AddMessageReceived(messageSent, userChatRoom.Id, dateCreated, dateReceived);
 
-                var messageSentDto = GetMessage(messageSent, messageReceived);
                 return CreatedAtAction(nameof(GetMany), null, messageSentDto);
             }
             catch (Exception ex)
@@ -326,7 +334,7 @@ namespace WebAPI.Controllers
             }
         }
 
-        private async Task<MessageReceived> AddMessageReceived(MessageSent messageSent, long userChatRoomId, DateTimeOffset dateCreated, DateTimeOffset dateReceived)
+        private async Task<MessageSentDTO> AddMessageReceived(MessageSent messageSent, long userChatRoomId, DateTimeOffset dateCreated, DateTimeOffset dateReceived)
         {
             var messageReceived = new MessageReceived()
             {
@@ -339,19 +347,23 @@ namespace WebAPI.Controllers
             dbc.MessagesReceived.Add(messageReceived);
             await dbc.SaveChangesAsync();
 
-            // Send the MessageReceived push notification
-            var pushNotificationDto = new PushNotificationDTO
+            var messageSentDto = GetMessage(messageSent, messageReceived);
+
+            if (messageSent.SenderId.HasValue)
             {
-                Topic = PushNotificationTopic.MessageReceived,
-                DateCreated = dateCreated,
-                UserChatRoomId = userChatRoomId,
-                MessageSentId = messageSent.Id,
-            };
+                // Send the MessageReceived push notification
+                var pushNotificationDto = new PushNotificationDTO
+                {
+                    Topic = PushNotificationTopic.MessageReceived,
+                    DateCreated = dateCreated,
+                    MessageSent = messageSentDto,
+                };
 
-            var userProfileIds = new List<long> { messageSent.Sender.UserProfileId };
-            await _pushNotificationService.SendAsync(dbc, userProfileIds, pushNotificationDto);
+                var userProfileIds = new List<long> { messageSent.Sender.UserProfileId };
+                await _pushNotificationService.SendAsync(dbc, userProfileIds, pushNotificationDto);
+            }
 
-            return messageReceived;
+            return messageSentDto;
         }
 
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
@@ -374,6 +386,7 @@ namespace WebAPI.Controllers
                     return BadRequest("Date read cannot be before date received!");
 
                 var utcNow = DateTimeOffset.UtcNow;
+
                 if (!LesserTime(dateRead, utcNow))
                     return BadRequest("Date read cannot be in the future!");
 
@@ -383,16 +396,17 @@ namespace WebAPI.Controllers
                 messageReceived.DateRead = dateRead;
                 await dbc.SaveChangesAsync();
 
+                MessageSent messageSent = messageReceived.MessageSent;
+
                 // Send the MessageRead push notification
                 var pushNotificationDto = new PushNotificationDTO
                 {
                     Topic = PushNotificationTopic.MessageRead,
                     DateCreated = utcNow,
-                    UserChatRoomId = messageReceived.ReceiverId,
-                    MessageSentId = messageReceived.MessageSentId,
+                    MessageSent = GetMessage(messageSent, messageReceived)
                 };
 
-                var userProfileIds = new List<long> { messageReceived.MessageSent.Sender.UserProfileId };
+                var userProfileIds = new List<long> { messageSent.Sender.UserProfileId };
                 var outcomes = await _pushNotificationService.SendAsync(dbc, userProfileIds, pushNotificationDto);
 
                 return NoContent();
@@ -401,20 +415,6 @@ namespace WebAPI.Controllers
             {
                 return InternalServerError(ex);
             }
-        }
-
-        private async Task SendPushNotificationToEveryone(UserChatRoom userChatRoom, PushNotificationDTO pushNotificationDto)
-        {
-            var userProfileIds = await dbc.UserChatRooms
-                                          .Where(x => x.Id != userChatRoom.Id &&
-                                              x.ChatRoomId == userChatRoom.ChatRoomId &&
-                                              x.DateBlocked == null &&
-                                              x.DateDeleted == null &&
-                                              x.DateExited == null)
-                                          .Select(x => x.UserProfileId)
-                                          .ToListAsync();
-
-            var outcomes = await _pushNotificationService.SendAsync(dbc, userProfileIds, pushNotificationDto);
         }
 
         [HttpPatch]
@@ -428,7 +428,7 @@ namespace WebAPI.Controllers
             var user = dbc.UserProfiles.First(u => u.Identity == UserIdentity);
             var utcNow = DateTimeOffset.UtcNow;
 
-            if (message.Sender.UserProfileId != user.Id)
+            if (message.Sender?.UserProfileId != user.Id)
                 return Forbid("This message doesn't belong to you!");
 
             if (!LesserTime(dateStarred, utcNow))
@@ -453,7 +453,7 @@ namespace WebAPI.Controllers
             var user = dbc.UserProfiles.First(u => u.Identity == UserIdentity);
             var utcNow = DateTimeOffset.UtcNow;
 
-            if (message.Sender.UserProfileId != user.Id)
+            if (message.Sender?.UserProfileId != user.Id)
                 return Forbid("This message doesn't belong to you!");
 
             if (!LesserTime(dateDeleted, utcNow))
@@ -465,20 +465,33 @@ namespace WebAPI.Controllers
             if (utcNow - message.DateSent >= TimeSpan.FromMinutes(30))
                 return Forbid("Can't delete the message at this time!");
 
+            message.DateDeleted = dateDeleted;
+            await dbc.SaveChangesAsync();
+
             var pushNotificationDto = new PushNotificationDTO()
             {
                 Topic = PushNotificationTopic.MessageDeleted,
                 DateCreated = utcNow,
-                UserChatRoomId = message.SenderId,
-                MessageSentId = message.Id,
+                MessageSent = GetMessage(message, null),
             };
 
             await SendPushNotificationToEveryone(message.Sender, pushNotificationDto);
 
-            message.DateDeleted = dateDeleted;
-            await dbc.SaveChangesAsync();
-
             return NoContent();
+        }
+
+        private async Task SendPushNotificationToEveryone(UserChatRoom userChatRoom, PushNotificationDTO pushNotificationDto)
+        {
+            var userProfileIds = await dbc.UserChatRooms
+                                          .Where(x => x.Id != userChatRoom.Id &&
+                                              x.ChatRoomId == userChatRoom.ChatRoomId &&
+                                              x.DateBlocked == null &&
+                                              x.DateDeleted == null &&
+                                              x.DateExited == null)
+                                          .Select(x => x.UserProfileId)
+                                          .ToListAsync();
+
+            var outcomes = await _pushNotificationService.SendAsync(dbc, userProfileIds, pushNotificationDto);
         }
     }
 }

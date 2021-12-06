@@ -46,10 +46,16 @@ namespace XamApp
             }
             else if (Notification != null)
             {
-                string error = Task.Run(async () => await SetChatRoomPage(Notification.UserChatRoomId)).Result;
-                if (error == null)
-                    page += "/" + nameof(ChatRoomPage);
+                long? chatRoomId = Notification.MessageSent?.MessageTag?.ChatRoomId;
                 Notification = null;
+
+                if (chatRoomId.HasValue)
+                {
+                    string error = Task.Run(async () => await SetChatRoomPage(chatRoomId.Value)).Result;
+
+                    if (error == null)
+                        page += "/" + nameof(ChatRoomPage);
+                }
             }
 
             var appShell = new AppShell();
@@ -57,9 +63,9 @@ namespace XamApp
             return appShell;
         }
 
-        private static async Task<string> SetChatRoomPage(long userChatRoomId)
+        private static async Task<string> SetChatRoomPage(long chatRoomId)
         {
-            var url = $"/api/ChatRoom/GetInfo?userChatRoomId={userChatRoomId}";
+            string url = "/api/ChatRoom/GetInfo/" + chatRoomId;
             var response = await HTTPClient.GetAsync(null, url);
 
             if (response.IsSuccessStatusCode)
@@ -98,16 +104,22 @@ namespace XamApp
             {
                 if (source == NotificationSource.OnResume)
                 {
-                    error = await SetChatRoomPage(notification.UserChatRoomId);
-                    if (error == null)
-                        await Shell.Current.GoToAsync(nameof(ChatRoomPage));
+                    long? chatRoomId = notification.MessageSent?.MessageTag?.ChatRoomId;
+
+                    if (chatRoomId.HasValue)
+                    {
+                        error = await SetChatRoomPage(chatRoomId.Value);
+
+                        if (error == null)
+                            await Shell.Current.GoToAsync(nameof(ChatRoomPage));
+                    }
                 }
                 else
                 {
                     if (notification.Topic == PushNotificationTopic.MessageSent)
                     {
                         string dateReceived = HttpUtility.UrlEncode(DateTimeOffset.Now.ToString("O"));
-                        string args = $"?messageSentId={notification.MessageSentId}&dateReceived={dateReceived}";
+                        string args = $"?messageSentId={notification.MessageSent.Id}&dateReceived={dateReceived}";
 
                         var response = await HTTPClient.PostAsync<string>(null, "/api/Message/Received" + args, null);
                         if (response.IsSuccessStatusCode)
@@ -123,7 +135,6 @@ namespace XamApp
                             }
                             else
                             {
-                                notification.UserChatRoomId = message.ReceiverId; // a hack!
                                 DependencyService.Get<INotifications>().Notify(notification);
                             }
                         }

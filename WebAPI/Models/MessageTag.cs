@@ -11,18 +11,20 @@ namespace WebAPI.Models
     {
         public long Id { get; set; }
 
+        [Required]
         [MaxLength(63)]
         public string Name { get; set; }
 
         public long ChatRoomId { get; set; }
         public virtual ChatRoom ChatRoom { get; set; }
 
-        public long CreatorId { get; set; }
-        public virtual UserProfile Creator { get; set; }
-
         public long? ParentId { get; set; }
         public virtual MessageTag Parent { get; set; }
 
+        public long CreatorId { get; set; }
+        public virtual UserProfile Creator { get; set; }
+
         public DateTimeOffset DateCreated { get; set; }
+        public DateTimeOffset? DateDeleted { get; set; }
     }
 }

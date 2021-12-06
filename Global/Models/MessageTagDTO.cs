@@ -12,6 +12,8 @@ namespace Global.Models
 
         public long ChatRoomId { get; set; }
 
+        public long? ParentId { get; set; }
+
         public long CreatorId { get; set; }
 
         public DateTimeOffset DateCreated { get; set; }

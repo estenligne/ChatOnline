@@ -51,14 +51,29 @@ namespace WebAPI.Controllers
 
         [HttpGet]
         [Route(nameof(GetInfo))]
-        public async Task<ActionResult<ChatRoomInfo>> GetInfo(long userChatRoomId)
+        public async Task<ActionResult<ChatRoomInfo>> GetInfo(long id, long userChatRoomId)
         {
             try
             {
-                var userChatRoom = await dbc.UserChatRooms
+                UserChatRoom userChatRoom;
+
+                if (id != 0)
+                {
+                    long userProfileId = dbc.UserProfiles.Where(u => u.Identity == UserIdentity).Select(u => u.Id).First();
+
+                    userChatRoom = await dbc.UserChatRooms
+                                            .Include(x => x.UserProfile)
+                                            .Include(x => x.ChatRoom.GroupProfile.PhotoFile)
+                                            .Where(x => x.UserProfileId == userProfileId && x.ChatRoomId == id)
+                                            .FirstOrDefaultAsync();
+                }
+                else
+                {
+                    userChatRoom = await dbc.UserChatRooms
                                             .Include(x => x.UserProfile)
                                             .Include(x => x.ChatRoom.GroupProfile.PhotoFile)
                                             .FirstOrDefaultAsync(x => x.Id == userChatRoomId);
+                }
 
                 if (userChatRoom == null)
                     return NotFound("User chat room not found.");

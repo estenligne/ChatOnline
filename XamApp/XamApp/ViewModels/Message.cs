@@ -13,37 +13,28 @@ namespace XamApp.ViewModels
         private readonly ChatRoomViewModel _chatRoom;
         private readonly MessageSentDTO _message;
         private readonly Message _linked;
-        private readonly EventDTO _eventDto;
 
         public Message(ChatRoomViewModel chatRoom, MessageSentDTO message)
         {
-            _chatRoom = chatRoom;
-            _message = message;
+            _chatRoom = chatRoom ?? throw new ArgumentNullException(nameof(chatRoom));
+            _message = message ?? throw new ArgumentNullException(nameof(message));
             _linked = chatRoom.GetMessage(message.LinkedId);
         }
 
-        public Message(EventDTO eventDto)
-        {
-            _eventDto = eventDto;
-        }
-
-        public bool IsAnEvent => _eventDto != null || _message.DateDeleted != null;
-        public DateTimeOffset DateOccurred => _eventDto != null ? _eventDto.DateOccurred : _message.DateSent;
-
-        private ChatRoomEventEnum Event => _eventDto != null ? _eventDto.Event :
-            _message?.DateDeleted != null ? ChatRoomEventEnum.MessageDeleted :
-            ChatRoomEventEnum.None;
+        public MessageTypeEnum Type => _message.DateDeleted != null ? MessageTypeEnum.Deleted : _message.MessageType;
+        public bool IsAnEvent => (Type & MessageTypeEnum.MASK) == MessageTypeEnum.Event;
+        public DateTimeOffset DateSent => _message.DateSent.ToLocalTime();
 
         public Color EventBackgroundColor
         {
             get
             {
-                switch (Event)
+                switch (Type)
                 {
-                    case ChatRoomEventEnum.DateChanged:
+                    case MessageTypeEnum.SwitchInDate:
                         return Color.DarkCyan;
 
-                    case ChatRoomEventEnum.MessageDeleted:
+                    case MessageTypeEnum.Deleted:
                         return Color.Gray;
 
                     default: return Color.Black;
@@ -55,13 +46,13 @@ namespace XamApp.ViewModels
         {
             get
             {
-                switch (Event)
+                switch (Type)
                 {
-                    case ChatRoomEventEnum.DateChanged:
-                        return DateOccurred.ToLocalTime().ToString("dd/MM/yyyy");
+                    case MessageTypeEnum.SwitchInDate:
+                        return DateSent.ToString("dd/MM/yyyy");
 
-                    case ChatRoomEventEnum.MessageDeleted:
-                        return "Deleted at " + _message.DateDeleted.Value.ToString("HH:mm");
+                    case MessageTypeEnum.Deleted:
+                        return Sender + " deleted. " + DateSent.ToString("HH:mm");
 
                     default: return null;
                 }
@@ -99,7 +90,7 @@ namespace XamApp.ViewModels
 
         public Color BackgroundColor => IamSender ? Color.LightGreen : Color.White;
         public LayoutOptions HorizontalOptions =>
-            _message == null ? LayoutOptions.Center :
+            (IsAnEvent && Type != MessageTypeEnum.Deleted) ? LayoutOptions.Center :
             IamSender ? LayoutOptions.End : LayoutOptions.Start;
 
         private bool IamSender => _message.DateReceived == null;
@@ -121,7 +112,7 @@ namespace XamApp.ViewModels
                 if (_message.DateStarred != null)
                     footerInfo += "star ";
 
-                footerInfo += _message.DateSent.ToLocalTime().ToString("HH:mm");
+                footerInfo += DateSent.ToString("HH:mm");
                 return footerInfo;
             }
         }

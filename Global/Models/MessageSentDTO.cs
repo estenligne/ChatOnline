@@ -10,8 +10,9 @@ namespace Global.Models
 
         /// <summary>
         /// A FK to a UserChatRoom, for the user who sent the message.
+        /// <br/>If null then this is a system-generated event-message.
         /// </summary>
-        public long SenderId { get; set; }
+        public long? SenderId { get; set; }
 
         public string SenderName { get; set; }
 

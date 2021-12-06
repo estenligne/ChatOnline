@@ -11,7 +11,7 @@ namespace Global.Models
 
         public PushNotificationTopic Topic { get; set; }
 
-        public int Id { get; set; } // used to identify a notification
+        public long Id { get; set; } // used to identify a notification
         public string Tag { get; set; } // used to update a notification
 
         public string Title { get; set; }
@@ -36,17 +36,6 @@ namespace Global.Models
 
         #endregion
 
-        #region Used for message sent, received and read
-
-        /// <summary>
-        /// Interpretation is based on which Topic:
-        /// if topic == message sent then this is the message sender's id,
-        /// if topic == message received or read then this is the receiver's id.
-        /// </summary>
-        public long UserChatRoomId { get; set; }
-
-        public long MessageSentId { get; set; }
-
-        #endregion
+        public MessageSentDTO MessageSent { get; set; }
     }
 }

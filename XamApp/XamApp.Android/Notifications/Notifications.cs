@@ -63,7 +63,7 @@ namespace XamApp.Droid.Notifications
             notificationBuilder.SetContentIntent(resultPendingIntent);
 
             var notificationManager = (NotificationManager)context.GetSystemService(Context.NotificationService);
-            notificationManager.Notify(notification.Tag, notification.Id, notificationBuilder.Build());
+            notificationManager.Notify(notification.Tag, (int)notification.Id, notificationBuilder.Build());
         }
 
         public static void ProcessIntent(Intent intent, App.NotificationSource source)

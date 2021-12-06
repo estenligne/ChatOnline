@@ -10,7 +10,7 @@ namespace WebAPI.Models
     {
         public long Id { get; set; }
 
-        public long SenderId { get; set; }
+        public long? SenderId { get; set; }
         public virtual UserChatRoom Sender { get; set; }
 
         public long MessageTagId { get; set; }

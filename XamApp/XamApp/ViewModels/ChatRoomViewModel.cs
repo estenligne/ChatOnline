@@ -39,17 +39,14 @@ namespace XamApp.ViewModels
             int count = Messages.Count;
             Message last = count != 0 ? Messages[count - 1] : null;
 
-            if (last == null ||
-                (last.DateOccurred.ToUniversalTime().Date !=
-                message.DateOccurred.ToUniversalTime().Date))
+            if (last == null || (last.DateSent.Date != message.DateSent.Date))
             {
-                var eventDto = new EventDTO
+                var msg = new MessageSentDTO
                 {
-                    Event = ChatRoomEventEnum.DateChanged,
-                    DateOccurred = message.DateOccurred,
-                    DateCreated = DateTimeOffset.Now
+                    MessageType = MessageTypeEnum.SwitchInDate,
+                    DateSent = message.DateSent,
                 };
-                Messages.Add(new Message(eventDto));
+                Messages.Add(new Message(this, msg));
                 count += 1;
             }
             return count;
