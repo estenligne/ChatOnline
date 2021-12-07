@@ -37,7 +37,7 @@ namespace WebAPI.Controllers
                 if (userChatRoom == null)
                     return NotFound("User chat room not found.");
 
-                if (userChatRoom.UserProfile.Identity != UserIdentity)
+                if (userChatRoom.UserProfileId != UserId)
                     return Forbid("Not associated to this user chat room!");
 
                 var userChatRoomDto = _mapper.Map<UserChatRoomDTO>(userChatRoom);
@@ -59,12 +59,10 @@ namespace WebAPI.Controllers
 
                 if (id != 0)
                 {
-                    long userProfileId = dbc.UserProfiles.Where(u => u.Identity == UserIdentity).Select(u => u.Id).First();
-
                     userChatRoom = await dbc.UserChatRooms
                                             .Include(x => x.UserProfile)
                                             .Include(x => x.ChatRoom.GroupProfile.PhotoFile)
-                                            .Where(x => x.UserProfileId == userProfileId && x.ChatRoomId == id)
+                                            .Where(x => x.UserProfileId == UserId && x.ChatRoomId == id)
                                             .FirstOrDefaultAsync();
                 }
                 else
@@ -78,7 +76,7 @@ namespace WebAPI.Controllers
                 if (userChatRoom == null)
                     return NotFound("User chat room not found.");
 
-                if (userChatRoom.UserProfile.Identity != UserIdentity)
+                if (userChatRoom.UserProfileId != UserId)
                     return Forbid("Not associated to this user chat room!");
 
                 return await GetChatRoomInfo(userChatRoom);
@@ -151,15 +149,14 @@ namespace WebAPI.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route(nameof(GetAll))]
-        public async Task<ActionResult<List<ChatRoomInfo>>> GetAll(long userProfileId)
+        public async Task<ActionResult<List<ChatRoomInfo>>> GetAll()
         {
             try
             {
                 var userChatRooms = await dbc.UserChatRooms
                     .Include(x => x.ChatRoom.GroupProfile.PhotoFile)
                     .Where(x =>
-                        x.UserProfileId == userProfileId &&
-                        x.UserProfile.Identity == UserIdentity &&
+                        x.UserProfileId == UserId &&
                         x.DateDeleted == null &&
                         (x.ChatRoom.GroupProfile == null || x.ChatRoom.GroupProfile.DateDeleted == null))
                     .ToListAsync();
@@ -193,23 +190,16 @@ namespace WebAPI.Controllers
         [ProducesResponseType((int)HttpStatusCode.Created)]
         [HttpPost]
         [Route(nameof(CreatePrivate))]
-        public async Task<ActionResult<UserChatRoomDTO>> CreatePrivate(long userProfileId, string emailAddress, string phoneNumber)
+        public async Task<ActionResult<UserChatRoomDTO>> CreatePrivate(string userName)
         {
             try
             {
-                UserProfile user1 = dbc.UserProfiles.Find(userProfileId);
+                UserProfile user1 = dbc.UserProfiles.Find(UserId);
 
                 if (user1 == null)
                     return NotFound("User profile not found.");
 
-                if (user1.Identity != UserIdentity)
-                    return Forbid("User profile does not match!");
-
-                UserProfile user2 = await dbc.UserProfiles
-                    .Where(x =>
-                        (!string.IsNullOrEmpty(emailAddress) && x.Identity == emailAddress) ||
-                        (!string.IsNullOrEmpty(phoneNumber) && x.Identity == phoneNumber))
-                    .FirstOrDefaultAsync();
+                UserProfile user2 = dbc.UserProfiles.FirstOrDefault(u => u.Username == userName);
 
                 if (user2 == null)
                     return NotFound("Given user was not found.");

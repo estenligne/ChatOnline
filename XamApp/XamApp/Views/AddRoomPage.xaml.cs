@@ -57,7 +57,6 @@ namespace XamApp.Views
 
                     model = new GroupProfileDTO()
                     {
-                        CreatorId = user.UserProfileId,
                         GroupName = vm.GroupName,
                         JoinToken = vm.GroupName,
                     };
@@ -79,17 +78,12 @@ namespace XamApp.Views
                             joinToken = vm.JoinToken.Substring(index);
                     }
 
-                    url = "/api/GroupProfile/JoinGroup";
-                    url += "?userProfileId=" + user.UserProfileId;
-                    url += "&groupProfileId=" + groupProfileId;
+                    url = "/api/GroupProfile/JoinGroup?groupProfileId=" + groupProfileId;
                     url += "&joinToken=" + HttpUtility.UrlEncode(joinToken);
                 }
                 else // if creating a private chat room with another user
                 {
-                    url = "/api/ChatRoom/CreatePrivate";
-                    url += "?userProfileId=" + user.UserProfileId;
-                    url += "&emailAddress=" + vm.Email;
-                    url += "&phoneNumber=" + HttpUtility.UrlEncode(vm.PhoneNumber);
+                    url = "/api/ChatRoom/CreatePrivate?userName=" + HttpUtility.UrlEncode(vm.Email);
                 }
 
                 var response = await HTTPClient.PostAsync(null, url, model);

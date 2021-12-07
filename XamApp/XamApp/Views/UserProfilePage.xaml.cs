@@ -42,11 +42,9 @@ namespace XamApp.Views
             {
                 SetBusy(true);
 
-                User user = await DataStore.Instance.GetUserAsync();
-
                 var userProfile = new UserProfileDTO()
                 {
-                    Identity = user.Identity,
+                    Id = vm.userProfileId,
                     Username = vm.Name,
                     About = vm.About,
                 };
@@ -56,7 +54,7 @@ namespace XamApp.Views
                     var response = await HTTPClient.PostAsync(null, "/api/UserProfile", userProfile);
                     if (response.IsSuccessStatusCode)
                     {
-                        await GotoRoomsPage(user);
+                        await GotoRoomsPage();
                     }
                     else await DisplayAlert("Failed to Create", await HTTPClient.GetResponseError(response), "Ok");
                 }
@@ -74,7 +72,7 @@ namespace XamApp.Views
             }
         }
 
-        private async Task GotoRoomsPage(User user)
+        private async Task GotoRoomsPage()
         {
             var url = "/api/DeviceUsed?devicePlatform=" + App.DevicePlatform();
             var response = await HTTPClient.PutAsync<string>(null, url, null);
@@ -83,8 +81,8 @@ namespace XamApp.Views
             {
                 var deviceUsedDto = await HTTPClient.ReadAsAsync<DeviceUsedDTO>(response);
 
+                User user = await DataStore.Instance.GetUserAsync();
                 user.DeviceUsedId = deviceUsedDto.Id;
-                user.UserProfileId = deviceUsedDto.UserProfileId;
                 await DataStore.Instance.UpdateUserAsync(user);
 
                 DependencyService.Get<INotifications>().RegisterFcmToken(deviceUsedDto.Id);

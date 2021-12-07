@@ -49,8 +49,7 @@ namespace WebAPI.Controllers
         [Route(nameof(GetUser))]
         public async Task<ActionResult<ApplicationUserDTO>> GetUser()
         {
-            string userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = await _userManager.FindByNameAsync(userName);
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
             var userDto = _mapper.Map<ApplicationUserDTO>(user);
             return userDto;
         }
@@ -223,7 +222,7 @@ namespace WebAPI.Controllers
                     user.DateSignedIn = DateTimeOffset.UtcNow;
                     await _userManager.UpdateAsync(user);
 
-                    string jwt = BuildJWT(user.UserName, userDto.Authorization);
+                    string jwt = BuildJWT(user.Id, user.UserName, userDto.Authorization);
                     userDto = _mapper.Map<ApplicationUserDTO>(user);
                     userDto.Authorization = "Bearer " + jwt;
 
@@ -256,7 +255,7 @@ namespace WebAPI.Controllers
             }
         }
 
-        private string BuildJWT(string sub, string key)
+        private string BuildJWT(long userId, string userName, string key)
         {
             SigningCredentials signingCredentials;
             using RSA rsa = RSA.Create();
@@ -279,7 +278,7 @@ namespace WebAPI.Controllers
             }
 
             var claims = new List<Claim>();
-            claims.Add(new Claim(JwtRegisteredClaimNames.Sub, sub));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()));
 
             if (!_configuration.GetValue<bool>("JwtSecurity:Shorten"))
             {
@@ -292,6 +291,8 @@ namespace WebAPI.Controllers
                 claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
                 claims.Add(new Claim(JwtRegisteredClaimNames.Iss, issuer));
                 claims.Add(new Claim(JwtRegisteredClaimNames.Aud, audience));
+
+                claims.Add(new Claim(ClaimTypes.Name, userName));
             }
 
             var token = new JwtSecurityToken(claims: claims,
@@ -312,13 +313,14 @@ namespace WebAPI.Controllers
                 await _signInManager.SignOutAsync();
 
                 var deviceUsed = dbc.DevicesUsed.Find(deviceUsedId);
-                if (deviceUsed != null && deviceUsed.DateDeleted == null)
+
+                if (deviceUsed?.UserProfileId == UserId && deviceUsed.DateDeleted == null)
                 {
                     deviceUsed.DateDeleted = DateTimeOffset.UtcNow;
                     dbc.SaveChanges();
                 }
 
-                _logger.LogInformation($"User {UserIdentity} signed out on deviceUsedId {deviceUsedId}.");
+                _logger.LogInformation($"User signed out on deviceUsedId {deviceUsedId}.");
                 return NoContent();
             }
             catch (Exception ex)

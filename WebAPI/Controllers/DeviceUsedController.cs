@@ -35,10 +35,9 @@ namespace WebAPI.Controllers
             try
             {
                 var userProfile = await dbc.UserProfiles
-                                            .Include(x => x.PhotoFile)
-                                            .Include(x => x.WallpaperFile)
-                                            .Where(x => x.Identity == UserIdentity)
-                                            .FirstOrDefaultAsync();
+                                        .Include(x => x.PhotoFile)
+                                        .Include(x => x.WallpaperFile)
+                                        .FirstOrDefaultAsync(x => x.Id == UserId);
 
                 if (userProfile == null)
                     return NotFound("User profile not found.");
@@ -90,18 +89,16 @@ namespace WebAPI.Controllers
                 if (fcmToken.Length > 1023)
                     return BadRequest("FcmToken length must be < 1024.");
 
-                var deviceUsed = dbc.DevicesUsed
-                                    .Include(d => d.UserProfile)
-                                    .FirstOrDefault(d => d.Id == deviceUsedId);
+                var deviceUsed = dbc.DevicesUsed.Find(deviceUsedId);
 
                 if (deviceUsed == null)
                     return NotFound($"DeviceUsed {deviceUsedId} not found.");
 
-                if (deviceUsed.UserProfile.Identity != UserIdentity)
+                if (deviceUsed.UserProfileId != UserId)
                     return Forbid("User profile does not match!");
 
                 if (deviceUsed.DateDeleted != null)
-                    return Forbid($"User already signed out of this device!");
+                    return Conflict($"User already signed out of this device!");
 
                 deviceUsed.PushNotificationToken = fcmToken;
                 deviceUsed.DateTokenProvided = DateTimeOffset.UtcNow;

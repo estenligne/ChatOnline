@@ -35,7 +35,7 @@ namespace WebAPI.Controllers
             _mapper = mapper;
         }
 
-        protected string UserIdentity => User.FindFirstValue(ClaimTypes.NameIdentifier);
+        protected long UserId => long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
         protected ActionResult Forbid(string message)
         {

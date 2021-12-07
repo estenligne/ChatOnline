@@ -49,17 +49,14 @@ namespace WebAPI.Controllers
 
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [HttpDelete]
-        public async Task<ActionResult> DeleteUserProfile(long id)
+        public async Task<ActionResult> DeleteUserProfile()
         {
             try
             {
-                UserProfile userProfile = dbc.UserProfiles.Find(id);
+                UserProfile userProfile = dbc.UserProfiles.Find(UserId);
 
                 if (userProfile == null)
                     return NotFound("User profile not found.");
-
-                if (userProfile.Identity != UserIdentity)
-                    return Forbid("User profile does not match!");
 
                 userProfile.DateDeleted = DateTimeOffset.UtcNow;
                 await dbc.SaveChangesAsync();
@@ -99,10 +96,7 @@ namespace WebAPI.Controllers
                 if (userProfileDto.DateDeleted != null)
                     return Forbid("Cannot delete user profile!");
 
-                if (userProfileDto.Identity != UserIdentity)
-                    return Forbid("Identity does not match!");
-
-                var userProfile = await dbc.UserProfiles.FirstOrDefaultAsync(u => u.Identity == UserIdentity);
+                var userProfile = dbc.UserProfiles.Find(UserId);
                 if (userProfile == null || userProfile.DateDeleted != null)
                 {
                     if (onPut) // else onPost
@@ -111,24 +105,17 @@ namespace WebAPI.Controllers
                     if (userProfileDto.Id != 0)
                         return BadRequest("Id must be 0!");
 
-                    if (userProfileDto.DateDeleted != null)
-                        return Forbid("Cannot set DateDeleted!");
-
+                    userProfileDto.Id = UserId;
                     userProfileDto.DateCreated = DateTimeOffset.UtcNow;
 
                     if (userProfile == null)
                     {
                         userProfile = _mapper.Map<UserProfile>(userProfileDto);
                         dbc.UserProfiles.Add(userProfile);
-                        await dbc.SaveChangesAsync(); // get Id
-                        userProfileDto.Id = userProfile.Id; // set Id
                     }
-                    else
-                    {
-                        userProfileDto.Id = userProfile.Id; // set Id
-                        _mapper.Map(userProfileDto, userProfile);
-                        await dbc.SaveChangesAsync();
-                    }
+                    else _mapper.Map(userProfileDto, userProfile);
+
+                    await dbc.SaveChangesAsync();
 
                     return CreatedAtAction(nameof(GetUserProfile), null, userProfileDto);
                 }

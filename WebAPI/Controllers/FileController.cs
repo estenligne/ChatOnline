@@ -64,10 +64,9 @@ namespace WebAPI.Controllers
 
                 _file.Name = fileName;
                 _file.Size = fileSize;
-                _file.DateUploaded = DateTimeOffset.UtcNow;
 
-                var user = dbc.UserProfiles.First(u => u.Identity == UserIdentity);
-                _file.UploaderId = user.Id;
+                _file.UploaderId = UserId;
+                _file.DateUploaded = DateTimeOffset.UtcNow;
 
                 dbc.Files.Add(_file);
                 dbc.SaveChanges();
@@ -124,9 +123,7 @@ namespace WebAPI.Controllers
         {
             File file = await dbc.Files.FindAsync(id);
 
-            var user = dbc.UserProfiles.First(u => u.Identity == UserIdentity);
-
-            if (file.UploaderId != user.Id)
+            if (file.UploaderId != UserId)
                 return Forbid("This file doesn't belong to you!");
 
             file.DateDeleted = DateTimeOffset.UtcNow;

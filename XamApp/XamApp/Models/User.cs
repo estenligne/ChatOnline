@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
 using SQLite;
 
 namespace XamApp.Models
@@ -8,6 +7,7 @@ namespace XamApp.Models
     {
         [PrimaryKey]
         public long Id { get; set; }
+        public long DeviceUsedId { get; set; }
 
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
@@ -15,11 +15,5 @@ namespace XamApp.Models
 
         public bool RememberMe { get; set; }
         public string Authorization { get; set; }
-
-        public long DeviceUsedId { get; set; }
-        public long UserProfileId { get; set; }
-
-        [NotMapped]
-        public string Identity => string.IsNullOrEmpty(PhoneNumber) ? Email : PhoneNumber;
     }
 }

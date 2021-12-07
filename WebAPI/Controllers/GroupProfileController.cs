@@ -25,8 +25,7 @@ namespace WebAPI.Controllers
         {
             return dbc.UserChatRooms
                     .Include(x => x.UserProfile)
-                    .Where(x =>
-                        x.UserProfile.Identity == UserIdentity &&
+                    .Where(x => x.UserProfileId == UserId &&
                         x.ChatRoom.GroupProfileId == groupProfileId)
                     .FirstOrDefaultAsync();
         }
@@ -104,12 +103,11 @@ namespace WebAPI.Controllers
 
                 var groupProfile = dbc.GroupProfiles.Find(groupProfileDto.Id);
 
+                if (groupProfileDto.CreatorId != UserId)
+                    return Forbid("CreatorId does not match!");
+
                 if (groupProfileDto.CreatorId != groupProfile.CreatorId)
                     return Forbid("Cannot update group creator!");
-
-                if (groupProfileDto.JoinToken != groupProfile.JoinToken &&
-                    groupProfileDto.CreatorId != userChatRoom.UserProfileId)
-                    return Forbid("Cannot update group JoinToken!");
 
                 if (groupProfileDto.DateCreated != groupProfile.DateCreated)
                     return Forbid("Cannot update group DateCreated!");
@@ -141,15 +139,12 @@ namespace WebAPI.Controllers
                 if (groupProfileDto.DateDeleted != null)
                     return Forbid("Cannot delete group profile!");
 
+                if (groupProfileDto.CreatorId != 0)
+                    return Forbid("CreatorId must be 0!");
+
                 var dateCreated = DateTimeOffset.UtcNow;
                 groupProfileDto.DateCreated = dateCreated;
-
-                var userProfile = await dbc.UserProfiles.FirstOrDefaultAsync(x => x.Identity == UserIdentity);
-                if (userProfile == null)
-                    return NotFound("User profile not found.");
-
-                if (groupProfileDto.CreatorId != userProfile.Id)
-                    return Forbid("CreatorId does not match!");
+                groupProfileDto.CreatorId = UserId;
 
                 ChatRoom chatRoom = null;
                 UserChatRoom userChatRoom = null;
@@ -191,7 +186,7 @@ namespace WebAPI.Controllers
                 {
                     userChatRoom = new UserChatRoom
                     {
-                        UserProfileId = userProfile.Id,
+                        UserProfileId = UserId,
                         ChatRoom = chatRoom,
                         UserRole = UserRoleEnum.FullNode | UserRoleEnum.GroupAdmin,
                         DateAdded = dateCreated,
@@ -218,7 +213,7 @@ namespace WebAPI.Controllers
         [ProducesResponseType((int)HttpStatusCode.Created)]
         [HttpPost]
         [Route(nameof(JoinGroup))]
-        public async Task<ActionResult<UserChatRoomDTO>> JoinGroup(long userProfileId, long groupProfileId, string joinToken)
+        public async Task<ActionResult<UserChatRoomDTO>> JoinGroup(long groupProfileId, string joinToken)
         {
             try
             {
@@ -235,23 +230,15 @@ namespace WebAPI.Controllers
                 if (chatRoom.GroupProfile.JoinToken != joinToken)
                     return Forbid("Invalid token value!");
 
-                var userProfile = dbc.UserProfiles.Find(userProfileId);
-
-                if (userProfile == null)
-                    return NotFound("User profile not found.");
-
-                if (userProfile.Identity != UserIdentity)
-                    return Forbid("User profile does not match!");
-
                 var userChatRoom = await dbc.UserChatRooms
-                                            .Where(x => x.UserProfileId == userProfileId && x.ChatRoomId == chatRoom.Id)
+                                            .Where(x => x.UserProfileId == UserId && x.ChatRoomId == chatRoom.Id)
                                             .FirstOrDefaultAsync();
                 if (userChatRoom != null)
                     return Conflict("User already joined to group.");
 
                 userChatRoom = new UserChatRoom
                 {
-                    UserProfileId = userProfileId,
+                    UserProfileId = UserId,
                     ChatRoomId = chatRoom.Id,
                     DateAdded = DateTimeOffset.UtcNow,
                 };

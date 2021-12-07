@@ -34,10 +34,7 @@ namespace XamApp.ViewModels
             {
                 IsBusy = true;
 
-                var user = await DataStore.Instance.GetUserAsync();
-                var url = "/api/ChatRoom/GetAll?userProfileId=" + user.UserProfileId;
-
-                var response = await HTTPClient.GetAsync(null, url);
+                var response = await HTTPClient.GetAsync(null, "/api/ChatRoom/GetAll");
                 if (response.IsSuccessStatusCode)
                 {
                     var rooms = await HTTPClient.ReadAsAsync<List<RoomInfo>>(response);

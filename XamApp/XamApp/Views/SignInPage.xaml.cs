@@ -75,7 +75,6 @@ namespace XamApp.Views
                         var deviceUsedDto = await HTTPClient.ReadAsAsync<DeviceUsedDTO>(response);
 
                         user.DeviceUsedId = deviceUsedDto.Id;
-                        user.UserProfileId = deviceUsedDto.UserProfileId;
                         await DataStore.Instance.InsertUserAsync(user);
 
                         DependencyService.Get<INotifications>().RegisterFcmToken(deviceUsedDto.Id);

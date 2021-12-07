@@ -78,14 +78,12 @@ namespace WebAPI.Controllers
         {
             try
             {
-                var userChatRoom = await dbc.UserChatRooms
-                                            .Include(x => x.UserProfile)
-                                            .FirstOrDefaultAsync(x => x.Id == userChatRoomId);
+                var userChatRoom = dbc.UserChatRooms.Find(userChatRoomId);
 
                 if (userChatRoom == null)
                     return NotFound("Sender's user chat room not found.");
 
-                if (userChatRoom.UserProfile.Identity != UserIdentity)
+                if (userChatRoom.UserProfileId != UserId)
                     return Forbid("Sender's user chat room does not match!");
 
                 if (userChatRoom.DateBlocked != null ||
@@ -170,7 +168,7 @@ namespace WebAPI.Controllers
                 if (userChatRoom == null)
                     return NotFound("Sender's user chat room not found.");
 
-                if (userChatRoom.UserProfile.Identity != UserIdentity)
+                if (userChatRoom.UserProfileId != UserId)
                     return Forbid("Sender's user chat room does not match!");
 
                 if (messageSentDto.LinkedId != null)
@@ -307,8 +305,8 @@ namespace WebAPI.Controllers
                     return BadRequest("Date received cannot be in the future!");
 
                 var userChatRoom = await dbc.UserChatRooms
-                                            .Where(x => x.ChatRoomId == messageSent.Sender.ChatRoomId
-                                                && x.UserProfile.Identity == UserIdentity)
+                                            .Where(x => x.UserProfileId == UserId &&
+                                                x.ChatRoomId == messageSent.Sender.ChatRoomId)
                                             .FirstOrDefaultAsync();
 
                 if (userChatRoom == null)
@@ -376,7 +374,7 @@ namespace WebAPI.Controllers
                 var messageReceived = await dbc.MessagesReceived
                                         .Include(x => x.MessageSent.Sender)
                                         .Where(x => x.MessageSentId == messageSentId &&
-                                            x.Receiver.UserProfile.Identity == UserIdentity)
+                                            x.Receiver.UserProfileId == UserId)
                                         .FirstOrDefaultAsync();
 
                 if (messageReceived == null)
@@ -425,10 +423,9 @@ namespace WebAPI.Controllers
                 .Include(x => x.Sender)
                 .FirstOrDefaultAsync(x => x.Id == messageSentId);
 
-            var user = dbc.UserProfiles.First(u => u.Identity == UserIdentity);
             var utcNow = DateTimeOffset.UtcNow;
 
-            if (message.Sender?.UserProfileId != user.Id)
+            if (message.Sender?.UserProfileId != UserId)
                 return Forbid("This message doesn't belong to you!");
 
             if (!LesserTime(dateStarred, utcNow))
@@ -450,10 +447,9 @@ namespace WebAPI.Controllers
                 .Include(x => x.Sender)
                 .FirstOrDefaultAsync(x => x.Id == messageSentId);
 
-            var user = dbc.UserProfiles.First(u => u.Identity == UserIdentity);
             var utcNow = DateTimeOffset.UtcNow;
 
-            if (message.Sender?.UserProfileId != user.Id)
+            if (message.Sender?.UserProfileId != UserId)
                 return Forbid("This message doesn't belong to you!");
 
             if (!LesserTime(dateDeleted, utcNow))
