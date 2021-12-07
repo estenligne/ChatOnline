@@ -107,7 +107,7 @@ namespace WebAPI.Controllers
                                         .Select(x => x.UserProfile)
                                         .FirstAsync();
 
-                chatRoomInfo.Name = otherUser.Username;
+                chatRoomInfo.Name = otherUser.Name;
                 chatRoomInfo.PhotoFileName = otherUser.PhotoFile?.Name;
             }
             else
@@ -190,7 +190,7 @@ namespace WebAPI.Controllers
         [ProducesResponseType((int)HttpStatusCode.Created)]
         [HttpPost]
         [Route(nameof(CreatePrivate))]
-        public async Task<ActionResult<UserChatRoomDTO>> CreatePrivate(string userName)
+        public async Task<ActionResult<UserChatRoomDTO>> CreatePrivate(long userId)
         {
             try
             {
@@ -199,7 +199,7 @@ namespace WebAPI.Controllers
                 if (user1 == null)
                     return NotFound("User profile not found.");
 
-                UserProfile user2 = dbc.UserProfiles.FirstOrDefault(u => u.Username == userName);
+                UserProfile user2 = dbc.UserProfiles.Find(userId);
 
                 if (user2 == null)
                     return NotFound("Given user was not found.");

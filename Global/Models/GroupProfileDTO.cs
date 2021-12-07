@@ -9,6 +9,7 @@ namespace Global.Models
 
         public long CreatorId { get; set; }
 
+        [Required]
         [StringLength(63)]
         public string GroupName { get; set; }
 

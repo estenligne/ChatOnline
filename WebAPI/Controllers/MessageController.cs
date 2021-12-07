@@ -31,7 +31,7 @@ namespace WebAPI.Controllers
         {
             var messageSentDto = _mapper.Map<MessageSentDTO>(messageSent);
 
-            messageSentDto.SenderName = messageSent.Sender?.UserProfile?.Username;
+            messageSentDto.SenderName = messageSent.Sender?.UserProfile?.Name;
 
             if (messageSentDto.MessageTag == null)
             {
@@ -249,9 +249,9 @@ namespace WebAPI.Controllers
                 await dbc.SaveChangesAsync();
 
                 messageSentDto.Id = messageSent.Id;
-                messageSentDto.SenderName = userChatRoom.UserProfile.Username;
+                messageSentDto.SenderName = userChatRoom.UserProfile.Name;
 
-                string title = userChatRoom.UserProfile.Username;
+                string title = userChatRoom.UserProfile.Name;
                 string group = userChatRoom.ChatRoom.GroupProfile?.GroupName;
                 if (group != null)
                     title += " - " + group;

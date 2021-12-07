@@ -7,7 +7,7 @@ using Global.Enums;
 namespace WebAPI.Models
 {
     [Table(nameof(ApplicationDbContext.UserProfiles))]
-    [Index(nameof(Username), IsUnique = true)]
+    [Index(nameof(Name))]
     public class UserProfile
     {
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -15,7 +15,7 @@ namespace WebAPI.Models
 
         [Required]
         [MaxLength(63)]
-        public string Username { get; set; }
+        public string Name { get; set; }
 
         [MaxLength(4095)]
         public string About { get; set; }

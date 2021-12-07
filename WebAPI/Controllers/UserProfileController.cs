@@ -25,12 +25,17 @@ namespace WebAPI.Controllers
         {
             try
             {
+                if (id == 0) id = UserId;
+
                 var userProfile = await dbc.UserProfiles
                                             .Include(u => u.PhotoFile)
                                             .FirstOrDefaultAsync(u => u.Id == id);
 
                 if (userProfile == null)
                     return NotFound($"User profile {id} not found.");
+
+                if (userProfile.DateDeleted != null)
+                    return NotFound($"User profile {id} is deleted.");
 
                 if (userProfile.PhotoFile?.DateDeleted != null)
                 {
@@ -107,6 +112,7 @@ namespace WebAPI.Controllers
 
                     userProfileDto.Id = UserId;
                     userProfileDto.DateCreated = DateTimeOffset.UtcNow;
+                    userProfileDto.LastConnected = userProfileDto.DateCreated;
 
                     if (userProfile == null)
                     {

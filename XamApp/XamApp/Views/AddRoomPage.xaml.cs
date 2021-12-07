@@ -44,7 +44,6 @@ namespace XamApp.Views
                 SetBusy(true);
                 string url;
                 GroupProfileDTO model = null;
-                User user = await DataStore.Instance.GetUserAsync();
 
                 if (vm.GroupName != null) // if adding a new group
                 {
@@ -83,7 +82,7 @@ namespace XamApp.Views
                 }
                 else // if creating a private chat room with another user
                 {
-                    url = "/api/ChatRoom/CreatePrivate?userName=" + HttpUtility.UrlEncode(vm.Email);
+                    url = "/api/ChatRoom/CreatePrivate?userId=" + vm.AccountId;
                 }
 
                 var response = await HTTPClient.PostAsync(null, url, model);

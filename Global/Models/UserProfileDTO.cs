@@ -8,8 +8,9 @@ namespace Global.Models
     {
         public long Id { get; set; }
 
+        [Required]
         [StringLength(63)]
-        public string Username { get; set; }
+        public string Name { get; set; }
 
         [StringLength(4095)]
         public string About { get; set; }

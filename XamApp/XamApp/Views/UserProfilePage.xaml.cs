@@ -19,7 +19,7 @@ namespace XamApp.Views
         public UserProfilePage()
         {
             InitializeComponent();
-            vm = new UserProfileViewModel();
+            vm = new UserProfileViewModel(0);
             BindingContext = vm;
         }
 
@@ -44,12 +44,12 @@ namespace XamApp.Views
 
                 var userProfile = new UserProfileDTO()
                 {
-                    Id = vm.userProfileId,
-                    Username = vm.Name,
+                    Id = vm.Id,
+                    Name = vm.Name,
                     About = vm.About,
                 };
 
-                if (vm.userProfileId == 0) // if creating
+                if (vm.Id == 0) // if creating
                 {
                     var response = await HTTPClient.PostAsync(null, "/api/UserProfile", userProfile);
                     if (response.IsSuccessStatusCode)

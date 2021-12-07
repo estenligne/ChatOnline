@@ -4,9 +4,14 @@ namespace XamApp.ViewModels
 {
     public class UserProfileViewModel : BaseViewModel
     {
+        public readonly long Id;
         private string name;
         private string about;
-        public long userProfileId;
+
+        public UserProfileViewModel(long id)
+        {
+            Id = id;
+        }
 
         public string Name
         {
@@ -33,7 +38,7 @@ namespace XamApp.ViewModels
             }
         }
 
-        public string ButtonText => userProfileId == 0 ? "Create" : "Save";
+        public string ButtonText => Id == 0 ? "Create" : "Save";
 
         public bool CanSave => IsValid(Type.ProfileName, Name);
 

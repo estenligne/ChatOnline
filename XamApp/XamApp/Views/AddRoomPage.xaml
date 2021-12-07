@@ -6,42 +6,30 @@
              Title="Add Chat Room">
 
     <ScrollView x:DataType="local:AddRoomViewModel">
-        <StackLayout Padding="10,30,10,0">
+        <StackLayout Padding="10,30,10,0" Spacing="15">
 
             <Label Text="Enter" TextColor="Black" HorizontalOptions="Center" />
 
-            <Entry Text="{Binding Email, Mode=TwoWay}"
-                    Placeholder="Email address of contact"
-                    Keyboard="Email"
+            <Entry Text="{Binding AccountId}"
+                    Placeholder="Account number of contact"
+                    Keyboard="Numeric"
                     FontSize="Large"
-                    TextColor="{Binding EmailColor}"
-                    Margin="0,15" />
+                    TextColor="{Binding AccountIdColor}" />
 
             <Label Text="OR" TextColor="Black" HorizontalOptions="Center" />
 
-            <Entry Text="{Binding PhoneNumber, Mode=TwoWay}"
-                    Placeholder="Phone number of contact"
-                    Keyboard="Telephone"
-                    FontSize="Large"
-                    TextColor="{Binding PhoneNumberColor}"
-                    Margin="0,15" />
+            <Entry Text="{Binding JoinToken}"
+                Placeholder="Token to join a group"
+                FontSize="Large"
+                TextColor="{Binding JoinTokenColor}" />
 
             <Label Text="OR" TextColor="Black" HorizontalOptions="Center" />
 
-            <Entry Text="{Binding GroupName, Mode=TwoWay}"
+            <Entry Text="{Binding GroupName}"
                 Placeholder="Name of new group to create"
                 Keyboard="Plain"
                 FontSize="Large"
-                TextColor="{Binding GroupNameColor}"
-                Margin="0,15" />
-
-            <Label Text="OR" TextColor="Black" HorizontalOptions="Center" />
-
-            <Entry Text="{Binding JoinToken, Mode=TwoWay}"
-                Placeholder="Token to join a group"
-                FontSize="Large"
-                TextColor="{Binding JoinTokenColor}"
-                Margin="0,15" />
+                TextColor="{Binding GroupNameColor}" />
 
             <Button Text="Add Chat Room"
                 VerticalOptions="Center"

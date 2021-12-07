@@ -94,6 +94,7 @@ namespace XamApp.ViewModels
             Password,
             ProfileName,
             JoinToken,
+            Numeric
         }
 
         public static bool IsValid(Type Type, string value)
@@ -130,6 +131,9 @@ namespace XamApp.ViewModels
 
                 case Type.JoinToken:
                     return 5 <= length && length <= 70 && value.Contains(Views.AddRoomPage.separator);
+
+                case Type.Numeric:
+                    return long.TryParse(value, out _);
 
                 default: return false;
             }
