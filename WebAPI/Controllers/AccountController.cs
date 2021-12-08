@@ -219,11 +219,10 @@ namespace WebAPI.Controllers
 
                 if (result.Succeeded)
                 {
-                    user.DateSignedIn = DateTimeOffset.UtcNow;
-                    await _userManager.UpdateAsync(user);
+                    _logger.LogInformation($"User {user.Id} {user.UserName} has authenticated.");
+                    userDto = _mapper.Map<ApplicationUserDTO>(user);
 
                     string jwt = BuildJWT(user.Id, user.UserName, userDto.Authorization);
-                    userDto = _mapper.Map<ApplicationUserDTO>(user);
                     userDto.Authorization = "Bearer " + jwt;
 
                     return Ok(userDto);
@@ -255,14 +254,12 @@ namespace WebAPI.Controllers
             }
         }
 
-        private string BuildJWT(long userId, string userName, string key)
+        private string BuildJWT(long userId, string userName, string duration)
         {
             SigningCredentials signingCredentials;
             using RSA rsa = RSA.Create();
 
-            if (key == null || key.Length < 16)
-                key = _configuration["JwtSecurity:SecretKey"];
-
+            string key = _configuration["JwtSecurity:SecretKey"];
             if (!string.IsNullOrEmpty(key))
             {
                 var securityKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(key));
@@ -288,15 +285,17 @@ namespace WebAPI.Controllers
                 if (string.IsNullOrEmpty(audience))
                     audience = issuer;
 
-                claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
                 claims.Add(new Claim(JwtRegisteredClaimNames.Iss, issuer));
                 claims.Add(new Claim(JwtRegisteredClaimNames.Aud, audience));
 
-                claims.Add(new Claim(ClaimTypes.Name, userName));
+                claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
+                claims.Add(new Claim(JwtRegisteredClaimNames.UniqueName, userName));
             }
 
+            int minutes = string.IsNullOrEmpty(duration) ? 24 * 60 : int.Parse(duration);
+
             var token = new JwtSecurityToken(claims: claims,
-                expires: DateTime.UtcNow.AddHours(24),
+                expires: DateTime.UtcNow.AddMinutes(minutes),
                 signingCredentials: signingCredentials);
 
             string jwt = new JwtSecurityTokenHandler().WriteToken(token);

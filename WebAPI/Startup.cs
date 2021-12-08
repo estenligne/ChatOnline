@@ -128,22 +128,28 @@ namespace WebAPI
                 if (audience == null)
                     audience = issuer;
 
-                options.SaveToken = true;
-                options.RequireHttpsMetadata = !_env.IsDevelopment();
-                options.TokenValidationParameters = new TokenValidationParameters()
+                var tokenValidationParameters = new TokenValidationParameters()
                 {
                     ValidateIssuer = validate,
                     ValidateAudience = validate,
                     ValidAudiences = audience.Split(';'),
                     ValidIssuer = issuer,
+
                     ValidateLifetime = true,
+                    RequireExpirationTime = true,
+                    //ClockSkew = TimeSpan.FromMinutes(1),
+
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = securityKey
                 };
 
                 if (string.IsNullOrEmpty(secretKey)) // if using RSA
-                    options.TokenValidationParameters.CryptoProviderFactory =
+                    tokenValidationParameters.CryptoProviderFactory =
                         new CryptoProviderFactory() { CacheSignatureProviders = false };
+
+                options.SaveToken = true;
+                options.RequireHttpsMetadata = !_env.IsDevelopment();
+                options.TokenValidationParameters = tokenValidationParameters;
             });
         }
 

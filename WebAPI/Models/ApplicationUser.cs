@@ -20,7 +20,6 @@ namespace WebAPI.Models
 
         public DateTimeOffset DateCreated { get; set; }
         public DateTimeOffset? DateDeleted { get; set; }
-        public DateTimeOffset? DateSignedIn { get; set; }
     }
 
     public class ApplicationRole : IdentityRole<long>
