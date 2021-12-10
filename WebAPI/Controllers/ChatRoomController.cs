@@ -158,7 +158,7 @@ namespace WebAPI.Controllers
                     .Where(x =>
                         x.UserProfileId == UserId &&
                         x.DateDeleted == null &&
-                        (x.ChatRoom.GroupProfile == null || x.ChatRoom.GroupProfile.DateDeleted == null))
+                        x.ChatRoom.DateDeleted == null)
                     .ToListAsync();
 
                 var chatRoomsInfos = new List<ChatRoomInfo>();

@@ -64,20 +64,20 @@ namespace XamApp.Views
                 else if (vm.JoinToken != null) // if joining a group
                 {
                     string joinToken = null;
-                    long groupProfileId = 0;
+                    long chatRoomId = 0;
 
                     int index = vm.JoinToken.IndexOf(separator);
                     if (index >= 0)
                     {
                         string id = vm.JoinToken.Substring(0, index);
-                        long.TryParse(id, out groupProfileId);
+                        long.TryParse(id, out chatRoomId);
 
                         index += separator.Length;
                         if (index < vm.JoinToken.Length)
                             joinToken = vm.JoinToken.Substring(index);
                     }
 
-                    url = "/api/GroupProfile/JoinGroup?groupProfileId=" + groupProfileId;
+                    url = "/api/GroupProfile/JoinGroup?id=" + chatRoomId;
                     url += "&joinToken=" + HttpUtility.UrlEncode(joinToken);
                 }
                 else // if creating a private chat room with another user
@@ -93,7 +93,7 @@ namespace XamApp.Views
                     if (vm.GroupName != null) // if adding a new group
                     {
                         var groupProfile = userChatRoom.ChatRoom.GroupProfile;
-                        string joinToken = groupProfile.Id + separator + groupProfile.JoinToken;
+                        string joinToken = groupProfile.ChatRoomId + separator + groupProfile.JoinToken;
                         await Clipboard.SetTextAsync(joinToken);
 
                         string message = "Below is the token for others to join your group. It has already been copied to your clipboard!\n\n" + joinToken;

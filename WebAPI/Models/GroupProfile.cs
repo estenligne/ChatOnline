@@ -6,13 +6,10 @@ using Microsoft.EntityFrameworkCore;
 namespace WebAPI.Models
 {
     [Table(nameof(ApplicationDbContext.GroupProfiles))]
-    [Index(nameof(CreatorId), nameof(GroupName), IsUnique = true)]
     public class GroupProfile
     {
-        public long Id { get; set; }
-
-        public long CreatorId { get; set; }
-        public virtual UserProfile Creator { get; set; }
+        [Key, ForeignKey(nameof(ChatRoom))]
+        public long ChatRoomId { get; set; }
 
         [Required]
         [MaxLength(63)]
@@ -29,8 +26,5 @@ namespace WebAPI.Models
 
         public long? WallpaperFileId { get; set; }
         public virtual File WallpaperFile { get; set; }
-
-        public DateTimeOffset DateCreated { get; set; }
-        public DateTimeOffset? DateDeleted { get; set; }
     }
 }

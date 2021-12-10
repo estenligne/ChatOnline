@@ -5,9 +5,7 @@ namespace Global.Models
 {
     public class GroupProfileDTO
     {
-        public long Id { get; set; }
-
-        public long CreatorId { get; set; }
+        public long ChatRoomId { get; set; }
 
         [Required]
         [StringLength(63)]
@@ -24,8 +22,5 @@ namespace Global.Models
 
         public long? WallpaperFileId { get; set; }
         public FileDTO WallpaperFile { get; set; }
-
-        public DateTimeOffset DateCreated { get; set; }
-        public DateTimeOffset? DateDeleted { get; set; }
     }
 }
