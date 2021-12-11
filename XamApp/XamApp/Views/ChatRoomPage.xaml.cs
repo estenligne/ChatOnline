@@ -12,10 +12,12 @@ using Global.Enums;
 
 namespace XamApp.Views
 {
+    [QueryProperty(nameof(ChatRoomId), "id")]
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class ChatRoomPage : ContentPage
     {
         private readonly ChatRoomViewModel vm;
+        public long ChatRoomId { get; set; }
 
         public ChatRoomPage()
         {
@@ -27,6 +29,20 @@ namespace XamApp.Views
 
         protected override async void OnAppearing()
         {
+            if (ChatRoomId != 0)
+            {
+                var response = await HTTPClient.GetAsync(null, "/api/ChatRoom/GetInfo?id=" + ChatRoomId);
+                if (response.IsSuccessStatusCode)
+                {
+                    vm.Room = await HTTPClient.ReadAsAsync<RoomInfo>(response);
+                }
+                else
+                {
+                    string message = await HTTPClient.GetResponseError(response);
+                    await DisplayAlert("Failed to Load", message, "Ok");
+                }
+                ChatRoomId = 0;
+            }
             base.OnAppearing();
             await vm.OnAppearing();
         }

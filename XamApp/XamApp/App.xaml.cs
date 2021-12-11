@@ -47,33 +47,16 @@ namespace XamApp
             else if (Notification != null)
             {
                 long? chatRoomId = Notification.MessageSent?.MessageTag?.ChatRoomId;
-                Notification = null;
-
                 if (chatRoomId.HasValue)
                 {
-                    string error = Task.Run(async () => await SetChatRoomPage(chatRoomId.Value)).Result;
-
-                    if (error == null)
-                        page += "/" + nameof(ChatRoomPage);
+                    page += "/" + nameof(ChatRoomPage) + "?id=" + chatRoomId;
                 }
+                Notification = null;
             }
 
             var appShell = new AppShell();
             appShell.GoToAsync("//" + page).Wait();
             return appShell;
-        }
-
-        private static async Task<string> SetChatRoomPage(long chatRoomId)
-        {
-            string url = "/api/ChatRoom/GetInfo/" + chatRoomId;
-            var response = await HTTPClient.GetAsync(null, url);
-
-            if (response.IsSuccessStatusCode)
-            {
-                ChatRoomViewModel.Room = await HTTPClient.ReadAsAsync<RoomInfo>(response);
-                return null;
-            }
-            else return await HTTPClient.GetResponseError(response);
         }
 
         public enum NotificationSource
@@ -108,10 +91,7 @@ namespace XamApp
 
                     if (chatRoomId.HasValue)
                     {
-                        error = await SetChatRoomPage(chatRoomId.Value);
-
-                        if (error == null)
-                            await Shell.Current.GoToAsync(nameof(ChatRoomPage));
+                        await Shell.Current.GoToAsync(nameof(ChatRoomPage) + "?id=" + chatRoomId);
                     }
                 }
                 else

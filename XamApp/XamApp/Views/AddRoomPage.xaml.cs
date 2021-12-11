@@ -100,19 +100,9 @@ namespace XamApp.Views
                         await DisplayAlert("Group Created", message, "Ok");
                     }
 
-                    url = "/api/ChatRoom/GetInfo?userChatRoomId=" + userChatRoom.Id;
-                    response = await HTTPClient.GetAsync(null, url);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var room = await HTTPClient.ReadAsAsync<RoomInfo>(response);
-                        ChatRoomViewModel.Room = room; // provide the necessary data
-
-                        // This will push the ChatRoomPage onto the navigation stack
-                        await Shell.Current.GoToAsync("../" + nameof(ChatRoomPage));
-                    }
+                    await Shell.Current.GoToAsync("../" + nameof(ChatRoomPage) + "?id=" + userChatRoom.ChatRoomId);
                 }
-
-                if (!response.IsSuccessStatusCode)
+                else
                 {
                     string message = await HTTPClient.GetResponseError(response);
                     await DisplayAlert("Failed to Add", message, "Ok");

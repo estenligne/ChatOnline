@@ -62,11 +62,10 @@ namespace XamApp.ViewModels
 
         private async void OnRoomSelected(RoomInfo room)
         {
-            if (room != null && !IsBusy)
+            if (!IsBusy && room != null)
             {
                 IsBusy = true;
-                ChatRoomViewModel.Room = room; // provide the necessary data
-                await Shell.Current.GoToAsync(nameof(Views.ChatRoomPage));
+                await Shell.Current.GoToAsync(nameof(Views.ChatRoomPage) + "?id=" + room.Id);
                 IsBusy = false;
             }
         }

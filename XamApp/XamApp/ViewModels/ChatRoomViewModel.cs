@@ -13,9 +13,6 @@ namespace XamApp.ViewModels
     public class ChatRoomViewModel : BaseViewModel
     {
         private static ChatRoomViewModel Appearing = null;
-        public static RoomInfo Room;
-        private RoomInfo _room;
-        private string _body;
 
         public Command SendMessageCommand { get; }
         public ObservableCollection<Message> Messages { get; }
@@ -62,13 +59,24 @@ namespace XamApp.ViewModels
         public static bool AddMessageFromPushNotification(MessageSentDTO message)
         {
             var vm = Appearing;
-            if (vm != null && vm._room != null && vm._room.Id == message.MessageTag.ChatRoomId)
+            if (vm?.Room?.Id == message.MessageTag.ChatRoomId)
             {
                 vm.AddMessage(message);
                 vm.ScrollToIndex(-1);
                 return true;
             }
             else return false;
+        }
+
+        private RoomInfo _room;
+        public RoomInfo Room
+        {
+            get { return _room; }
+            set
+            {
+                _room = value;
+                Title = _room.Name;
+            }
         }
 
         public void OnDisappearing()
@@ -78,12 +86,6 @@ namespace XamApp.ViewModels
 
         public Task OnAppearing()
         {
-            if (Room != null)
-            {
-                _room = Room;
-                Room = null;
-                Title = _room.Name;
-            }
             Appearing = this;
             return LoadMessages();
         }
@@ -93,7 +95,7 @@ namespace XamApp.ViewModels
             if (!IsBusy)
             {
                 SetBusy(true);
-                var url = "/api/Message/GetMany?userChatRoomId=" + _room.UserChatRoomId;
+                var url = "/api/Message/GetMany?userChatRoomId=" + Room.UserChatRoomId;
                 var response = await HTTPClient.GetAsync(null, url);
                 if (response.IsSuccessStatusCode)
                 {
@@ -140,6 +142,7 @@ namespace XamApp.ViewModels
             return null;
         }
 
+        private string _body;
         public string Body
         {
             get { return _body; }
@@ -165,7 +168,7 @@ namespace XamApp.ViewModels
         public string LinkedMessageBody => _linked?.ShortBody;
         public bool HasLinkedMessage => _linked != null;
 
-        public bool IsGroupChat => _room.Type == ChatRoomTypeEnum.Group;
+        public bool IsGroupChat => Room.Type == ChatRoomTypeEnum.Group;
 
         public bool ShowSendButton => !IsBusy;
         public bool CanSendMessage => ShowSendButton && !string.IsNullOrEmpty(Body);
@@ -189,8 +192,8 @@ namespace XamApp.ViewModels
 
             var messageSent = new MessageSentDTO()
             {
-                SenderId = _room.UserChatRoomId,
-                MessageTag = new MessageTagDTO { ChatRoomId = _room.Id },
+                SenderId = Room.UserChatRoomId,
+                MessageTag = new MessageTagDTO { ChatRoomId = Room.Id },
                 Body = Body,
                 FileId = file?.Id,
                 MessageType = file == null ? MessageTypeEnum.Text : MessageTypeEnum.File,
