@@ -94,9 +94,11 @@ namespace XamApp.Views
                     {
                         var groupProfile = userChatRoom.ChatRoom.GroupProfile;
                         string joinToken = groupProfile.ChatRoomId + separator + groupProfile.JoinToken;
-                        await Clipboard.SetTextAsync(joinToken);
 
-                        string message = "Below is the token for others to join your group. It has already been copied to your clipboard!\n\n" + joinToken;
+                        await Clipboard.SetTextAsync(joinToken);
+                        App.Toast("Token copied", true);
+
+                        string message = "Below is the token for others to join your group. It has been copied to the clipboard!\n\n" + joinToken;
                         await DisplayAlert("Group Created", message, "Ok");
                     }
 

@@ -146,6 +146,11 @@ namespace XamApp
             }
         }
 
+        public static void Toast(string message, bool takeLong)
+        {
+            DependencyService.Get<INotifications>().Toast(message, takeLong);
+        }
+
         public static DevicePlatformEnum DevicePlatform()
         {
             var platform =

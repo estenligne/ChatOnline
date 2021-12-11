@@ -1,6 +1,7 @@
 ﻿using Android.App;
 using Android.Content;
 using Android.OS;
+using Android.Widget;
 using AndroidX.Core.App;
 using AndroidX.Core.Content;
 using Android.Gms.Tasks;
@@ -96,6 +97,12 @@ namespace XamApp.Droid.Notifications
                 nc.EnableLights(true);
                 notificationManager.CreateNotificationChannel(nc);
             }
+        }
+
+        void INotifications.Toast(string message, bool takeLong)
+        {
+            var duration = takeLong ? ToastLength.Long : ToastLength.Short;
+            Toast.MakeText(Application.Context, message, duration).Show();
         }
     }
 }

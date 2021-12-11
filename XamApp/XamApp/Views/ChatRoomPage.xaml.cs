@@ -102,6 +102,7 @@ namespace XamApp.Views
             if (action == "Copy")
             {
                 await Clipboard.SetTextAsync(message.Body);
+                App.Toast("Message copied", false);
             }
             else if (action == "Reply")
             {
@@ -112,7 +113,6 @@ namespace XamApp.Views
                 DateTimeOffset now = DateTimeOffset.Now;
 
                 string dateStarred = HttpUtility.UrlEncode(now.ToString("O"));
-
                 string args = $"/api/Message/Starred?messageSentId={message.Id}&dateStarred={dateStarred}";
 
                 var response = await HTTPClient.PatchAsync(null, args, (string)null);
@@ -138,7 +138,7 @@ namespace XamApp.Views
             }
             else if (!string.IsNullOrEmpty(action))
             {
-                await DisplayAlert("Sorry", $"{action} not yet implemented!", "Ok");
+                App.Toast($"{action} not yet implemented!", false);
             }
         }
 
