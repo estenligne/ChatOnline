@@ -63,7 +63,7 @@ namespace WebAPI.Services
                 }
 
                 var data = new Dictionary<string, string>();
-                data[nameof(PushNotificationDTO)] = JsonConvert.SerializeObject(pushNotificationDto);
+                data[PushNotificationDTO.Key] = JsonConvert.SerializeObject(pushNotificationDto);
 
                 var payload = new
                 {

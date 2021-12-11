@@ -225,7 +225,7 @@ namespace WebAPI.Controllers
                         {
                             Name = tag.Name,
                             ChatRoomId = userChatRoom.ChatRoomId,
-                            CreatorId = userChatRoom.UserProfileId,
+                            CreatorId = userChatRoom.Id,
                             DateCreated = dateCreated,
                         };
 
@@ -266,7 +266,8 @@ namespace WebAPI.Controllers
                     Id = dateCreated.Ticks,
                     Title = title,
                     Body = messageSentDto.Body,
-                    Priority = true,
+
+                    //Priority = userChatRoom.ChatRoom.Type == ChatRoomTypeEnum.Private,
                 };
 
                 await SendPushNotificationToEveryone(userChatRoom, pushNotificationDto);
@@ -287,7 +288,7 @@ namespace WebAPI.Controllers
             try
             {
                 var messageSent = await dbc.MessagesSent
-                                            .Include(x => x.Sender)
+                                            .Include(x => x.Sender.UserProfile)
                                             .Where(x => x.Id == messageSentId)
                                             .FirstOrDefaultAsync();
 

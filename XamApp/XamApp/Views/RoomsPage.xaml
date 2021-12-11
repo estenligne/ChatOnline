@@ -3,18 +3,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="XamApp.Views.RoomsPage"
              xmlns:local="clr-namespace:XamApp.ViewModels"
+             x:DataType="local:RoomsViewModel"
              Title="{Binding Title}">
 
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Add" Command="{Binding AddChatRoomCommand}" />
     </ContentPage.ToolbarItems>
-    <!--
-      x:DataType enables compiled bindings for better performance and compile time validation of binding expressions.
-      https://docs.microsoft.com/xamarin/xamarin-forms/app-fundamentals/data-binding/compiled-bindings
-    -->
-    <RefreshView x:DataType="local:RoomsViewModel"
-                 Command="{Binding LoadRoomsCommand}"
-                 IsRefreshing="{Binding IsBusy, Mode=OneWay}">
+
+    <RefreshView
+        Command="{Binding LoadRoomsCommand}"
+        IsRefreshing="{Binding IsBusy, Mode=OneWay}">
 
         <CollectionView x:Name="RoomsListView"
                         HorizontalScrollBarVisibility="Always"
@@ -85,7 +83,7 @@
                         </StackLayout>
 
                         <StackLayout.GestureRecognizers>
-                            <TapGestureRecognizer 
+                            <TapGestureRecognizer
                                 NumberOfTapsRequired="1"
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type local:RoomsViewModel}}, Path=RoomSelectedCommand}"		
                                 CommandParameter="{Binding .}">
