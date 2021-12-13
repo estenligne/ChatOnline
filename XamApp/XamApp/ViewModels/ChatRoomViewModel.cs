@@ -10,10 +10,8 @@ using Xamarin.Forms;
 
 namespace XamApp.ViewModels
 {
-    public class ChatRoomViewModel : BaseViewModel
+    public class ChatRoomViewModel : BaseViewModel, IProcessNotification
     {
-        private static ChatRoomViewModel Appearing = null;
-
         public Command SendMessageCommand { get; }
         public ObservableCollection<Message> Messages { get; }
         private Dictionary<long, int> MessageIndex { get; }
@@ -56,16 +54,18 @@ namespace XamApp.ViewModels
             Messages.Add(msg);
         }
 
-        public static bool AddMessageFromPushNotification(MessageSentDTO message)
+        bool IProcessNotification.ProcessPushNotification(PushNotificationDTO notification)
         {
-            var vm = Appearing;
-            if (vm?.Room?.Id == message.MessageTag.ChatRoomId)
+            if (notification.MessageSent.MessageTag.ChatRoomId == Room.Id)
             {
-                vm.AddMessage(message);
-                vm.ScrollToIndex(-1);
-                return true;
+                if (notification.Topic == PushNotificationTopic.MessageSent)
+                {
+                    AddMessage(notification.MessageSent);
+                    ScrollToIndex(-1);
+                    return true;
+                }
             }
-            else return false;
+            return false;
         }
 
         private RoomInfo _room;
@@ -81,12 +81,12 @@ namespace XamApp.ViewModels
 
         public void OnDisappearing()
         {
-            Appearing = null;
+            App.Appearing = null;
         }
 
         public Task OnAppearing()
         {
-            Appearing = this;
+            App.Appearing = this;
             return LoadMessages();
         }
 

@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Xamarin.Forms;
+using Global.Enums;
+using Global.Models;
 using XamApp.Models;
 using XamApp.Services;
 
 namespace XamApp.ViewModels
 {
-    public class RoomsViewModel : BaseViewModel
+    public class RoomsViewModel : BaseViewModel, IProcessNotification
     {
         public Command LoadRoomsCommand { get; }
         public Command AddChatRoomCommand { get; }
@@ -68,6 +70,16 @@ namespace XamApp.ViewModels
                 await Shell.Current.GoToAsync(nameof(Views.ChatRoomPage) + "?id=" + room.Id);
                 IsBusy = false;
             }
+        }
+
+        bool IProcessNotification.ProcessPushNotification(PushNotificationDTO notification)
+        {
+            if (notification.Topic == PushNotificationTopic.MessageSent)
+            {
+                LoadRoomsCommand.Execute(null);
+                return true;
+            }
+            return false;
         }
     }
 }

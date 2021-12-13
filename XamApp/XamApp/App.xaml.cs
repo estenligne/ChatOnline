@@ -80,6 +80,11 @@ namespace XamApp
             else Device.BeginInvokeOnMainThread(() => ProcessNotificationReceived(notification, source));
         }
 
+        /// <summary>
+        /// The currently appearing page while the app is in foreground.
+        /// </summary>
+        internal static IProcessNotification Appearing = null;
+
         private static async void ProcessNotificationReceived(PushNotificationDTO notification, NotificationSource source)
         {
             string error = null;
@@ -104,12 +109,10 @@ namespace XamApp
                         var response = await HTTPClient.PostAsync<string>(null, "/api/Message/Received" + args, null);
                         if (response.IsSuccessStatusCode)
                         {
-                            var message = await HTTPClient.ReadAsAsync<MessageSentDTO>(response);
-
-                            Trace.TraceInformation($"ProcessNotificationReceived() ReceiverId: {message.ReceiverId}");
+                            notification.MessageSent = await HTTPClient.ReadAsAsync<MessageSentDTO>(response);
 
                             if (source == NotificationSource.OnForeground &&
-                                ChatRoomViewModel.AddMessageFromPushNotification(message))
+                                Appearing?.ProcessPushNotification(notification) == true)
                             {
                                 Vibrate(500);
                             }

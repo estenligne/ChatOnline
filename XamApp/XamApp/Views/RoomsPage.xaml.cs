@@ -30,7 +30,14 @@ namespace XamApp.Views
             {
                 base.OnAppearing();
                 vm.OnAppearing();
+                App.Appearing = vm;
             }
+        }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            App.Appearing = null;
         }
     }
 }
