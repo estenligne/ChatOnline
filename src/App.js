@@ -2,8 +2,12 @@ import './App.css';
 
 function App() {
   return (
-    <div className="App">
-      <h1>Lets build a WhatsApp Clone!</h1>
+    // BEM naming convention
+    <div className="app">
+      <div className="app__body">
+        {/* Sidebar */}
+        {/* Chat */}
+      </div>
     </div>
   );
 }
