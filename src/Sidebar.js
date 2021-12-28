@@ -1,5 +1,5 @@
 import React from 'react';
-import { Avatar } from '@mui/material';
+import { Avatar, IconButton } from '@mui/material';
 
 import DonutLargeIcon from '@mui/icons-material/DonutLarge';
 import ChatIcon from '@mui/icons-material/Chat';
@@ -14,9 +14,15 @@ function Sidebar() {
                 <Avatar />
 
                 <div className="sidebar__headerRight">
-                    <DonutLargeIcon />
-                    <ChatIcon />
-                    <MoreVertIcon />
+                    <IconButton>
+                        <DonutLargeIcon />
+                    </IconButton>
+                    <IconButton>
+                        <ChatIcon />
+                    </IconButton>
+                    <IconButton>
+                        <MoreVertIcon />
+                    </IconButton>
                 </div>
             </div>
 
