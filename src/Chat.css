@@ -49,3 +49,15 @@
     background-color: white;
     margin-bottom: 30px;
 }
+
+.chat__timestamp {
+    margin-left: 10px;
+    font-size: xx-small;
+}
+
+.chat__name {
+    position: absolute;
+    top: -15px;
+    font-weight: 800;
+    font-size: xx-small;
+}
