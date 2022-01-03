@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Avatar, IconButton } from '@mui/material';
 import { SearchOutlined, AttachFile, MoreVert } from '@mui/icons-material/';
+import { InsertEmoticon, Mic } from '@mui/icons-material/';
 import './Chat.css';
 
 function Chat() {
@@ -43,7 +44,12 @@ function Chat() {
             </div>
 
             <div className="chat__footer">
-                
+                <InsertEmoticon />
+                <form>
+                    <input type="text" placeholder="Type a message" />
+                    <button type="submit">Send a message</button>
+                </form>
+                <Mic />
             </div>
         </div>
     )
