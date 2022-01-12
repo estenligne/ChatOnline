@@ -1,12 +1,13 @@
 import './App.css';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { useStateValue } from './StateProvider';
 import Login from './Login';
 import Chat from './Chat';
 import Sidebar from './Sidebar';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 function App() {
-  const [user, setUser] = useState(null);
+  const [{ user }, dispatch] = useStateValue();
 
   return (
     // BEM naming convention
