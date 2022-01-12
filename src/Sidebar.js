@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { useStateValue } from './StateProvider';
+
 import { Avatar, IconButton } from '@mui/material';
 import { SearchOutlined } from '@mui/icons-material/';
 
@@ -12,6 +14,7 @@ import './Sidebar.css';
 
 function Sidebar() {
     const [rooms, setRooms] = useState([]);
+    const [{ user }, dispatch] = useStateValue();
 
     useEffect(() => {
         const unsubscribe = db.collection('rooms').onSnapshot(snapshot => (
@@ -30,7 +33,7 @@ function Sidebar() {
     return (
         <div className="sidebar">
             <div className="sidebar__header">
-                <Avatar />
+                <Avatar src={user?.photoURL} />
 
                 <div className="sidebar__headerRight">
                     <IconButton>
