@@ -3,6 +3,8 @@ import { Avatar, IconButton } from '@mui/material';
 import { SearchOutlined, AttachFile, MoreVert } from '@mui/icons-material/';
 import { InsertEmoticon, Mic } from '@mui/icons-material/';
 import { useParams } from 'react-router-dom';
+import { useStateValue } from './StateProvider';
+import firebase from 'firebase/compat/app';
 import db from './firebase';
 import './Chat.css';
 
@@ -12,6 +14,7 @@ function Chat() {
     const { roomId } = useParams();
     const [roomName, setRoomName] = useState("");
     const [messages, setMessages] = useState([]);
+    const [{ user }, dispatch] = useStateValue();
 
     useEffect(() => {
         if (roomId) {
@@ -36,6 +39,15 @@ function Chat() {
     const sendMessage = (e) => {
         e.preventDefault();
         console.log("You typed >>>", input);
+
+        db.collection('rooms').doc(roomId)
+            .collection('messages')
+            .add({
+                message: input,
+                name: user.displayName,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            });
+
         setInput("");
     }
 
