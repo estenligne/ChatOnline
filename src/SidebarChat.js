@@ -13,11 +13,11 @@ function SidebarChat({ id, name, addNewChat }) {
             db.collection('rooms').doc(id)
                 .collection('messages')
                 .orderBy('timestamp', 'desc')
-                .onSnapshot(snapshot => {
-                    setMessages(snapshot.docs.map(doc => doc.data()));
-                });
+                .onSnapshot(snapshot =>
+                    setMessages(snapshot.docs.map(doc => doc.data()))
+                );
         }
-    });
+    }, [id]);
 
     useEffect(() => {
         setSeed(Math.floor(Math.random() * 5000));
