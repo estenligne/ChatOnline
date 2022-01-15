@@ -23,46 +23,18 @@ namespace WebAPI.Controllers
         {
         }
 
-        [HttpGet]
-        [Route(nameof(GetUser))]
-        public async Task<ActionResult<UserChatRoomDTO>> GetUser(long userChatRoomId)
-        {
-            try
-            {
-                var userChatRoom = await dbc.UserChatRooms
-                                            .Include(x => x.UserProfile)
-                                            .Include(x => x.ChatRoom.GroupProfile)
-                                            .FirstOrDefaultAsync(x => x.Id == userChatRoomId);
-
-                if (userChatRoom == null)
-                    return NotFound("User chat room not found.");
-
-                if (userChatRoom.UserProfileId != UserId)
-                    return Forbid("Not associated to this user chat room!");
-
-                var userChatRoomDto = _mapper.Map<UserChatRoomDTO>(userChatRoom);
-                return userChatRoomDto;
-            }
-            catch (Exception ex)
-            {
-                return InternalServerError(ex);
-            }
-        }
-
-        [HttpGet]
-        [Route(nameof(GetInfo))]
-        public async Task<ActionResult<ChatRoomInfo>> GetInfo(long id, long userChatRoomId)
+        private async Task<ActionResult> GetUserOrInfo(long charRoomId, long userChatRoomId, bool getInfo)
         {
             try
             {
                 UserChatRoom userChatRoom;
 
-                if (id != 0)
+                if (userChatRoomId == 0)
                 {
                     userChatRoom = await dbc.UserChatRooms
                                             .Include(x => x.UserProfile)
                                             .Include(x => x.ChatRoom.GroupProfile.PhotoFile)
-                                            .Where(x => x.UserProfileId == UserId && x.ChatRoomId == id)
+                                            .Where(x => x.UserProfileId == UserId && x.ChatRoomId == charRoomId)
                                             .FirstOrDefaultAsync();
                 }
                 else
@@ -79,12 +51,31 @@ namespace WebAPI.Controllers
                 if (userChatRoom.UserProfileId != UserId)
                     return Forbid("Not associated to this user chat room!");
 
-                return await GetChatRoomInfo(userChatRoom);
+                if (getInfo)
+                    return Ok(await GetChatRoomInfo(userChatRoom));
+                else
+                    return Ok(_mapper.Map<UserChatRoomDTO>(userChatRoom));
             }
             catch (Exception ex)
             {
                 return InternalServerError(ex);
             }
+        }
+
+        [ProducesResponseType(typeof(UserChatRoom), (int)HttpStatusCode.OK)]
+        [HttpGet]
+        [Route(nameof(GetUser))]
+        public Task<ActionResult> GetUser(long id, long userChatRoomId)
+        {
+            return GetUserOrInfo(id, userChatRoomId, false);
+        }
+
+        [ProducesResponseType(typeof(ChatRoomInfo), (int)HttpStatusCode.OK)]
+        [HttpGet]
+        [Route(nameof(GetInfo))]
+        public Task<ActionResult> GetInfo(long id, long userChatRoomId)
+        {
+            return GetUserOrInfo(id, userChatRoomId, true);
         }
 
         private async Task<ChatRoomInfo> GetChatRoomInfo(UserChatRoom userChatRoom)
@@ -184,9 +175,6 @@ namespace WebAPI.Controllers
         /// <summary>
         /// Create a private chat room between the signed-in user and the given user.
         /// </summary>
-        /// <param name="emailAddress"></param>
-        /// <param name="phoneNumber"></param>
-        /// <returns></returns>
         [ProducesResponseType((int)HttpStatusCode.Created)]
         [HttpPost]
         [Route(nameof(CreatePrivate))]
