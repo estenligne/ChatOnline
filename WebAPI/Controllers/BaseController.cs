@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using WebAPI.Models;
+using Global.Helpers;
 
 namespace WebAPI.Controllers
 {
@@ -40,6 +41,14 @@ namespace WebAPI.Controllers
         protected ActionResult Forbid(string message)
         {
             return StatusCode((int)HttpStatusCode.Forbidden, message);
+        }
+
+        protected ActionResult Failure<TObj>(Return<TObj> returned)
+        {
+            if (returned.exception != null)
+                return InternalServerError(returned.exception);
+            else
+                return StatusCode((int)returned.code, returned.message);
         }
 
         /// <summary>
