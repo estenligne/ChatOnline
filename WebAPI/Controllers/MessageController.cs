@@ -74,11 +74,22 @@ namespace WebAPI.Controllers
 
         [HttpGet]
         [Route(nameof(GetMany))]
-        public async Task<ActionResult<List<MessageSentDTO>>> GetMany(long userChatRoomId)
+        public async Task<ActionResult<List<MessageSentDTO>>> GetMany(long chatRoomId, long userChatRoomId)
         {
             try
             {
-                var userChatRoom = dbc.UserChatRooms.Find(userChatRoomId);
+                UserChatRoom userChatRoom;
+                if (userChatRoomId == 0)
+                {
+                    userChatRoom = dbc.UserChatRooms.FirstOrDefault(x =>
+                        x.UserProfileId == UserId && x.ChatRoomId == chatRoomId);
+                    userChatRoomId = userChatRoom.Id;
+                }
+                else
+                {
+                    userChatRoom = dbc.UserChatRooms.Find(userChatRoomId);
+                    chatRoomId = userChatRoom.ChatRoomId;
+                }
 
                 if (userChatRoom == null)
                     return NotFound("Sender's user chat room not found.");
@@ -95,7 +106,7 @@ namespace WebAPI.Controllers
                                             .Include(x => x.Sender.UserProfile)
                                             .Include(x => x.MessageTag)
                                             .Include(x => x.File)
-                                            .Where(x => x.Sender.ChatRoomId == userChatRoom.ChatRoomId)
+                                            .Where(x => x.Sender.ChatRoomId == chatRoomId)
                                             .OrderBy(x => x.Id)
                                             .ToListAsync();
 
@@ -117,7 +128,7 @@ namespace WebAPI.Controllers
                     if (messageReceived == null && messageSent.SenderId != userChatRoomId)
                     {
                         _logger.LogWarning($"GetMany({userChatRoomId}): user did not receive message {messageSent.Id}.");
-                        var messageSentDto = await AddMessageReceived(messageSent, userChatRoom.Id, utcNow, utcNow);
+                        var messageSentDto = await AddMessageReceived(messageSent, userChatRoomId, utcNow, utcNow);
                         messages.Add(messageSentDto);
                     }
                     else messages.Add(GetMessage(messageSent, messageReceived));
@@ -335,6 +346,9 @@ namespace WebAPI.Controllers
 
         private async Task<MessageSentDTO> AddMessageReceived(MessageSent messageSent, long userChatRoomId, DateTimeOffset dateCreated, DateTimeOffset dateReceived)
         {
+            if (messageSent.SenderId == userChatRoomId)
+                throw new ApplicationException($"Sender {userChatRoomId} cannot receive their own message!");
+
             var messageReceived = new MessageReceived()
             {
                 ReceiverId = userChatRoomId,
