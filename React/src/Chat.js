@@ -5,48 +5,42 @@ import { InsertEmoticon, Mic } from '@mui/icons-material/';
 import { useParams } from 'react-router-dom';
 import { useStateValue } from './StateProvider';
 import firebase from 'firebase/compat/app';
-import db from './firebase';
+import { _fetch, getFileURL, dateToLocal } from './global';
 import './Chat.css';
 
 function Chat() {
-    const [input, setInput] = useState("");
-    const [seed, setSeed] = useState("");
     const { roomId } = useParams();
-    const [roomName, setRoomName] = useState("");
+    const [input, setInput] = useState("");
+    const [roomInfo, setRoomInfo] = useState({});
     const [messages, setMessages] = useState([]);
     const [{ user }, dispatch] = useStateValue();
 
     useEffect(() => {
         if (roomId) {
-            db.collection('rooms').doc(roomId)
-                .onSnapshot(snapshot => (
-                    setRoomName(snapshot.data().name)
-                ));
+            _fetch(user, "/api/ChatRoom/GetInfo?id=" + roomId)
+                .then(response => response.json())
+                .then(roomInfo => setRoomInfo(roomInfo));
 
-            db.collection('rooms').doc(roomId)
-                .collection('messages')
-                .orderBy('timestamp', 'asc')
-                .onSnapshot(snapshot => (
-                    setMessages(snapshot.docs.map(doc => doc.data()))
-                ));
+            _fetch(user, "/api/Message/GetMany?chatRoomId=" + roomId)
+                .then(response => response.json())
+                .then(messages => setMessages(messages));
         }
-    }, [roomId]);
-
-    useEffect(() => {
-        setSeed(Math.floor(Math.random() * 5000));
-    }, [roomId]);
+    }, [roomId, user]);
 
     const sendMessage = (e) => {
         e.preventDefault();
-        console.log("You typed >>>", input);
+        console.debug("You typed >>>", input);
 
-        db.collection('rooms').doc(roomId)
-            .collection('messages')
-            .add({
-                message: input,
-                name: user.displayName,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-            });
+        const body = {
+            senderId: roomInfo.userChatRoomId,
+            messageTag: { chatRoomId: roomId },
+            body: input,
+            dateSent: new Date().toJSON(),
+        }
+
+        _fetch(user, "/api/Message", "POST", body)
+            .then(response => response.json())
+            .then(message => setMessages([...messages, message]));
 
         setInput("");
     }
@@ -54,16 +48,16 @@ function Chat() {
     return (
         <div className="chat">
             <div className="chat__header">
-                <Avatar src={`https://avatars.dicebear.com/api/human/${seed}.svg`} />
+                <Avatar src={getFileURL(roomInfo.photoFileName)} />
 
                 <div className="chat__headerInfo">
-                    <h3>{roomName}</h3>
-                    <p>{new Date(messages[messages.length - 1]?.timestamp?.toDate()).toUTCString()}</p>
+                    <h3>{roomInfo.name}</h3>
+                    <p>{dateToLocal(roomInfo.latestMessage?.id ? roomInfo.latestMessage?.dateSent : null)}</p>
                 </div>
 
                 <div className="chat__headerRight">
                     <IconButton>
-                         <SearchOutlined />
+                        <SearchOutlined />
                     </IconButton>
                     <IconButton>
                         <AttachFile />
@@ -76,11 +70,11 @@ function Chat() {
 
             <div className="chat__body">
                 {messages.map(message => (
-                    <p className={`chat__message ${message.name === user.displayName && "chat__receiver"}`}>
-                        <span className="chat__name">{message.name}</span>
-                        {message.message}
+                    <p key={message.id} className={`chat__message ${message.senderId === roomInfo.userChatRoomId && "chat__receiver"}`}>
+                        <span className="chat__name">{message.senderName}</span>
+                        {message.body}
                         <span className="chat__timestamp">
-                            {new Date(message.timestamp?.toDate()).toUTCString()}
+                            {dateToLocal(new Date(message.dateSent))}
                         </span>
                     </p>
                 ))}
