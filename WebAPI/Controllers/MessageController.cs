@@ -235,7 +235,8 @@ namespace WebAPI.Controllers
                         messageTag = new MessageTag()
                         {
                             Name = tag.Name,
-                            ChatRoomId = userChatRoom.ChatRoomId,
+                            ChatRoomId = tag.ChatRoomId,
+                            ParentId = tag.ParentId,
                             CreatorId = userChatRoom.Id,
                             DateCreated = dateCreated,
                         };
