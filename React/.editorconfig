@@ -1,0 +1,14 @@
+# To learn more about .editorconfig see https://aka.ms/editorconfigdocs
+###############################
+# Core EditorConfig Options   #
+###############################
+root = true
+# All files
+[*]
+charset = utf-8
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+# Code files
+[*.{html,css,js}]
+indent_size = 4
