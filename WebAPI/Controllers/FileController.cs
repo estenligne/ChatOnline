@@ -32,13 +32,23 @@ namespace WebAPI.Controllers
         [HttpGet]
         public ActionResult<FileDTO> GetFile(long id)
         {
-            File file = dbc.Files.Find(id);
+            try
+            {
+                File file = dbc.Files.Find(id);
 
-            if (file == null)
-                return NotFound($"File {id} not found");
+                if (file == null)
+                    return NotFound($"File {id} not found");
 
-            var fileDTO = _mapper.Map<FileDTO>(file);
-            return Ok(fileDTO);
+                if (file.UploaderId != UserId)
+                    return Forbid("This file doesn't belong to you!");
+
+                var fileDTO = _mapper.Map<FileDTO>(file);
+                return Ok(fileDTO);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
         [ProducesResponseType(typeof(FileDTO), (int)HttpStatusCode.Created)]
@@ -94,6 +104,9 @@ namespace WebAPI.Controllers
                 if (_file == null)
                     return NotFound($"File {id} not found");
 
+                if (_file.UploaderId != UserId)
+                    return Forbid("This file doesn't belong to you!");
+
                 string folder = _configuration.GetValue<string>("PathToFiles");
                 string dateTime = DateTime.UtcNow.ToString("yyyy-MM-dd HH-mm-ss");
                 string fileName = $"File {dateTime} {file.FileName}";
@@ -121,17 +134,25 @@ namespace WebAPI.Controllers
         [HttpDelete]
         public async Task<ActionResult> DeleteConfirmed(long id)
         {
-            File file = await dbc.Files.FindAsync(id);
+            try
+            {
+                File file = await dbc.Files.FindAsync(id);
 
-            if (file.UploaderId != UserId)
-                return Forbid("This file doesn't belong to you!");
+                if (file.UploaderId != UserId)
+                    return Forbid("This file doesn't belong to you!");
 
-            file.DateDeleted = DateTimeOffset.UtcNow;
-            await dbc.SaveChangesAsync();
+                file.DateDeleted = DateTimeOffset.UtcNow;
+                await dbc.SaveChangesAsync();
 
-            return NoContent();
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
+        [ResponseCache(NoStore = false, Duration = 365 * 24 * 60 * 60)]
         [HttpGet]
         [AllowAnonymous]
         [Route(nameof(Download))]
