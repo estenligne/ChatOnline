@@ -1,25 +1,32 @@
-// https://stackoverflow.com/questions/70445014/module-not-found-error-package-path-is-not-exported-from-package/70445098
-// https://firebase.google.com/docs/auth/web/google-signin#handle_the_sign-in_flow_with_the_firebase_sdk
+// https://firebase.google.com/docs/cloud-messaging/js/client
 
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
-import 'firebase/compat/firestore';
-import { GoogleAuthProvider } from "firebase/auth";
+import { initializeApp } from "firebase/app";
+import { getMessaging, getToken } from "firebase/messaging";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCRwGyf4UMLNO0R0m7Op2WYbQQG94_WcQc",
-    authDomain: "tests-712.firebaseapp.com",
-    projectId: "tests-712",
-    storageBucket: "tests-712.appspot.com",
-    messagingSenderId: "347722402306",
-    appId: "1:347722402306:web:7531be9ea5c4686921f51b"
-  };
+    apiKey: "AIzaSyBZsYMP0JCT5qYXAf-ptlEWnTVXW2CPhv4",
+    authDomain: "rhyscitlema-chatonline.firebaseapp.com",
+    projectId: "rhyscitlema-chatonline",
+    storageBucket: "rhyscitlema-chatonline.appspot.com",
+    messagingSenderId: "310036780903",
+    appId: "1:310036780903:web:e65c228dc6a65173bd41c2"
+};
 
-  const firebaseApp = firebase.initializeApp(firebaseConfig);
-  const db = firebaseApp.firestore();
-  const auth = firebase.auth();
-  const provider = new GoogleAuthProvider();
-  
-  export { auth, provider };
-  export default db;
-  
+const firebaseApp = initializeApp(firebaseConfig);
+const messaging = getMessaging();
+
+export function getFcmToken(user) {
+    const options = {
+        vapidKey: "BG4pkThZ2TFPxmpZ7mv9cMFGEBGCtZt6YRGlPLiY3bs68P8MAfGmNhQj4dOffW1vLEGu2Doqhmqxn_lqRolDWYU"
+    };
+
+    return getToken(messaging, options)
+        .then(fcmToken => {
+            if (fcmToken) {
+                return fcmToken;
+            }
+            else {
+                console.warn('No registration token available. Request permission to generate one.');
+            }
+        });
+}

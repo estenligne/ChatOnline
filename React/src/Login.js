@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button } from '@mui/material/';
+import { getFcmToken } from './firebase';
 import { _fetch, trimObject, getFormValues } from './global';
 import { useStateValue } from './StateProvider';
 import { actionTypes } from './reducer';
@@ -24,10 +25,31 @@ function Login() {
 
         _fetch(null, "/api/Account/SignIn", "POST", body)
             .then(response => response.json())
-            .then(result => dispatch({
-                type: actionTypes.SET_USER,
-                user: result
-            }));
+            .then(user => {
+                _fetch(user, "/api/DeviceUsed?devicePlatform=WebApp", "PUT")
+                    .then(response => response.json())
+                    .then(deviceUsed => {
+                        user.deviceUsedId = deviceUsed.id;
+                        registerFcmToken(user);
+
+                        dispatch({
+                            type: actionTypes.SET_USER,
+                            user: { ...user, ...deviceUsed.userProfile }
+                        });
+                    })
+            }).catch(error => console.error(error));
+
+        const registerFcmToken = (user) => {
+            getFcmToken(user).then(fcmToken => {
+                if (fcmToken) {
+                    let endpoint = "/api/DeviceUsed/RegisterFcmToken";
+                    endpoint += "?deviceUsedId=" + user.deviceUsedId;
+                    endpoint += "&fcmToken=" + encodeURIComponent(fcmToken);
+                    _fetch(user, endpoint, "PATCH");
+                }
+                else console.warn('No registration token available.');
+            });
+        }
     };
 
     return (
