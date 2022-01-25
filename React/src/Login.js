@@ -38,19 +38,34 @@ function Login() {
                         });
                     })
             }).catch(error => console.error(error));
-
-        const registerFcmToken = (user) => {
-            getFcmToken(user).then(fcmToken => {
-                if (fcmToken) {
-                    let endpoint = "/api/DeviceUsed/RegisterFcmToken";
-                    endpoint += "?deviceUsedId=" + user.deviceUsedId;
-                    endpoint += "&fcmToken=" + encodeURIComponent(fcmToken);
-                    _fetch(user, endpoint, "PATCH");
-                }
-                else console.warn('No registration token available.');
-            });
-        }
     };
+
+    function registerFcmToken(user) {
+        registerServiceWorker();
+
+        getFcmToken().then(fcmToken => {
+            if (fcmToken) {
+                let endpoint = "/api/DeviceUsed/RegisterFcmToken";
+                endpoint += "?deviceUsedId=" + user.deviceUsedId;
+                endpoint += "&fcmToken=" + encodeURIComponent(fcmToken);
+                _fetch(user, endpoint, "PATCH");
+            }
+            else console.warn('No registration token available.');
+        });
+    }
+
+    function registerServiceWorker() {
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker
+                .register("./firebase-messaging-sw.js")
+                .then(function (registration) {
+                    console.log("Registration successful, scope is:", registration.scope);
+                })
+                .catch(function (err) {
+                    console.error("Service worker registration failed, error:", err);
+                });
+        }
+    }
 
     return (
         <div className="login">
