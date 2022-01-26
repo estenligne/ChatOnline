@@ -96,7 +96,7 @@ namespace WebAPI
 
         private void ConfigureAuthentication(IServiceCollection services)
         {
-            SecurityKey securityKey = null;
+            SecurityKey securityKey;
             string secretKey = _configuration["JwtSecurity:SecretKey"];
             string publicKey = _configuration["JwtSecurity:PublicKey"];
 
@@ -110,6 +110,7 @@ namespace WebAPI
                 rsa.ImportRSAPublicKey(Convert.FromBase64String(publicKey), out _);
                 securityKey = new RsaSecurityKey(rsa);
             }
+            else throw new SystemException("No security key specified!");
 
             services.AddAuthentication(options =>
             {
@@ -120,19 +121,14 @@ namespace WebAPI
             .AddJwtBearer(options =>
             {
                 bool validate = !_configuration.GetValue<bool>("JwtSecurity:Shorten");
+                string[] audiences = _configuration["JwtSecurity:Audiences"].Split(';');
                 string issuer = _configuration["JwtSecurity:Issuer"];
-
-                string audience = _configuration["URLS"];
-                if (_proxied != null)
-                    audience += ";" + _proxied;
-                if (audience == null)
-                    audience = issuer;
 
                 var tokenValidationParameters = new TokenValidationParameters()
                 {
                     ValidateIssuer = validate,
                     ValidateAudience = validate,
-                    ValidAudiences = audience.Split(';'),
+                    ValidAudiences = audiences,
                     ValidIssuer = issuer,
 
                     ValidateLifetime = true,
