@@ -71,7 +71,13 @@ namespace WebAPI.Controllers
 
                 var user = await _userManager.FindByNameAsync(userName);
                 if (user != null)
+                {
+                    if (User.Identity.Name == "chatonline@estenligne.com")
+                    {
+                        return Ok(_mapper.Map<ApplicationUserDTO>(user));
+                    }
                     return Conflict($"User account {userName} already exists.");
+                }
 
                 user = new ApplicationUser
                 {

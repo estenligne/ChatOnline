@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using WebAPI.Services;
 
 namespace WebAPI.Models
 {
@@ -111,10 +112,8 @@ namespace WebAPI.Models
             IConfiguration configuration,
             ApplicationDbData data)
         {
-            using (var httpClient = new HttpClient())
+            using (var httpClient = await HTTPClient.GetAuthenticated(configuration))
             {
-                httpClient.BaseAddress = new Uri(configuration["JwtSecurity:Issuer"]);
-
                 foreach (var userProfile in data.userProfiles)
                 {
                     await SetupUser(dbc, logger, httpClient, userProfile);
