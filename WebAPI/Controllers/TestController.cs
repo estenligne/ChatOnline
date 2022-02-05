@@ -3,7 +3,9 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Global.Helpers;
 using Global.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -13,10 +15,10 @@ using WebAPI.Services;
 
 namespace WebAPI.Controllers
 {
+    [Authorize(Roles = Role.SystemAdmin)]
     public class TestController : BaseController<TestController>
     {
         private readonly PushNotificationService _pushNotificationService;
-
         private IConfiguration _configuration;
 
         public TestController(
@@ -34,12 +36,8 @@ namespace WebAPI.Controllers
         [Route(nameof(DatabaseData))]
         public async Task<ActionResult> DatabaseData()
         {
-            if (UserId != 1)
-                return Unauthorized();
-
             var data = await ApplicationDbData.GetAll(dbc);
             string content = data.ToJSON();
-
             return CompressedFile(content, "application/json", "database_data.json");
         }
 
@@ -47,9 +45,6 @@ namespace WebAPI.Controllers
         [Route(nameof(DatabaseData))]
         public async Task<ActionResult> DatabaseData(IFormFile file)
         {
-            if (UserId != 1)
-                return Unauthorized();
-
             if (file == null)
                 return BadRequest("File not provided");
 
@@ -68,8 +63,6 @@ namespace WebAPI.Controllers
             [FromQuery] List<long> userProfileIds,
             [FromBody] PushNotificationDTO pushNotificationDto)
         {
-            if (UserId != 1)
-                return Unauthorized();
             var outcomes = await _pushNotificationService.SendAsync(dbc, userProfileIds, pushNotificationDto);
             return Ok(outcomes);
         }

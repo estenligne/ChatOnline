@@ -1,22 +1,21 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity;
+﻿using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Net;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Threading.Tasks;
+using AutoMapper;
+using Global.Helpers;
+using Global.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Net;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using WebAPI.Models;
-using Global.Models;
-using Global.Enums;
-using AutoMapper;
 using Newtonsoft.Json;
+using WebAPI.Models;
 
 namespace WebAPI.Controllers
 {
@@ -72,7 +71,7 @@ namespace WebAPI.Controllers
                 var user = await _userManager.FindByNameAsync(userName);
                 if (user != null)
                 {
-                    if (User.Identity.Name == "chatonline@estenligne.com")
+                    if (User.Identity.IsAuthenticated && User.IsInRole(Role.KnownServer))
                     {
                         return Ok(_mapper.Map<ApplicationUserDTO>(user));
                     }
@@ -226,9 +225,11 @@ namespace WebAPI.Controllers
                 if (result.Succeeded)
                 {
                     _logger.LogInformation($"User {user.Id} {user.UserName} has authenticated.");
-                    userDto = _mapper.Map<ApplicationUserDTO>(user);
 
-                    string jwt = BuildJWT(user.Id, user.UserName, userDto.Authorization);
+                    var roles = await _userManager.GetRolesAsync(user);
+                    string jwt = BuildJWT(user.Id, user.UserName, roles, userDto.Authorization);
+
+                    userDto = _mapper.Map<ApplicationUserDTO>(user);
                     userDto.Authorization = "Bearer " + jwt;
 
                     return Ok(userDto);
@@ -260,7 +261,7 @@ namespace WebAPI.Controllers
             }
         }
 
-        private string BuildJWT(long userId, string userName, string duration)
+        private string BuildJWT(long userId, string userName, IList<string> roles, string duration)
         {
             SigningCredentials signingCredentials;
             using RSA rsa = RSA.Create();
@@ -296,6 +297,9 @@ namespace WebAPI.Controllers
 
                 claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
                 claims.Add(new Claim(JwtRegisteredClaimNames.UniqueName, userName));
+
+                foreach (string role in roles)
+                    claims.Add(new Claim(ClaimTypes.Role, role));
             }
 
             int minutes = string.IsNullOrEmpty(duration) ? 24 * 60 : int.Parse(duration);
