@@ -1,16 +1,17 @@
 ﻿using System;
-using System.Net;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
+using System.IO.Compression;
+using System.Net;
+using System.Security.Claims;
+using System.Text;
 using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
+using Global.Helpers;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using WebAPI.Models;
-using Global.Helpers;
 
 namespace WebAPI.Controllers
 {
@@ -66,6 +67,21 @@ namespace WebAPI.Controllers
                 message = ex.Message;
             }
             return StatusCode((int)HttpStatusCode.InternalServerError, message);
+        }
+
+        protected FileResult CompressedFile(string content, string contentType, string fileDownloadName)
+        {
+            using (var compressed = new MemoryStream())
+            {
+                using (var stream = new GZipStream(compressed, CompressionMode.Compress))
+                {
+                    byte[] array = Encoding.UTF8.GetBytes(content);
+                    stream.Write(array, 0, array.Length);
+                    stream.Close();
+                    Response.Headers.Add("Content-Encoding", "gzip");
+                    return File(compressed.ToArray(), contentType, fileDownloadName);
+                }
+            }
         }
 
         /// <summary>

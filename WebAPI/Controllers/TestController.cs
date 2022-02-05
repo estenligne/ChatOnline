@@ -31,12 +31,9 @@ namespace WebAPI.Controllers
                 return Unauthorized();
 
             var data = await ApplicationDbData.GetAll(dbc);
+            string content = data.ToJSON();
 
-            string json = data.ToJSON();
-
-            byte[] content = Encoding.UTF8.GetBytes(json);
-
-            return File(content, "application/json", "database_data.json");
+            return CompressedFile(content, "application/json", "database_data.json");
         }
 
         [HttpPost]
