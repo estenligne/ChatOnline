@@ -1,25 +1,32 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Global.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using WebAPI.Models;
+using WebAPI.Services;
 
 namespace WebAPI.Controllers
 {
     public class TestController : BaseController<TestController>
     {
+        private readonly PushNotificationService _pushNotificationService;
+
         private IConfiguration _configuration;
 
         public TestController(
+            PushNotificationService pushNotificationService,
             IConfiguration configuration,
             ApplicationDbContext context,
             ILogger<TestController> logger,
             IMapper mapper) : base(context, logger, mapper)
         {
+            _pushNotificationService = pushNotificationService;
             _configuration = configuration;
         }
 
@@ -53,6 +60,18 @@ namespace WebAPI.Controllers
                 await ApplicationDbData.AddData(dbc, _logger, _configuration, data);
             }
             return NoContent();
+        }
+
+        [HttpPost]
+        [Route(nameof(SendPushNotification))]
+        public async Task<ActionResult<List<PushNotificationOutcome>>> SendPushNotification(
+            [FromQuery] List<long> userProfileIds,
+            [FromBody] PushNotificationDTO pushNotificationDto)
+        {
+            if (UserId != 1)
+                return Unauthorized();
+            var outcomes = await _pushNotificationService.SendAsync(dbc, userProfileIds, pushNotificationDto);
+            return Ok(outcomes);
         }
     }
 }

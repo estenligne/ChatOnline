@@ -111,17 +111,5 @@ namespace WebAPI.Controllers
                 return InternalServerError(ex);
             }
         }
-
-        #if DEBUG
-        [HttpPost]
-        [Route(nameof(SendPushNotification))]
-        public async Task<ActionResult<List<PushNotificationOutcome>>> SendPushNotification(
-            [FromQuery] List<long> userProfileIds,
-            [FromBody] PushNotificationDTO pushNotificationDto)
-        {
-            var outcomes = await _pushNotificationService.SendAsync(dbc, userProfileIds, pushNotificationDto);
-            return Ok(outcomes);
-        }
-        #endif
     }
 }
