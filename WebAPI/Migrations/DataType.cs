@@ -17,22 +17,17 @@ namespace WebAPI.Migrations
 
         private static DBMS dbms;
 
-        private static DBMS GetDBMS()
+        public static void SetDBMS(string value)
         {
-            if (dbms == DBMS.Unknown)
-            {
-                string value = Environment.GetEnvironmentVariable("ASPNETCORE_DBMS");
-                Enum.TryParse<DBMS>(value, out dbms);
+            Enum.TryParse<DBMS>(value, out dbms);
 
-                if (dbms == DBMS.Unknown)
-                    dbms = DBMS.SQLite;
-            }
-            return dbms;
+            if (dbms == DBMS.Unknown)
+                dbms = DBMS.SQLite;
         }
 
-        public static bool UseSQLServer => GetDBMS() == DBMS.SQLServer;
-        public static bool UseSQLite => GetDBMS() == DBMS.SQLite;
-        public static bool UseMySQL => GetDBMS() == DBMS.MySQL;
+        public static bool UseSQLServer => dbms == DBMS.SQLServer;
+        public static bool UseSQLite => dbms == DBMS.SQLite;
+        public static bool UseMySQL => dbms == DBMS.MySQL;
 
         public static string Bool => UseMySQL ? "tinyint(1)" : "bit";
 

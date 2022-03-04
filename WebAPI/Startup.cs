@@ -30,7 +30,7 @@ namespace WebAPI
 
         private readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _env;
-        private string _proxied;
+        private readonly string _proxied;
 
         private void ConfigureMySQL(DbContextOptionsBuilder options, string connectionName)
         {
@@ -41,6 +41,8 @@ namespace WebAPI
 
         private void ConfigureDatabase(IServiceCollection services)
         {
+            DataType.SetDBMS(_configuration["DBMS"]);
+
             if (DataType.UseMySQL)
             {
                 services.AddDbContext<AccountDbContext>(options => ConfigureMySQL(options, "Account_MySQL_Connection"));
