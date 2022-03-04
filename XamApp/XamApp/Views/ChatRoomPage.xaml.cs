@@ -13,11 +13,13 @@ using Global.Enums;
 namespace XamApp.Views
 {
     [QueryProperty(nameof(ChatRoomId), "id")]
+    [QueryProperty(nameof(SharedText), "sharedText")]
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class ChatRoomPage : ContentPage
     {
         private readonly ChatRoomViewModel vm;
         public long ChatRoomId { get; set; }
+        public string SharedText { get; set; }
 
         public ChatRoomPage()
         {
@@ -43,6 +45,18 @@ namespace XamApp.Views
                 }
                 ChatRoomId = 0;
             }
+
+            if (vm.Room == null)
+            {
+                await Navigation.PopAsync();
+                return;
+            }
+
+            if (SharedText != null)
+            {
+                vm.Body = SharedText;
+            }
+
             base.OnAppearing();
             await vm.OnAppearing();
         }
