@@ -8,7 +8,7 @@ namespace WebAPI.Models
 {
     [Table(nameof(ApplicationDbContext.Files))]
     [Index(nameof(Name), IsUnique = true)]
-    public class File
+    public class FileModel
     {
         public long Id { get; set; }
 

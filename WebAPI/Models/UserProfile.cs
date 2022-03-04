@@ -21,10 +21,10 @@ namespace WebAPI.Models
         public string About { get; set; }
 
         public long? PhotoFileId { get; set; }
-        public virtual File PhotoFile { get; set; }
+        public virtual FileModel PhotoFile { get; set; }
 
         public long? WallpaperFileId { get; set; }
-        public virtual File WallpaperFile { get; set; }
+        public virtual FileModel WallpaperFile { get; set; }
 
         public DateTimeOffset DateCreated { get; set; }
         public DateTimeOffset? DateDeleted { get; set; }

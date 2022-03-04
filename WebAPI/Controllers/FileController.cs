@@ -12,7 +12,6 @@ using AutoMapper;
 using System.Net;
 using Global.Models;
 using WebAPI.Models;
-using File = WebAPI.Models.File;
 
 namespace WebAPI.Controllers
 {
@@ -34,7 +33,7 @@ namespace WebAPI.Controllers
         {
             try
             {
-                File file = dbc.Files.Find(id);
+                FileModel file = dbc.Files.Find(id);
 
                 if (file == null)
                     return NotFound($"File {id} not found");
@@ -70,7 +69,7 @@ namespace WebAPI.Controllers
                     await file.CopyToAsync(fileStream);
                 }
 
-                File _file = new File();
+                FileModel _file = new FileModel();
 
                 _file.Name = fileName;
                 _file.Size = fileSize;
@@ -100,7 +99,7 @@ namespace WebAPI.Controllers
                 if (file == null)
                     return BadRequest("File not provided");
 
-                File _file = dbc.Files.Find(id);
+                FileModel _file = dbc.Files.Find(id);
                 if (_file == null)
                     return NotFound($"File {id} not found");
 
@@ -136,7 +135,7 @@ namespace WebAPI.Controllers
         {
             try
             {
-                File file = await dbc.Files.FindAsync(id);
+                FileModel file = await dbc.Files.FindAsync(id);
 
                 if (file.UploaderId != UserId)
                     return Forbid("This file doesn't belong to you!");

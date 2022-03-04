@@ -25,7 +25,7 @@ namespace WebAPI.Models
         public virtual UserProfile Author { get; set; }
 
         public long? FileId { get; set; }
-        public virtual File File { get; set; }
+        public virtual FileModel File { get; set; }
 
         [MaxLength(16383)]
         public string Body { get; set; }
