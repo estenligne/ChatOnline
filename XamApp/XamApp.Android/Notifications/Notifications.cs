@@ -1,5 +1,6 @@
 ﻿using Android.App;
 using Android.Content;
+using Android.Net;
 using Android.OS;
 using Android.Widget;
 using AndroidX.Core.App;
@@ -73,6 +74,24 @@ namespace XamApp.Droid.Notifications
             {
                 string data = intent.GetStringExtra(PushNotificationDTO.Key);
                 App.OnNotificationReceived(data, source);
+            }
+
+            if (intent.Action == Intent.ActionSend)
+            {
+                if (intent.Type.StartsWith("text/"))
+                {
+                    string text = intent.GetStringExtra(Intent.ExtraText);
+                    App.OnSharedText(text, source);
+                }
+
+                if (intent.Type.StartsWith("image/"))
+                {
+                    Uri imageUri = (Uri)intent.GetParcelableExtra(Intent.ExtraStream);
+                    if (imageUri != null)
+                    {
+                        App.OnSharedText(imageUri.ToString(), source);
+                    }
+                }
             }
         }
 
