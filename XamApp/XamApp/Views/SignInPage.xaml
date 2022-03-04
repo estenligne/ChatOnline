@@ -23,10 +23,10 @@
                         FontSize="Title"
                         Margin="0,0,0,15" />
 
-                <Label Text="Use either email or phone" TextColor="OrangeRed" HorizontalOptions="Center" />
+                <Label Text="Use either email address or phone number" TextColor="OrangeRed" HorizontalOptions="Center" />
 
                 <Entry Text="{Binding Email, Mode=TwoWay}"
-                        Placeholder="Email address"
+                        Placeholder="email@address.com"
                         TextColor="{Binding EmailColor}"
                         IsVisible="{Binding EmailAllow}"
                         Keyboard="Email"
@@ -34,7 +34,7 @@
                         Margin="0,10,0,0" />
 
                 <Entry Text="{Binding PhoneNumber, Mode=TwoWay}"
-                        Placeholder="Phone number"
+                        Placeholder="+237123456789"
                         TextColor="{Binding PhoneNumberColor}"
                         IsVisible="{Binding PhoneNumberAllow}"
                         Keyboard="Telephone"
@@ -42,7 +42,7 @@
                         Margin="0,10,0,0" />
 
                 <Entry Text="{Binding Password, Mode=TwoWay}"
-                        Placeholder="Password"
+                        Placeholder="Password_0"
                         TextColor="{Binding PasswordColor}"
                         IsPassword="True"
                         FontSize="Large"

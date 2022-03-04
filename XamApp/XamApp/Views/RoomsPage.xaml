@@ -15,9 +15,8 @@
         IsRefreshing="{Binding IsBusy, Mode=OneWay}">
 
         <CollectionView x:Name="RoomsListView"
-                        HorizontalScrollBarVisibility="Always"
-                        ItemsSource="{Binding Rooms}"
-                        SelectionMode="None">
+                        VerticalScrollBarVisibility="Always"
+                        ItemsSource="{Binding Rooms}">
 
             <CollectionView.ItemTemplate>
                 <DataTemplate>

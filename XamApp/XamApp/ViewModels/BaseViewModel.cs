@@ -41,38 +41,45 @@ namespace XamApp.ViewModels
             [CallerMemberName] string propertyName = "",
             Action onChanged = null)
         {
-            if (value == "")
+            if (value == "") // important for HTTP request JSON body
                 value = null;
 
-            if (propertyName == "PhoneNumber" && !CheckPhoneNumber(value, propertyName))
-                return false;
+            if (propertyName == "PhoneNumber")
+            {
+                string message = CheckPhoneNumber(value);
+                if (message != null)
+                {
+                    DisplayAlert("Invalid", message, "Ok");
+                    OnPropertyChanged(propertyName);
+                    return false;
+                }
+            }
 
             if (EqualityComparer<string>.Default.Equals(backingStore, value))
                 return false;
 
             backingStore = value;
             onChanged?.Invoke();
+
             OnPropertyChanged(propertyName);
             return true;
         }
 
-        private bool CheckPhoneNumber(string value, string propertyName)
+        /// <summary>
+        /// Check phone number and return error message if not valid.
+        /// </summary>
+        private static string CheckPhoneNumber(string phoneNumber)
         {
             string message = null;
-            if (!string.IsNullOrEmpty(value))
+            if (!string.IsNullOrEmpty(phoneNumber))
             {
-                if (value[0] != '+')
+                if (phoneNumber[0] != '+')
                     message = "Please start with + then country code to enter the international phone number, like +237123456789.";
 
-                else if (value.Contains(' '))
+                else if (phoneNumber.Contains(' '))
                     message = "No space allowed in phone number";
             }
-            if (message != null)
-            {
-                DisplayAlert("Invalid", message, "Ok");
-                OnPropertyChanged(propertyName);
-            }
-            return message == null;
+            return message;
         }
 
         public event PropertyChangedEventHandler PropertyChanged; // see INotifyPropertyChanged
