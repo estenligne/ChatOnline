@@ -9,7 +9,7 @@ namespace Global.Helpers
     {
         public readonly T value;
         public readonly HttpStatusCode code;
-        public readonly string message;
+        public readonly string title, message;
         public readonly Exception exception;
 
         public Return(T value)
@@ -17,14 +17,16 @@ namespace Global.Helpers
             this.value = value;
         }
 
-        public Return(HttpStatusCode code, string message)
+        public Return(HttpStatusCode code, string title, string message)
         {
             this.code = code;
+            this.title = title;
             this.message = message;
         }
 
-        public Return(Exception exception)
+        public Return(string title, Exception exception)
         {
+            this.title = title;
             this.exception = exception;
         }
 
