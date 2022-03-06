@@ -218,6 +218,7 @@ namespace WebAPI.Controllers
                     var chatRoom = new ChatRoom
                     {
                         Type = ChatRoomTypeEnum.Private,
+                        CreatorId = user1.Id,
                         DateCreated = dateCreated,
                     };
 

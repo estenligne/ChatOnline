@@ -43,6 +43,9 @@ namespace WebAPI.Services
         {
             var outcomes = new List<PushNotificationOutcome>();
 
+            if (userProfileIds.Count == 0)
+                return outcomes;
+
             var devices = await dbc.DevicesUsed
                                     .Where(x => userProfileIds.Contains(x.UserProfileId) && x.DateDeleted == null)
                                     .ToListAsync();
