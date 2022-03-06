@@ -51,7 +51,7 @@ namespace XamApp.Views
                     RememberMe = true,
                 };
 
-                var response = await HTTPClient.PostAsync(null, "/api/Account/SignIn", userDto);
+                var response = await HTTPClient.PostAsync(null, HTTPClient.AccountBaseURL + "Authenticate", userDto);
                 if (response.IsSuccessStatusCode)
                 {
                     var result = await HTTPClient.ReadAsAsync<ApplicationUserDTO>(response);
@@ -102,8 +102,10 @@ namespace XamApp.Views
             {
                 SetBusy(true);
 
-                string args = $"?emailAddress={vm.Email}&phoneNumber={vm.PhoneNumber}";
-                var response = await HTTPClient.PatchAsync(null, "/api/Account/ForgotPassword" + args, (string)null);
+                string url = HTTPClient.AccountBaseURL + "ForgotPassword";
+                url += $"?emailAddress={vm.Email}&phoneNumber={vm.PhoneNumber}";
+
+                var response = await HTTPClient.PatchAsync(null, url, (string)null);
                 if (response.IsSuccessStatusCode)
                 {
                     await DisplayAlert("Success", await response.Content.ReadAsStringAsync(), "Ok");
@@ -143,7 +145,7 @@ namespace XamApp.Views
                     Password = vm.Password,
                 };
 
-                var response = await HTTPClient.PostAsync(null, "/api/Account/Register", userDto);
+                var response = await HTTPClient.PostAsync(null, HTTPClient.AccountBaseURL + "Register", userDto);
                 if (response.IsSuccessStatusCode)
                 {
                     if (response.StatusCode == HttpStatusCode.NoContent)

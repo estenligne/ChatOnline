@@ -16,8 +16,10 @@ namespace XamApp.Services
         private static HttpClient httpClient = null;
 
 #if DEBUG
-        public const string WebAPIBaseURL = "http://172.20.10.3:44363";
+        public const string AccountBaseURL = "http://192.168.43.149:44363/api/Account/";
+        public const string WebAPIBaseURL = "http://192.168.43.149:44363";
 #else
+        public const string AccountBaseURL = "https://api.chatonline.estenligne.com/api/Account/";
         public const string WebAPIBaseURL = "https://api.chatonline.estenligne.com";
 #endif
 
@@ -52,7 +54,7 @@ namespace XamApp.Services
                     Password = user.Password,
                     RememberMe = user.RememberMe,
                 };
-                var response = await PostAsync(client, "/api/Account/SignIn", userDto);
+                var response = await PostAsync(client, AccountBaseURL + "SignIn", userDto);
                 if (response.IsSuccessStatusCode)
                 {
                     var result = await HTTPClient.ReadAsAsync<ApplicationUserDTO>(response);

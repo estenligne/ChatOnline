@@ -180,8 +180,17 @@ namespace WebAPI.Controllers
             }
         }
 
+        [AllowAnonymous]
+        [HttpPost]
+        [Route(nameof(Authenticate))]
+        public Task<ActionResult> Authenticate(ApplicationUserDTO userDto)
+        {
+            return SignIn(userDto);
+        }
+
         [ProducesResponseType(typeof(ApplicationUserDTO), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
+        [ProducesResponseType((int)HttpStatusCode.Forbidden)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         [AllowAnonymous]
@@ -315,21 +324,12 @@ namespace WebAPI.Controllers
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [HttpDelete]
         [Route(nameof(SignOut))]
-        public async Task<ActionResult> SignOut(long deviceUsedId)
+        public new async Task<ActionResult> SignOut()
         {
             try
             {
                 await _signInManager.SignOutAsync();
-
-                var deviceUsed = dbc.DevicesUsed.Find(deviceUsedId);
-
-                if (deviceUsed?.UserProfileId == UserId && deviceUsed.DateDeleted == null)
-                {
-                    deviceUsed.DateDeleted = DateTimeOffset.UtcNow;
-                    dbc.SaveChanges();
-                }
-
-                _logger.LogInformation($"User signed out on deviceUsedId {deviceUsedId}.");
+                _logger.LogInformation($"User {UserId} {User.Identity.Name} has signed out.");
                 return NoContent();
             }
             catch (Exception ex)

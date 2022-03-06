@@ -77,6 +77,37 @@ namespace WebAPI.Controllers
         }
 
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [HttpDelete]
+        public ActionResult DeleteDeviceUsed(long id)
+        {
+            try
+            {
+                string tag = $"User {UserId} {User.Identity.Name} on device {id}";
+
+                DeviceUsed deviceUsed = dbc.DevicesUsed.Find(id);
+
+                if (deviceUsed?.UserProfileId == UserId)
+                {
+                    if (deviceUsed.DateDeleted == null)
+                    {
+                        deviceUsed.DateDeleted = DateTimeOffset.UtcNow;
+                        dbc.SaveChanges();
+
+                        _logger.LogInformation($"{tag} has signed out.");
+                    }
+                    else _logger.LogWarning($"{tag} already signed out.");
+                }
+                else _logger.LogError($"{tag} not found or not valid.");
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [HttpPatch]
         [Route(nameof(RegisterFcmToken))]
         public ActionResult RegisterFcmToken(long deviceUsedId, string fcmToken)

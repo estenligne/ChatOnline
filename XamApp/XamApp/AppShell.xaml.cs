@@ -31,7 +31,7 @@ namespace XamApp
         public static async Task DoSignOut(Page page, User user)
         {
             long deviceUsedId = user == null ? 0 : user.DeviceUsedId;
-            string url = "/api/Account/SignOut?deviceUsedId=" + deviceUsedId;
+            string url = "/api/DeviceUsed?id=" + deviceUsedId;
 
             var response = await HTTPClient.DeleteAsync(null, url);
             if (!response.IsSuccessStatusCode && response.StatusCode != System.Net.HttpStatusCode.Unauthorized)
