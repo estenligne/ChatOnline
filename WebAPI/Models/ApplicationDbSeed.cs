@@ -13,11 +13,6 @@ namespace WebAPI.Models
             {
                 var services = scope.ServiceProvider;
 
-                using (var account_dbc = services.GetRequiredService<AccountDbContext>())
-                {
-                    account_dbc.Database.Migrate();
-                }
-
                 using (var dbc = services.GetRequiredService<ApplicationDbContext>())
                 {
                     dbc.Database.Migrate();

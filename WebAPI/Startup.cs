@@ -45,55 +45,19 @@ namespace WebAPI
 
             if (DataType.UseMySQL)
             {
-                services.AddDbContext<AccountDbContext>(options => ConfigureMySQL(options, "Account_MySQL_Connection"));
-                services.AddDbContext<ApplicationDbContext>(options => ConfigureMySQL(options, "ChatOnline_MySQL_Connection"));
+                services.AddDbContext<ApplicationDbContext>(options => ConfigureMySQL(options, "MySQL_Connection"));
             }
             else if (DataType.UseSQLite)
             {
-                services.AddDbContext<AccountDbContext>(options => options
-                    .UseSqlite(_configuration.GetConnectionString("Account_SQLite_Connection")));
-
                 services.AddDbContext<ApplicationDbContext>(options => options
-                    .UseSqlite(_configuration.GetConnectionString("ChatOnline_SQLite_Connection")));
+                    .UseSqlite(_configuration.GetConnectionString("SQLite_Connection")));
             }
             else if (DataType.UseSQLServer)
             {
-                services.AddDbContext<AccountDbContext>(options => options
-                    .UseSqlServer(_configuration.GetConnectionString("Account_SQLServer_Connection")));
-
                 services.AddDbContext<ApplicationDbContext>(options => options
-                    .UseSqlServer(_configuration.GetConnectionString("ChatOnline_SQLServer_Connection")));
+                    .UseSqlServer(_configuration.GetConnectionString("SQLServer_Connection")));
             }
             else throw new SystemException("No DBMS specified!");
-        }
-
-        private void ConfigureIdentity(IServiceCollection services)
-        {
-            services.AddIdentity<ApplicationUser, ApplicationRole>()
-                .AddEntityFrameworkStores<AccountDbContext>()
-                .AddDefaultTokenProviders();
-
-            services.Configure<IdentityOptions>(options =>
-            {
-                // Password settings.
-                options.Password.RequireDigit = true;
-                options.Password.RequireLowercase = true;
-                options.Password.RequireUppercase = true;
-                options.Password.RequireNonAlphanumeric = true;
-                options.Password.RequiredLength = 6;
-                options.Password.RequiredUniqueChars = 1;
-
-                // Lockout settings.
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-                options.Lockout.MaxFailedAccessAttempts = 5;
-                options.Lockout.AllowedForNewUsers = true;
-
-                // User settings.
-                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-
-                // SignIn settings.
-                options.SignIn.RequireConfirmedAccount = true;
-            });
         }
 
         private void ConfigureAuthentication(IServiceCollection services)
@@ -187,8 +151,6 @@ namespace WebAPI
         public void ConfigureServices(IServiceCollection services)
         {
             ConfigureDatabase(services);
-
-            ConfigureIdentity(services);
 
             ConfigureAuthentication(services);
 
