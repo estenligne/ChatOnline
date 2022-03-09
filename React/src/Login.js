@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@mui/material/';
 import { getFcmToken } from './firebase';
-import { _fetch, trimObject, getFormValues } from './global';
+import { _fetch, AccountBaseURL, trimObject, getFormValues } from './global';
 import { useStateValue } from './StateProvider';
 import { actionTypes } from './reducer';
 import './Login.css';
@@ -23,18 +23,25 @@ function Login() {
             "password": values.password,
         });
 
-        _fetch(null, "/api/Account/SignIn", "POST", body)
+        _fetch(null, AccountBaseURL + "Authenticate", "POST", body)
             .then(response => response.json())
-            .then(user => {
+            .then(result => {
+                let user = {
+                    account: { ...body, ...result }
+                };
                 _fetch(user, "/api/DeviceUsed?devicePlatform=WebApp", "PUT")
                     .then(response => response.json())
                     .then(deviceUsed => {
-                        user.deviceUsedId = deviceUsed.id;
+                        user = {
+                            ...user,
+                            ...deviceUsed.userProfile,
+                            deviceUsedId: deviceUsed.id
+                        }
                         registerFcmToken(user);
 
                         dispatch({
                             type: actionTypes.SET_USER,
-                            user: { ...user, ...deviceUsed.userProfile }
+                            user: user
                         });
                     })
             }).catch(error => console.error(error));
@@ -57,7 +64,7 @@ function Login() {
     function registerServiceWorker() {
         if ("serviceWorker" in navigator) {
             navigator.serviceWorker
-                .register("./firebase-messaging-sw.js")
+                .register("/firebase-messaging-sw.js")
                 .then(function (registration) {
                     console.log("Registration successful, scope is:", registration.scope);
                 })

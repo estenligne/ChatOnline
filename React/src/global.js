@@ -1,21 +1,37 @@
 
-const WebAPIBaseURL = "http://localhost:44363";
+export const AccountBaseURL = process.env.REACT_APP_AccountBaseURL;
+export const WebAPIBaseURL = process.env.REACT_APP_WebAPIBaseURL;
 
 
-export function _fetch(user, path, method, body) {
+/**
+ * Make a HTTP request
+ * @param {{ account: {}}} user
+ * @param {string} url
+ * @param {"GET"|"POST"|"PUT"|"DELETE"} method
+ * @param {Object} body
+ * @returns {Promise<Response>} Promise of HTTP response
+ */
+export function _fetch(user, url, method, body) {
     const init = { headers: {} };
 
     if (method) init.method = method;
     if (body) init.body = JSON.stringify(body);
 
     if (body) init.headers['Content-Type'] = 'application/json';
-    if (user) init.headers['Authorization'] = user.authorization;
+    if (user) init.headers['Authorization'] = user.account.authorization;
 
-    console.debug(path, init);
-    return fetch(WebAPIBaseURL + path, init);
+    if (url[0] === '/')
+        url = WebAPIBaseURL + url;
+
+    return fetch(url, init);
 }
 
 
+/**
+ * Delete all fields with false values: false, undefined, null, empty string, 0.
+ * @param {{}} obj
+ * @returns {{}}
+ */
 export function trimObject(obj) {
     for (const [key, value] of Object.entries(obj)) {
         if (!value)
@@ -51,5 +67,5 @@ export function dateToLocal(date) {
     if (!date) return null;
     const s = new Date(date).toString();
     const i = s.indexOf(" GMT");
-    return i ? s.substr(0, i) : date.toUTCString();
+    return i > 0 ? s.substring(0, i) : date.toUTCString();
 }

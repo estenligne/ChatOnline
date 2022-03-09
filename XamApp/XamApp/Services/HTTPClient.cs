@@ -16,10 +16,10 @@ namespace XamApp.Services
         private static HttpClient httpClient = null;
 
 #if DEBUG
-        public const string AccountBaseURL = "http://192.168.43.149:44363/api/Account/";
-        public const string WebAPIBaseURL = "http://192.168.43.149:44363";
+        public const string AccountBaseURL = "http://localhost:44361/api/Account/";
+        public const string WebAPIBaseURL = "http://localhost:44363";
 #else
-        public const string AccountBaseURL = "https://api.chatonline.estenligne.com/api/Account/";
+        public const string AccountBaseURL = "https://account.estenligne.com/api/Account/";
         public const string WebAPIBaseURL = "https://api.chatonline.estenligne.com";
 #endif
 
