@@ -27,7 +27,7 @@ namespace Global.Models
         public bool RememberMe { get; set; }
 
         /// <summary>
-        /// Used only on SignIn HTTP Response
+        /// Used only on Authenticate HTTP Response
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public string Authorization { get; set; }

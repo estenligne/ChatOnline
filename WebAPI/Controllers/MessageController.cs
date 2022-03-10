@@ -83,19 +83,17 @@ namespace WebAPI.Controllers
                 {
                     userChatRoom = dbc.UserChatRooms.FirstOrDefault(x =>
                         x.UserProfileId == UserId && x.ChatRoomId == chatRoomId);
-                    userChatRoomId = userChatRoom.Id;
                 }
-                else
-                {
-                    userChatRoom = dbc.UserChatRooms.Find(userChatRoomId);
-                    chatRoomId = userChatRoom.ChatRoomId;
-                }
+                else userChatRoom = dbc.UserChatRooms.Find(userChatRoomId);
 
                 if (userChatRoom == null)
                     return NotFound("Sender's user chat room not found.");
 
                 if (userChatRoom.UserProfileId != UserId)
                     return Forbid("Sender's user chat room does not match!");
+
+                userChatRoomId = userChatRoom.Id;
+                chatRoomId = userChatRoom.ChatRoomId;
 
                 if (userChatRoom.DateBlocked != null ||
                     userChatRoom.DateDeleted != null ||

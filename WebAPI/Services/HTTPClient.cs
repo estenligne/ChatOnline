@@ -24,7 +24,7 @@ namespace WebAPI.Services
             string json = JsonConvert.SerializeObject(userDto);
             var stringContent = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await httpClient.PostAsync("/api/Account/SignIn", stringContent);
+            var response = await httpClient.PostAsync("/api/Account/Authenticate", stringContent);
             string content = await response.Content.ReadAsStringAsync();
 
             if (!response.IsSuccessStatusCode)
