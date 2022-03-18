@@ -24,6 +24,12 @@ const reducer = (state, action) => {
                 messages: action.messages,
             };
         case actionTypes.SET_ROOMS:
+            // sort in descending order of dateSent
+            action.rooms.sort((a, b) => {
+                const c = a.latestMessage.dateSent;
+                const d = b.latestMessage.dateSent;
+                return new Date(d) - new Date(c);
+            });
             return {
                 ...state,
                 rooms: action.rooms,
