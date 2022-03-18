@@ -23,7 +23,14 @@ export function _fetch(user, url, method, body) {
     if (url[0] === '/')
         url = WebAPIBaseURL + url;
 
-    return fetch(url, init);
+    return fetch(url, init)
+        .then(response => {
+            if (user && response.status === 401) {
+                window.localStorage.removeItem('userData');
+                alert("This session has expired, please reload or refresh the page to sign-in again.");
+            }
+            return response;
+        });
 }
 
 

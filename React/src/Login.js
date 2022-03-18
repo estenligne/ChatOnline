@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button } from '@mui/material/';
 import { getFcmToken } from './firebase';
 import { _fetch, AccountBaseURL, trimObject, getFormValues } from './global';
@@ -8,6 +8,16 @@ import './Login.css';
 
 function Login() {
     const [{ }, dispatch] = useStateValue();
+
+    useEffect(() => {
+        const userData = window.localStorage.getItem('userData');
+        if (userData) {
+            dispatch({
+                type: actionTypes.SET_USER,
+                user: JSON.parse(userData)
+            });
+        }
+    }, [dispatch]);
 
     const signIn = (e) => {
         e.preventDefault();
@@ -27,7 +37,7 @@ function Login() {
             .then(response => response.json())
             .then(result => {
                 let user = {
-                    account: { ...body, ...result }
+                    account: result
                 };
                 _fetch(user, "/api/DeviceUsed?devicePlatform=WebApp", "PUT")
                     .then(response => response.json())
@@ -43,6 +53,7 @@ function Login() {
                             type: actionTypes.SET_USER,
                             user: user
                         });
+                        window.localStorage.setItem('userData', JSON.stringify(user));
                     })
             }).catch(error => console.error(error));
     };
