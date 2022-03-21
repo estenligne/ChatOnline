@@ -66,7 +66,10 @@ namespace WebAPI.Services
                 }
 
                 var data = new Dictionary<string, string>();
-                data[PushNotificationDTO.Key] = JsonConvert.SerializeObject(pushNotificationDto);
+
+                var serializerSettings = new JsonSerializerSettings();
+                serializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
+                data[PushNotificationDTO.Key] = JsonConvert.SerializeObject(pushNotificationDto, serializerSettings);
 
                 var payload = new
                 {

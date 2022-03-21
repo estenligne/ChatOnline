@@ -8,6 +8,7 @@ export const actionTypes = {
     SET_USER: "SET_USER",
     FETCH_MESSAGES: "FETCH_MESSAGES",
     SET_ROOMS: "SET_ROOMS",
+    SET_MESSAGE: "SET_MESSAGE",
 };
 
 const reducer = (state, action) => {
@@ -18,12 +19,23 @@ const reducer = (state, action) => {
                 ...state,
                 user: action.user,
             };
+        case actionTypes.SET_MESSAGE:
+            return {
+                ...state,
+                messages: [...state.messages, action.message]
+            };
         case actionTypes.FETCH_MESSAGES:
             return {
                 ...state,
                 messages: action.messages,
             };
         case actionTypes.SET_ROOMS:
+            // sort in descending order of dateSent
+            action.rooms.sort((a, b) => {
+                const c = a.latestMessage.dateSent;
+                const d = b.latestMessage.dateSent;
+                return new Date(d) - new Date(c);
+            });
             return {
                 ...state,
                 rooms: action.rooms,
