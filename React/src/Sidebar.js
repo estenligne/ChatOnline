@@ -1,25 +1,27 @@
-import React, { useEffect, useState } from 'react';
-import { useStateValue } from './StateProvider';
+import React, { useEffect, useState } from "react";
+import { useStateValue } from "./StateProvider";
 
-import { Avatar, IconButton } from '@mui/material';
-import { SearchOutlined } from '@mui/icons-material/';
+import { Avatar, IconButton } from "@mui/material";
+import { SearchOutlined } from "@mui/icons-material/";
 
-import DonutLargeIcon from '@mui/icons-material/DonutLarge';
-import ChatIcon from '@mui/icons-material/Chat';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import DonutLargeIcon from "@mui/icons-material/DonutLarge";
+import ChatIcon from "@mui/icons-material/Chat";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 
-import SidebarChat from './SidebarChat';
-import { _fetch, getFileURL } from './global';
-import './Sidebar.css';
+import SidebarChat from "./SidebarChat";
+import { _fetch, getFileURL } from "./global";
+import "./Sidebar.css";
+import { actionTypes } from "./reducer";
 
 function Sidebar() {
-    const [rooms, setRooms] = useState([]);
-    const [{ user }, dispatch] = useStateValue();
-
+    const [{ user, rooms }, dispatch] = useStateValue();
+    console.log(rooms);
     useEffect(() => {
         _fetch(user, "/api/ChatRoom/GetAll")
-            .then(response => response.json())
-            .then(rooms => setRooms(rooms));
+            .then((response) => response.json())
+            .then((rooms) => {
+                dispatch({ type: actionTypes.SET_ROOMS, rooms });
+            });
     }, [user]);
 
     return (
@@ -49,12 +51,12 @@ function Sidebar() {
 
             <div className="sidebar__chats">
                 <SidebarChat addNewChat />
-                {rooms.map(room => (
+                {rooms.map((room) => (
                     <SidebarChat key={room.id} room={room} />
                 ))}
             </div>
         </div>
-    )
+    );
 }
 
 export default Sidebar;
