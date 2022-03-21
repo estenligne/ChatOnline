@@ -3,6 +3,9 @@
 import { initializeApp } from "firebase/app";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
 
+import { store } from "./StateProvider";
+import { actionTypes } from "./reducer";
+
 const firebaseConfig = {
     apiKey: "AIzaSyBZsYMP0JCT5qYXAf-ptlEWnTVXW2CPhv4",
     authDomain: "rhyscitlema-chatonline.firebaseapp.com",
@@ -31,6 +34,26 @@ export function getFcmToken() {
         }).catch(error => console.error(error));
 }
 
+const enums = {
+    PushNotificationTopic: {
+        None: 0,
+        MessageSent: 1,
+        MessageReceived: 2,
+        MessageRead: 3,
+        MessageDeleted: 4,
+    }
+}
+
 onMessage(messaging, (payload) => {
     console.log('Message received', payload);
+
+    const notification = JSON.parse(payload.data.PushNotificationDTO);
+
+    if (notification.topic === enums.PushNotificationTopic.MessageSent) {
+
+        store.dispatch({
+            type: actionTypes.SET_MESSAGE,
+            message: notification.messageSent,
+        });
+    }
 });

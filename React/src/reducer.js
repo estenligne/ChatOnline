@@ -8,6 +8,7 @@ export const actionTypes = {
     SET_USER: "SET_USER",
     FETCH_MESSAGES: "FETCH_MESSAGES",
     SET_ROOMS: "SET_ROOMS",
+    SET_MESSAGE: "SET_MESSAGE",
 };
 
 const reducer = (state, action) => {
@@ -17,6 +18,11 @@ const reducer = (state, action) => {
             return {
                 ...state,
                 user: action.user,
+            };
+        case actionTypes.SET_MESSAGE:
+            return {
+                ...state,
+                messages: [...state.messages, action.message]
             };
         case actionTypes.FETCH_MESSAGES:
             return {

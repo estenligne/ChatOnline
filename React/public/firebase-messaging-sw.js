@@ -1,6 +1,16 @@
 importScripts('https://www.gstatic.com/firebasejs/8.2.0/firebase-app.js');
 importScripts('https://www.gstatic.com/firebasejs/8.2.0/firebase-messaging.js');
 
+const enums = {
+    PushNotificationTopic: {
+        None: 0,
+        MessageSent: 1,
+        MessageReceived: 2,
+        MessageRead: 3,
+        MessageDeleted: 4,
+    }
+}
+
 const firebaseConfig = {
     apiKey: "AIzaSyBZsYMP0JCT5qYXAf-ptlEWnTVXW2CPhv4",
     authDomain: "rhyscitlema-chatonline.firebaseapp.com",
@@ -27,12 +37,15 @@ messaging.onBackgroundMessage(function(payload) {
 
     const notification = JSON.parse(payload.data.PushNotificationDTO);
 
-    const notificationOptions = {
-        body: notification.Body,
-        icon: '/logo192.png'
-    };
+    if (notification.topic === enums.PushNotificationTopic.MessageSent) {
 
-    self.registration.showNotification(notification.Title, notificationOptions);
+        const notificationOptions = {
+            body: notification.body,
+            icon: '/logo192.png'
+        };
+
+        self.registration.showNotification(notification.title, notificationOptions);
+    }
 });
 
 self.addEventListener("notificationclick", function (event) {
