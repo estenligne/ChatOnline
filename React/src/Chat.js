@@ -15,6 +15,9 @@ function Chat() {
     const [roomInfo, setRoomInfo] = useState({});
     const [{ user, messages, rooms }, dispatch] = useStateValue();
     const gotoLastMessageRef = React.useRef(null);
+    const [showReplyRef, setShowReplyRef] = useState(false)
+    const [linkedId, setLinkedId] = useState(null)
+    const [showReplyText, setShowReplyText] = useState(false)
 
     React.useEffect(() => {
         gotoLastMessageRef.current.scrollIntoView({ behavior: "auto" });
@@ -39,8 +42,9 @@ function Chat() {
     const sendMessage = (e) => {
         e.preventDefault();
         console.debug("You typed >>>", input);
-
+        setShowReplyRef(false)
         const body = {
+            linkedId: linkedId?? null,
             senderId: roomInfo.userChatRoomId,
             messageTag: { chatRoomId: roomId },
             body: input,
@@ -105,24 +109,52 @@ function Chat() {
             <div className="chat__body">
                 {messages.map((message) => (
                     <div
+                    onMouseEnter={() => setShowReplyText(true)}
+                    onMouseLeave={() => setShowReplyText(false)}
                         key={message.id}
                         className={`chat__message ${
                             message.senderId === roomInfo.userChatRoomId &&
                             "chat__receiver"
                         }`}
                     >
-                        <span className="chat__name">{message.senderName}</span>
-                        {
-                            message.linkedId ? (
-                                <p className="chat__ref">
-                            <span className="chat__refname">
-                                {getMessageById(messages, message.linkedId)?.senderName}
-                            </span>
-                            {getMessageById(messages, message.linkedId)?.body}
-                        </p>
-                            ): ''
-                        }
-                        
+                        <div
+                            className="chat__name"
+                        >
+                            <span>{message.senderName}</span>
+                            {showReplyText ? (
+                                <ul>
+                                    <li
+                                        onClick={() => {
+                                            setShowReplyRef(true);
+                                            setLinkedId(message.id);
+                                        }}
+                                    >
+                                        reply
+                                    </li>
+                                </ul>
+                            ) : (
+                                ""
+                            )}
+                        </div>
+                        {message.linkedId ? (
+                            <p className="chat__ref">
+                                <span className="chat__refname">
+                                    {
+                                        getMessageById(
+                                            messages,
+                                            message.linkedId
+                                        )?.senderName
+                                    }
+                                </span>
+                                {
+                                    getMessageById(messages, message.linkedId)
+                                        ?.body
+                                }
+                            </p>
+                        ) : (
+                            ""
+                        )}
+
                         {message.body}
                         <span className="chat__timestamp">
                             {dateToLocal(new Date(message.dateSent))}
@@ -133,20 +165,40 @@ function Chat() {
                 <div ref={gotoLastMessageRef}></div>
             </div>
 
-            <div className="chat__footer">
-                <InsertEmoticon />
-                <form>
-                    <input
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        type="text"
-                        placeholder="Type a message"
-                    />
-                    <button onClick={sendMessage} type="submit">
-                        Send a message
-                    </button>
-                </form>
-                <Mic />
+            <div>
+                {showReplyRef ? (
+                    <div className="chat__reply">
+                        <p className="">
+                            <span className="chat__refname">
+                                {getMessageById(messages, linkedId)?.senderName}
+                            </span>
+                            {getMessageById(messages, linkedId)?.body}
+                        </p>
+                        <p
+                            className="chat_refClose"
+                            onClick={() => setShowReplyRef(false)}
+                        >
+                            X
+                        </p>
+                    </div>
+                ) : (
+                    ""
+                )}
+                <div className="chat__footer">
+                    <InsertEmoticon />
+                    <form>
+                        <input
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            type="text"
+                            placeholder="Type a message"
+                        />
+                        <button onClick={sendMessage} type="submit">
+                            Send a message
+                        </button>
+                    </form>
+                    <Mic />
+                </div>
             </div>
         </div>
     );
