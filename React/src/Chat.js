@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Avatar, IconButton } from "@mui/material";
 import { SearchOutlined, AttachFile, MoreVert } from "@mui/icons-material/";
 import { InsertEmoticon, Mic } from "@mui/icons-material/";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useStateValue } from "./StateProvider";
 import firebase from "firebase/compat/app";
 import { _fetch, getFileURL, dateToLocal } from "./global";
@@ -109,19 +109,17 @@ function Chat() {
             <div className="chat__body">
                 {messages.map((message) => (
                     <div
-                    onMouseEnter={() => setShowReplyText(true)}
-                    onMouseLeave={() => setShowReplyText(false)}
+                        // onMouseEnter={() => setShowReplyText(true)}
+                        // onMouseLeave={() => setShowReplyText(false)}
                         key={message.id}
                         className={`chat__message ${
                             message.senderId === roomInfo.userChatRoomId &&
                             "chat__receiver"
                         }`}
                     >
-                        <div
-                            className="chat__name"
-                        >
+                        <div className="chat__name">
                             <span>{message.senderName}</span>
-                            {showReplyText ? (
+                            {true ? (
                                 <ul>
                                     <li
                                         onClick={() => {
@@ -150,6 +148,18 @@ function Chat() {
                                     getMessageById(messages, message.linkedId)
                                         ?.body
                                 }
+                            </p>
+                        ) : (
+                            ""
+                        )}
+                        {message.file ? (
+                            <p className="chat__image">
+                                <Link className="chat__imageLink" to={message.file.name} target="_blank">
+                                    <img
+                                        src={getFileURL(message.file.name)}
+                                        alt=""
+                                    />
+                                </Link>
                             </p>
                         ) : (
                             ""
@@ -206,6 +216,7 @@ function Chat() {
 
 function getMessageById(listOfMessages, id){
     const message = listOfMessages.filter(message=>message.id==id)
+    console.log(message[0]?.file?.name)
     return message[0]
 }
 

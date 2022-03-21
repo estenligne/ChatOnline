@@ -91,6 +91,13 @@
     font-weight: 800;
     font-size: xx-small;
 }
+.chat__image .chat__imageLink{
+    width: 400px;
+}
+.chat__imageLink > img{
+    width: inherit;
+}
+
 .chat__reply {
     display: flex;
     justify-content: space-between;
