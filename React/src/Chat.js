@@ -63,9 +63,11 @@ function Chat() {
                             type: actionTypes.SET_ROOMS,
                             rooms: _rooms,
                         });
-                        setRoomInfo(_rooms.find(room => room.id == parseInt(roomId)))
+                        setRoomInfo(
+                            _rooms.find((room) => room.id == parseInt(roomId))
+                        );
                     });
-                });
+            });
 
         console.log("after sent, ROOMS", rooms);
         setInput("");
@@ -102,7 +104,7 @@ function Chat() {
 
             <div className="chat__body">
                 {messages.map((message) => (
-                    <p
+                    <div
                         key={message.id}
                         className={`chat__message ${
                             message.senderId === roomInfo.userChatRoomId &&
@@ -110,12 +112,24 @@ function Chat() {
                         }`}
                     >
                         <span className="chat__name">{message.senderName}</span>
+                        {
+                            message.linkedId ? (
+                                <p className="chat__ref">
+                            <span className="chat__refname">
+                                {getMessageById(messages, message.linkedId)?.senderName}
+                            </span>
+                            {getMessageById(messages, message.linkedId)?.body}
+                        </p>
+                            ): ''
+                        }
+                        
                         {message.body}
                         <span className="chat__timestamp">
                             {dateToLocal(new Date(message.dateSent))}
                         </span>
-                    </p>
+                    </div>
                 ))}
+
                 <div ref={gotoLastMessageRef}></div>
             </div>
 
@@ -136,6 +150,11 @@ function Chat() {
             </div>
         </div>
     );
+}
+
+function getMessageById(listOfMessages, id){
+    const message = listOfMessages.filter(message=>message.id==id)
+    return message[0]
 }
 
 export default Chat;

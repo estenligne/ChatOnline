@@ -66,7 +66,17 @@
     font-weight: 800;
     font-size: xx-small;
 }
-
+.chat__ref {
+    background-color: lightgray;
+    border-radius: 5px;
+    padding: 1px 2px;
+    border-left: 3px solid darkcyan;
+}
+.chat__refname {
+    display: block;
+    font-weight: 800;
+    font-size: xx-small;
+}
 .chat__footer {
     display: flex;
     justify-content: space-between;
