@@ -18,6 +18,8 @@ function Chat() {
     const [showReplyRef, setShowReplyRef] = useState(false)
     const [linkedId, setLinkedId] = useState(null)
     const [showReplyText, setShowReplyText] = useState(false)
+    const [selectedFile, setSelectedFile] = useState();
+	const [isFilePicked, setIsFilePicked] = useState(false);
 
     React.useEffect(() => {
         gotoLastMessageRef.current.scrollIntoView({ behavior: "auto" });
@@ -76,6 +78,10 @@ function Chat() {
         console.log("after sent, ROOMS", rooms);
         setInput("");
     };
+    const fileChangeHandler = (event) => {
+		setSelectedFile(event.target.files[0]);
+		setIsFilePicked(true);
+	};
 
     return (
         <div className="chat">
@@ -98,7 +104,10 @@ function Chat() {
                         <SearchOutlined />
                     </IconButton>
                     <IconButton>
-                        <AttachFile />
+                        {/* <input style={{display: "none"}} onChange={fileChangeHandler}  type="file" name="file" id="file" /> */}
+                        <label htmlFor="file">
+                            <AttachFile />
+                        </label>
                     </IconButton>
                     <IconButton>
                         <MoreVert />
@@ -247,7 +256,6 @@ function Chat() {
 
 function getMessageById(listOfMessages, id){
     const message = listOfMessages.filter(message=>message.id==id)
-    console.log(message[0]?.file?.name)
     return message[0]
 }
 
