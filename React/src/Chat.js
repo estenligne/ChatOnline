@@ -135,7 +135,7 @@ function Chat() {
                             )}
                         </div>
                         {message.linkedId ? (
-                            <p className="chat__ref">
+                            <div className="chat__ref">
                                 <span className="chat__refname">
                                     {
                                         getMessageById(
@@ -144,17 +144,48 @@ function Chat() {
                                         )?.senderName
                                     }
                                 </span>
+                                {getMessageById(
+                                            messages,
+                                            message.linkedId
+                                        )?.file ? (
+                                    <p className="chat__image">
+                                        <Link
+                                            className="chat__imageLink"
+                                            to={getMessageById(
+                                                messages,
+                                                message.linkedId
+                                            )?.file.name}
+                                            target="_blank"
+                                        >
+                                            <img
+                                                src={getFileURL(
+                                                    getMessageById(
+                                                        messages,
+                                                        message.linkedId
+                                                    )?.file.name
+                                                )}
+                                                alt=""
+                                            />
+                                        </Link>
+                                    </p>
+                                ) : (
+                                    ""
+                                )}
                                 {
                                     getMessageById(messages, message.linkedId)
                                         ?.body
                                 }
-                            </p>
+                            </div>
                         ) : (
                             ""
                         )}
                         {message.file ? (
                             <p className="chat__image">
-                                <Link className="chat__imageLink" to={message.file.name} target="_blank">
+                                <Link
+                                    className="chat__imageLink"
+                                    to={message.file.name}
+                                    target="_blank"
+                                >
                                     <img
                                         src={getFileURL(message.file.name)}
                                         alt=""
