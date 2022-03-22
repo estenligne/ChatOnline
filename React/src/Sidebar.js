@@ -37,8 +37,8 @@ function Sidebar() {
                     <IconButton>
                         <ChatIcon />
                     </IconButton>
-                    <IconButton onClick={() => setShowMore(!showMore)}>
-                        <MoreVertIcon />
+                    <IconButton>
+                        <MoreVertIcon  onClick={() => setShowMore(!showMore)} />
                         {showMore ? (
                             <div className="sidebar__headerOptions">
                                 <ul className="options">

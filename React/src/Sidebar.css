@@ -49,25 +49,29 @@
     position: absolute;
     right: 20px;
     top: 40px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
+    border-radius: 20px;
+    width: fit-content;
+    box-sizing: border-box;
 }
 .sidebar__headerRight .sidebar__headerOptions .options {
-    border: 1px solid;
     list-style-type: none;
     background: white;
     padding-left: 0;
-    /* padding: 5px; */
+    width: 100%;
+    box-sizing: border-box;
 }
 .sidebar__headerRight .options li {
     text-align: left;
     font-size: medium;
-    font-weight: bold;
-    border-bottom: 1px solid lightgray;
-    padding: 10px;
-    width: inherit;
+    /* border-bottom: 1px solid lightgray; */
+    padding: 15px 20px;
+    box-sizing: border-box;
+    width: 100%;
     cursor: pointer;
 }
 .sidebar__headerRight .options li:hover {
-    background: rgb(233, 227, 227);
+    background: #faf6f6;
 }
 .sidebar__chats {
     flex: 1;
