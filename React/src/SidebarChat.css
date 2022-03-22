@@ -16,8 +16,16 @@ a {
 
 .sidebarChat__info {
     margin-left: 15px;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
 }
-
+.sidebarChat__info .chat__messageInfo {
+    align-self: center;
+}
+.sidebarChat__info .chat__readInfo {
+    align-self: center;
+}
 .sidebarChat__info > h2 {
     font-size: 16px;
     margin-bottom: 8px;
