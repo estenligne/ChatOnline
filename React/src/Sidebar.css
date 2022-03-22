@@ -43,8 +43,32 @@
     align-items: center;
     justify-content: space-between;
     min-width: 10vw;
+    position: relative;
 }
-
+.sidebar__headerRight .sidebar__headerOptions {
+    position: absolute;
+    right: 20px;
+    top: 40px;
+}
+.sidebar__headerRight .sidebar__headerOptions .options {
+    border: 1px solid;
+    list-style-type: none;
+    background: white;
+    padding-left: 0;
+    /* padding: 5px; */
+}
+.sidebar__headerRight .options li {
+    text-align: left;
+    font-size: medium;
+    font-weight: bold;
+    border-bottom: 1px solid lightgray;
+    padding: 10px;
+    width: inherit;
+    cursor: pointer;
+}
+.sidebar__headerRight .options li:hover {
+    background: rgb(233, 227, 227);
+}
 .sidebar__chats {
     flex: 1;
     overflow: scroll;
