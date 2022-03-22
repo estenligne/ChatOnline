@@ -5,20 +5,19 @@ import { getFileURL } from './global';
 import './SidebarChat.css';
 
 function SidebarChat({ room, addNewChat }) {
-    
-     // this works as a checkmark. I don't have any idea about how it shows up here
-    const [checkmark, setCheckmark] = React.useState([''])
 
-    React.useEffect(()=>{
-        if(room){
-            if(room.latestMessage.notReadCount > 0){
-                setCheckmark((_prev)=>[..._prev, '✔'])
-            }
-            if(room.latestMessage.notReceivedCount > 0){
-                setCheckmark((_prev)=>[..._prev, '✔'])
-            }
+    let checkmark = "";
+
+    if (room) {
+        if (room.latestMessage.notReceivedCount > 0) {
+            checkmark = "✔";
         }
-    },[])
+        else if (room.latestMessage.notReadCount > 0) {
+            checkmark = "✔✔";
+        }
+        else checkmark = "✔✔✔";
+    }
+
     const createChat = () => {
         alert("Not yet implemented!");
     };
@@ -34,9 +33,7 @@ function SidebarChat({ room, addNewChat }) {
                         <p>{room.latestMessage.shortBody}</p>
                     </div>
                     <div className='chat__readInfo'>
-                        {checkmark.map((mark, idx) => (
-                            <span key={idx}>{mark}</span>
-                        ))}
+                        {checkmark}
                     </div>
                 </div>
             </div>
