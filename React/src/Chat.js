@@ -14,15 +14,7 @@ function Chat() {
     const [roomInfo, setRoomInfo] = useState({});
     const [{ user, messages, rooms }, dispatch] = useStateValue();
     const gotoLastMessageRef = React.useRef(null);
-<<<<<<< HEAD
-    const [showReplyRef, setShowReplyRef] = useState(false)
-    const [linkedId, setLinkedId] = useState(null)
-    const [showReplyText, setShowReplyText] = useState(false)
-    const [selectedFile, setSelectedFile] = useState();
-	const [isFilePicked, setIsFilePicked] = useState(false);
-=======
     const [linkedId, setLinkedId] = useState(null);
->>>>>>> 2f820452858648b6c708128361b9c35a6566adad
 
     React.useEffect(() => {
         gotoLastMessageRef.current.scrollIntoView({ behavior: "auto" });
@@ -257,13 +249,8 @@ function Chat() {
     );
 }
 
-<<<<<<< HEAD
-function getMessageById(listOfMessages, id){
-    const message = listOfMessages.filter(message=>message.id==id)
-=======
 function getMessageById(listOfMessages, id) {
     const message = listOfMessages.filter(message => message.id === id)
->>>>>>> 2f820452858648b6c708128361b9c35a6566adad
     return message[0]
 }
 
