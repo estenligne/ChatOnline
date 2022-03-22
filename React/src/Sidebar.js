@@ -41,6 +41,7 @@ function Sidebar() {
                         <MoreVertIcon  onClick={() => setShowMore(!showMore)} />
                         {showMore ? (
                             <div className="sidebar__headerOptions">
+                                <div className="overlay" onClick={() => setShowMore(false)} ></div>
                                 <ul className="options">
                                     <li>Settings</li>
                                     <li
