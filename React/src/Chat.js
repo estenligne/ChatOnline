@@ -4,7 +4,6 @@ import { SearchOutlined, AttachFile, MoreVert } from "@mui/icons-material/";
 import { InsertEmoticon, Mic } from "@mui/icons-material/";
 import { Link, useParams } from "react-router-dom";
 import { useStateValue } from "./StateProvider";
-import firebase from "firebase/compat/app";
 import { _fetch, getFileURL, dateToLocal } from "./global";
 import "./Chat.css";
 import { actionTypes } from "./reducer";
@@ -15,9 +14,7 @@ function Chat() {
     const [roomInfo, setRoomInfo] = useState({});
     const [{ user, messages, rooms }, dispatch] = useStateValue();
     const gotoLastMessageRef = React.useRef(null);
-    const [showReplyRef, setShowReplyRef] = useState(false)
-    const [linkedId, setLinkedId] = useState(null)
-    const [showReplyText, setShowReplyText] = useState(false)
+    const [linkedId, setLinkedId] = useState(null);
 
     React.useEffect(() => {
         gotoLastMessageRef.current.scrollIntoView({ behavior: "auto" });
@@ -42,9 +39,9 @@ function Chat() {
     const sendMessage = (e) => {
         e.preventDefault();
         console.debug("You typed >>>", input);
-        setShowReplyRef(false)
+
         const body = {
-            linkedId: linkedId?? null,
+            linkedId: linkedId ?? null,
             senderId: roomInfo.userChatRoomId,
             messageTag: { chatRoomId: roomId },
             body: input,
@@ -54,11 +51,14 @@ function Chat() {
         _fetch(user, "/api/Message", "POST", body)
             .then((response) => response.json())
             .then((message) => {
+                setLinkedId(null);
+
                 // update messages in the store
                 dispatch({
                     type: actionTypes.FETCH_MESSAGES,
                     messages: [...messages, message],
                 });
+
                 // update rooms in the store
                 _fetch(user, "/api/ChatRoom/GetAll")
                     .then((response) => response.json())
@@ -68,7 +68,7 @@ function Chat() {
                             rooms: _rooms,
                         });
                         setRoomInfo(
-                            _rooms.find((room) => room.id == parseInt(roomId))
+                            _rooms.find((room) => room.id === parseInt(roomId))
                         );
                     });
             });
@@ -115,17 +115,14 @@ function Chat() {
                         className={`chat__message ${
                             message.senderId === roomInfo.userChatRoomId &&
                             "chat__receiver"
-                        }`}
+                            }`}
                     >
                         <div className="chat__name">
                             <span>{message.senderName}</span>
                             {true ? (
                                 <ul>
                                     <li
-                                        onClick={() => {
-                                            setShowReplyRef(true);
-                                            setLinkedId(message.id);
-                                        }}
+                                        onClick={() => setLinkedId(message.id)}
                                     >
                                         reply
                                     </li>
@@ -145,9 +142,9 @@ function Chat() {
                                     }
                                 </span>
                                 {getMessageById(
-                                            messages,
-                                            message.linkedId
-                                        )?.file ? (
+                                    messages,
+                                    message.linkedId
+                                )?.file ? (
                                     <p className="chat__image">
                                         <Link
                                             className="chat__imageLink"
@@ -207,7 +204,7 @@ function Chat() {
             </div>
 
             <div>
-                {showReplyRef ? (
+                {linkedId ? (
                     <div className="chat__reply">
                         <p className="">
                             <span className="chat__refname">
@@ -217,7 +214,7 @@ function Chat() {
                         </p>
                         <p
                             className="chat_refClose"
-                            onClick={() => setShowReplyRef(false)}
+                            onClick={() => setLinkedId(null)}
                         >
                             X
                         </p>
@@ -245,9 +242,8 @@ function Chat() {
     );
 }
 
-function getMessageById(listOfMessages, id){
-    const message = listOfMessages.filter(message=>message.id==id)
-    console.log(message[0]?.file?.name)
+function getMessageById(listOfMessages, id) {
+    const message = listOfMessages.filter(message => message.id === id)
     return message[0]
 }
 
