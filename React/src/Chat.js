@@ -68,13 +68,7 @@ function Chat() {
                             type: actionTypes.SET_ROOMS,
                             rooms: _rooms,
                         });
-<<<<<<< HEAD
-                        setRoomInfo(
-                            _rooms.find((room) => room.id === parseInt(roomId))
-                        );
-=======
                         setRoomInfo(_rooms.find(room => room.id == parseInt(roomId)))
->>>>>>> parent of 965cb40 (Get linked message and display on the UI as a tagged messge)
                     });
                 });
 
@@ -120,7 +114,7 @@ function Chat() {
 
             <div className="chat__body">
                 {messages.map((message) => (
-                    <p
+                    <div
                         key={message.id}
                         className={`chat__message ${
                             message.senderId === roomInfo.userChatRoomId &&
@@ -128,49 +122,52 @@ function Chat() {
                         }`}
                     >
                         <span className="chat__name">{message.senderName}</span>
+                        {
+                            message.linkedId ? (
+                                <p className="chat__ref">
+                            <span className="chat__refname">
+                                {getMessageById(messages, message.linkedId)?.senderName}
+                            </span>
+                            {getMessageById(messages, message.linkedId)?.body}
+                        </p>
+                            ): ''
+                        }
+                            {message.file ? (
+                            <div className="chat__image">
+                              <div className="chat__imageLink">
+                                    <img
+                                        src={getFileURL(message.file.name)}
+                                        alt=""
+                                    />
+                            </div>
+                            </div>
+                        ) : (
+                            ""
+                        )}
+                        
                         {message.body}
                         <span className="chat__timestamp">
                             {dateToLocal(new Date(message.dateSent))}
                         </span>
-                    </p>
+                    </div>
                 ))}
                 <div ref={gotoLastMessageRef}></div>
             </div>
 
-            <div>
-                {linkedId ? (
-                    <div className="chat__reply">
-                        <p className="">
-                            <span className="chat__refname">
-                                {getMessageById(messages, linkedId).senderName}
-                            </span>
-                            {getMessageById(messages, linkedId).body}
-                        </p>
-                        <p
-                            className="chat_refClose"
-                            onClick={() => setLinkedId(null)}
-                        >
-                            X
-                        </p>
-                    </div>
-                ) : (
-                    ""
-                )}
-                <div className="chat__footer">
-                    <InsertEmoticon />
-                    <form>
-                        <input
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            type="text"
-                            placeholder="Type a message"
-                        />
-                        <button onClick={sendMessage} type="submit">
-                            Send a message
-                        </button>
-                    </form>
-                    <Mic />
-                </div>
+            <div className="chat__footer">
+                <InsertEmoticon />
+                <form>
+                    <input
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        type="text"
+                        placeholder="Type a message"
+                    />
+                    <button onClick={sendMessage} type="submit">
+                        Send a message
+                    </button>
+                </form>
+                <Mic />
             </div>
         </div>
     );

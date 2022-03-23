@@ -65,16 +65,21 @@
     top: -15px;
     font-weight: 800;
     font-size: xx-small;
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
 }
 
-.chat__name .chat_carretParent {
-    position: relative;
-    /* display: none; */
+.chat__image .chat__imageLink{
+    width: 400px;
 }
-.chat__message:hover > .chat_carretParent {
+.chat__imageLink > img{
+    width: inherit;
+}
+.chat__ref {
+    background-color: lightgray;
+    border-radius: 5px;
+    padding: 1px 2px;
+    border-left: 3px solid darkcyan;
+}
+.chat__refname {
     display: block;
 }
 .chat_carretParent .carret {
