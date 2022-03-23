@@ -126,10 +126,9 @@ function Chat() {
                     >
                         <div className="chat__name">
                             <span>{message.senderName}</span>
-                            {true ? (
-                                <ul>
-                                    <li
-                                        onClick={() => setLinkedId(message.id)}
+                            <div className="chat_carretParent">
+                                <CarretDownIcon
+                                    onClick={() => setShowMore(true)}
                                     >
                                         reply
                                     </li>
@@ -138,7 +137,7 @@ function Chat() {
                                 ""
                             )}
                         </div>
-                        {message.linkedId ? (
+                        {messages.linkedId ? (
                             <div className="chat__ref">
                                 <span className="chat__refname">
                                     {
@@ -148,29 +147,20 @@ function Chat() {
                                         )?.senderName
                                     }
                                 </span>
-                                {getMessageById(
-                                    messages,
-                                    message.linkedId
-                                )?.file ? (
+                                {getMessageById(messages, message.linkedId)
+                                    ?.file ? (
                                     <p className="chat__image">
-                                        <Link
-                                            className="chat__imageLink"
-                                            to={getMessageById(
-                                                messages,
-                                                message.linkedId
-                                            )?.file.name}
-                                            target="_blank"
-                                        >
+                                      
                                             <img
                                                 src={getFileURL(
                                                     getMessageById(
                                                         messages,
                                                         message.linkedId
-                                                    )?.file.name
+                                                    ).file.name
                                                 )}
                                                 alt=""
                                             />
-                                        </Link>
+                                        
                                     </p>
                                 ) : (
                                     ""
@@ -215,9 +205,9 @@ function Chat() {
                     <div className="chat__reply">
                         <p className="">
                             <span className="chat__refname">
-                                {getMessageById(messages, linkedId)?.senderName}
+                                {getMessageById(messages, linkedId).senderName}
                             </span>
-                            {getMessageById(messages, linkedId)?.body}
+                            {getMessageById(messages, linkedId).body}
                         </p>
                         <p
                             className="chat_refClose"
