@@ -92,11 +92,14 @@
     position: absolute;
     display: none;
     left: -32px;
-    top: 15px;
+    /* top: 5px; */
     width: 25px;
     transition: all 1s linear;
     cursor: pointer;
     background: linear-gradient(15deg,rgba(11,20,26,0),rgba(11,20,26,0) 45%,rgba(168, 181, 190, 0.12) 70%,rgba(190, 202, 211, 0.33));
+}
+.chat_carretParent .carret svg {
+    fill: rgb(53, 51, 51);
 }
 .chat__message:hover .chat_carretParent .carret{
     display: block;

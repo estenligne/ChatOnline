@@ -15,6 +15,7 @@ function Chat() {
     const [{ user, messages, rooms }, dispatch] = useStateValue();
     const gotoLastMessageRef = React.useRef(null);
     const [linkedId, setLinkedId] = useState(null);
+    
 
     React.useEffect(() => {
         gotoLastMessageRef.current.scrollIntoView({ behavior: "auto" });
@@ -123,24 +124,8 @@ function Chat() {
                         <div className="chat__name">
                             <span>{message.senderName}</span>
                             <div className="chat_carretParent">
-                                <CarretDownIcon>
-                                    <div className="message__options">
-                                        <div className="list__reply">
-                                            <ul className="options">
-                                                <li
-                                                    onClick={() =>
-                                                        setLinkedId(
-                                                            message.id
-                                                        )
-                                                    }
-                                                >
-                                                    reply
-                                                </li>
-                                                {/* <li>Delete</li> */}
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </CarretDownIcon>
+                                <CarretDownIcon setLinkedId={setLinkedId} message={message} />
+                                  
                             </div>
                         </div>
                         {message.linkedId ? (
@@ -217,10 +202,10 @@ function Chat() {
     );
 }
 
-function CarretDownIcon({children, showMore, ...props}) {
-    const [showChildren, setShowChildren] = useState(showMore)
+function CarretDownIcon({message, setLinkedId, ...props}) {
+    const [showChildren, setShowChildren] = useState(false)
     return (
-        <div className="carret" {...props}  >
+        <div className="carret" {...props}  onClick={()=>setShowChildren(true)} >
             <div className="">
                 <span
                     data-testid="down-context"
@@ -235,7 +220,28 @@ function CarretDownIcon({children, showMore, ...props}) {
                     </svg>
                 </span>
             </div>
-            {true ? children : ""}
+            
+                  
+                  <div className="message__options">
+                     {showChildren ? (              
+                  <div className="list__reply">
+                      <ul className="options">
+                          <li
+                              onClick={() =>
+                                 { setLinkedId(
+                                      message.id
+                                  )
+                                  setShowChildren(false)
+                              }
+                              }
+                          >
+                              reply
+                          </li>
+                          <li>Delete</li>
+                      </ul>
+                  </div>
+            ) : ""}
+              </div>
         </div>
     );
   }
