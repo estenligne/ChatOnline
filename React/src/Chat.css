@@ -119,6 +119,7 @@
     width: 100%;
     cursor: pointer;
 }
+<<<<<<< HEAD
 .message__options .options li:hover {
     background: #faf6f6;
 }
@@ -164,6 +165,9 @@
     height: fit-content;
     width: fit-content;    
 }
+=======
+
+>>>>>>> parent of 965cb40 (Get linked message and display on the UI as a tagged messge)
 .chat__footer {
     display: flex;
     justify-content: space-between;

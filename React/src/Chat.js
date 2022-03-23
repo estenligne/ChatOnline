@@ -68,11 +68,15 @@ function Chat() {
                             type: actionTypes.SET_ROOMS,
                             rooms: _rooms,
                         });
+<<<<<<< HEAD
                         setRoomInfo(
                             _rooms.find((room) => room.id === parseInt(roomId))
                         );
+=======
+                        setRoomInfo(_rooms.find(room => room.id == parseInt(roomId)))
+>>>>>>> parent of 965cb40 (Get linked message and display on the UI as a tagged messge)
                     });
-            });
+                });
 
         console.log("after sent, ROOMS", rooms);
         setInput("");
@@ -116,13 +120,14 @@ function Chat() {
 
             <div className="chat__body">
                 {messages.map((message) => (
-                    <div
+                    <p
                         key={message.id}
                         className={`chat__message ${
                             message.senderId === roomInfo.userChatRoomId &&
                             "chat__receiver"
                         }`}
                     >
+<<<<<<< HEAD
                         <div className="chat__name">
                             <span>{message.senderName}</span>
                             <div className="chat_carretParent">
@@ -195,13 +200,15 @@ function Chat() {
                             ""
                         )}
 
+=======
+                        <span className="chat__name">{message.senderName}</span>
+>>>>>>> parent of 965cb40 (Get linked message and display on the UI as a tagged messge)
                         {message.body}
                         <span className="chat__timestamp">
                             {dateToLocal(new Date(message.dateSent))}
                         </span>
-                    </div>
+                    </p>
                 ))}
-
                 <div ref={gotoLastMessageRef}></div>
             </div>
 
@@ -266,9 +273,12 @@ function CarretDownIcon({children, showMore, ...props}) {
     );
   }
 
+<<<<<<< HEAD
 function getMessageById(listOfMessages, id) {
     const message = listOfMessages.filter(message => message.id === id)
     return message[0]
 }
 
+=======
+>>>>>>> parent of 965cb40 (Get linked message and display on the UI as a tagged messge)
 export default Chat;
