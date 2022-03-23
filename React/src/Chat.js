@@ -121,30 +121,58 @@ function Chat() {
                             "chat__receiver"
                         }`}
                     >
-                        <span className="chat__name">{message.senderName}</span>
-                        {
-                            message.linkedId ? (
-                                <p className="chat__ref">
-                            <span className="chat__refname">
-                                {getMessageById(messages, message.linkedId)?.senderName}
-                            </span>
-                            {getMessageById(messages, message.linkedId)?.body}
-                        </p>
-                            ): ''
-                        }
-                            {message.file ? (
+                        <div className="chat__name">
+                            <span>{message.senderName}</span>
+                            <div className="chat_carretParent">
+                                <CarretDownIcon>
+                                    {/* <div className="message__options">
+                                       <div className="list__reply">
+                                       {true ? (
+                                            <ul className="options">
+                                                <li
+                                                    onClick={()=>setLinkedId(message.linkedId)}
+                                                >reply</li>
+                                                <li>Delete</li>
+                                            </ul>
+                                        ) : (
+                                            ""
+                                        )}
+                                       </div>
+                                    </div> */}
+                                </CarretDownIcon>
+                            </div>
+                        </div>
+                        {message.linkedId ? (
+                            <p className="chat__ref">
+                                <span className="chat__refname">
+                                    {
+                                        getMessageById(
+                                            messages,
+                                            message.linkedId
+                                        )?.senderName
+                                    }
+                                </span>
+                                {
+                                    getMessageById(messages, message.linkedId)
+                                        ?.body
+                                }
+                            </p>
+                        ) : (
+                            ""
+                        )}
+                        {message.file ? (
                             <div className="chat__image">
-                              <div className="chat__imageLink">
+                                <div className="chat__imageLink">
                                     <img
                                         src={getFileURL(message.file.name)}
                                         alt=""
                                     />
-                            </div>
+                                </div>
                             </div>
                         ) : (
                             ""
                         )}
-                        
+
                         {message.body}
                         <span className="chat__timestamp">
                             {dateToLocal(new Date(message.dateSent))}
@@ -152,8 +180,28 @@ function Chat() {
                     </div>
                 ))}
                 <div ref={gotoLastMessageRef}></div>
+                
             </div>
-
+            <div>
+            {linkedId ? (
+                    <div className="chat__reply">
+                        <p className="">
+                            <span className="chat__refname">
+                                {getMessageById(messages, linkedId).senderName}
+                            </span>
+                            {getMessageById(messages, linkedId).body}
+                        </p>
+                        <p
+                            className="chat_refClose"
+                            onClick={() => setLinkedId(null)}
+                        >
+                            X
+                        </p>
+                    </div>
+                ) : (
+                    ""
+                    )}
+                    </div>
             <div className="chat__footer">
                 <InsertEmoticon />
                 <form>
@@ -172,10 +220,11 @@ function Chat() {
         </div>
     );
 }
+
 function CarretDownIcon({children, showMore, ...props}) {
     const [showChildren, setShowChildren] = useState(showMore)
     return (
-        <div className="carret" {...props}  onClick={() => setShowChildren(true)}>
+        <div className="carret" {...props}  >
             <div className="">
                 <span
                     data-testid="down-context"
@@ -190,7 +239,7 @@ function CarretDownIcon({children, showMore, ...props}) {
                     </svg>
                 </span>
             </div>
-            {showChildren ? children : ""}
+            {true ? children : ""}
         </div>
     );
   }
