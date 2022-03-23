@@ -127,82 +127,7 @@ function Chat() {
                             "chat__receiver"
                         }`}
                     >
-<<<<<<< HEAD
-                        <div className="chat__name">
-                            <span>{message.senderName}</span>
-                            <div className="chat_carretParent">
-                                <CarretDownIcon
-                                    showMore={showMore}
-                                >
-                                    <div className="message__options">
-                                        {/* <div className="overlay"></div> */}
-                                        <ul className="options">
-                                            <li
-                                                onClick={() =>
-                                                    {setLinkedId(message.id)
-                                                    setShowMore(false)}
-                                                }
-                                            >
-                                                Reply
-                                            </li>
-                                            <li>Delete</li>
-                                        </ul>
-                                    </div>
-                                </CarretDownIcon>
-                            </div>
-                        </div>
-                        {messages.linkedId ? (
-                            <div className="chat__ref">
-                                <span className="chat__refname">
-                                    {
-                                        getMessageById(
-                                            messages,
-                                            message.linkedId
-                                        )?.senderName
-                                    }
-                                </span>
-                                {getMessageById(messages, message.linkedId)
-                                    ?.file ? (
-                                    <div className="chat__image">
-                                        <div className="chat__imageLink">
-                                            <img
-                                                src={getFileURL(
-                                                    getMessageById(
-                                                        messages,
-                                                        message.linkedId
-                                                    )?.file.name
-                                                )}
-                                                alt=""
-                                            />
-                                        </div>
-                                    </div>
-                                ) : (
-                                    ""
-                                )}
-                                {
-                                    getMessageById(messages, message.linkedId)
-                                        ?.body
-                                }
-                            </div>
-                        ) : (
-                            ""
-                        )}
-                        {message.file ? (
-                            <div className="chat__image">
-                              <div className="chat__imageLink">
-                                <img
-                                    src={getFileURL(message.file.name)}
-                                    alt=""
-                                />
-                            </div>
-                            </div>
-                        ) : (
-                            ""
-                        )}
-
-=======
                         <span className="chat__name">{message.senderName}</span>
->>>>>>> parent of 965cb40 (Get linked message and display on the UI as a tagged messge)
                         {message.body}
                         <span className="chat__timestamp">
                             {dateToLocal(new Date(message.dateSent))}
@@ -273,12 +198,9 @@ function CarretDownIcon({children, showMore, ...props}) {
     );
   }
 
-<<<<<<< HEAD
 function getMessageById(listOfMessages, id) {
     const message = listOfMessages.filter(message => message.id === id)
     return message[0]
 }
 
-=======
->>>>>>> parent of 965cb40 (Get linked message and display on the UI as a tagged messge)
 export default Chat;
