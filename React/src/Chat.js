@@ -149,8 +149,8 @@ function Chat() {
                                 </span>
                                 {getMessageById(messages, message.linkedId)
                                     ?.file ? (
-                                    <p className="chat__image">
-                                      
+                                    <div className="chat__image">
+                                        <div className="chat__imageLink">
                                             <img
                                                 src={getFileURL(
                                                     getMessageById(
@@ -174,18 +174,14 @@ function Chat() {
                             ""
                         )}
                         {message.file ? (
-                            <p className="chat__image">
-                                <Link
-                                    className="chat__imageLink"
-                                    to={message.file.name}
-                                    target="_blank"
-                                >
+                            <div className="chat__image">
+                              <div className="chat__imageLink">
                                     <img
                                         src={getFileURL(message.file.name)}
                                         alt=""
                                     />
-                                </Link>
-                            </p>
+                            </div>
+                            </div>
                         ) : (
                             ""
                         )}
