@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Avatar, IconButton } from "@mui/material";
-import { SearchOutlined, AttachFile, MoreVert } from "@mui/icons-material/";
+import { SearchOutlined, AttachFile, MoreVert, Close } from "@mui/icons-material/";
 import { InsertEmoticon, Mic } from "@mui/icons-material/";
 import { Link, useParams } from "react-router-dom";
 import { useStateValue } from "./StateProvider";
@@ -15,7 +15,6 @@ function Chat() {
     const [{ user, messages, rooms }, dispatch] = useStateValue();
     const gotoLastMessageRef = React.useRef(null);
     const [linkedId, setLinkedId] = useState(null);
-    const [showMore, setShowMore] = React.useState(false)
 
     React.useEffect(() => {
         gotoLastMessageRef.current.scrollIntoView({ behavior: "auto" });
@@ -125,20 +124,22 @@ function Chat() {
                             <span>{message.senderName}</span>
                             <div className="chat_carretParent">
                                 <CarretDownIcon>
-                                    {/* <div className="message__options">
-                                       <div className="list__reply">
-                                       {true ? (
+                                    <div className="message__options">
+                                        <div className="list__reply">
                                             <ul className="options">
                                                 <li
-                                                    onClick={()=>setLinkedId(message.linkedId)}
-                                                >reply</li>
-                                                <li>Delete</li>
+                                                    onClick={() =>
+                                                        setLinkedId(
+                                                            message.id
+                                                        )
+                                                    }
+                                                >
+                                                    reply
+                                                </li>
+                                                {/* <li>Delete</li> */}
                                             </ul>
-                                        ) : (
-                                            ""
-                                        )}
-                                       </div>
-                                    </div> */}
+                                        </div>
+                                    </div>
                                 </CarretDownIcon>
                             </div>
                         </div>
@@ -180,10 +181,9 @@ function Chat() {
                     </div>
                 ))}
                 <div ref={gotoLastMessageRef}></div>
-                
             </div>
             <div>
-            {linkedId ? (
+                {linkedId ? (
                     <div className="chat__reply">
                         <p className="">
                             <span className="chat__refname">
@@ -191,17 +191,13 @@ function Chat() {
                             </span>
                             {getMessageById(messages, linkedId).body}
                         </p>
-                        <p
-                            className="chat_refClose"
-                            onClick={() => setLinkedId(null)}
-                        >
-                            X
-                        </p>
+
+                        <Close className="" onClick={() => setLinkedId(null)} />
                     </div>
                 ) : (
                     ""
-                    )}
-                    </div>
+                )}
+            </div>
             <div className="chat__footer">
                 <InsertEmoticon />
                 <form>
