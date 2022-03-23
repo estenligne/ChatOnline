@@ -60,6 +60,8 @@
     padding-left: 0;
     width: 100%;
     box-sizing: border-box;
+    position: relative;
+    z-index: 99;
 }
 
 .sidebar__headerRight .overlay {
@@ -89,6 +91,6 @@
 }
 .sidebar__chats {
     flex: 1;
-    overflow: scroll;
+    overflow: auto;
     background-color: white;
 }

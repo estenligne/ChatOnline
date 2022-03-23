@@ -15,6 +15,7 @@ function Chat() {
     const [{ user, messages, rooms }, dispatch] = useStateValue();
     const gotoLastMessageRef = React.useRef(null);
     const [linkedId, setLinkedId] = useState(null);
+    const [showMore, setShowMore] = React.useState(false)
 
     React.useEffect(() => {
         gotoLastMessageRef.current.scrollIntoView({ behavior: "auto" });
@@ -76,10 +77,10 @@ function Chat() {
         console.log("after sent, ROOMS", rooms);
         setInput("");
     };
-    const fileChangeHandler = (event) => {
+    /* const fileChangeHandler = (event) => {
 		setSelectedFile(event.target.files[0]);
 		setIsFilePicked(true);
-	};
+	}; */
 
     return (
         <div className="chat">
@@ -116,26 +117,34 @@ function Chat() {
             <div className="chat__body">
                 {messages.map((message) => (
                     <div
-                        // onMouseEnter={() => setShowReplyText(true)}
-                        // onMouseLeave={() => setShowReplyText(false)}
                         key={message.id}
                         className={`chat__message ${
                             message.senderId === roomInfo.userChatRoomId &&
                             "chat__receiver"
-                            }`}
+                        }`}
                     >
                         <div className="chat__name">
                             <span>{message.senderName}</span>
                             <div className="chat_carretParent">
                                 <CarretDownIcon
-                                    onClick={() => setShowMore(true)}
-                                    >
-                                        reply
-                                    </li>
-                                </ul>
-                            ) : (
-                                ""
-                            )}
+                                    showMore={showMore}
+                                >
+                                    <div className="message__options">
+                                        {/* <div className="overlay"></div> */}
+                                        <ul className="options">
+                                            <li
+                                                onClick={() =>
+                                                    {setLinkedId(message.id)
+                                                    setShowMore(false)}
+                                                }
+                                            >
+                                                Reply
+                                            </li>
+                                            <li>Delete</li>
+                                        </ul>
+                                    </div>
+                                </CarretDownIcon>
+                            </div>
                         </div>
                         {messages.linkedId ? (
                             <div className="chat__ref">
@@ -156,12 +165,12 @@ function Chat() {
                                                     getMessageById(
                                                         messages,
                                                         message.linkedId
-                                                    ).file.name
+                                                    )?.file.name
                                                 )}
                                                 alt=""
                                             />
-                                        
-                                    </p>
+                                        </div>
+                                    </div>
                                 ) : (
                                     ""
                                 )}
@@ -176,10 +185,10 @@ function Chat() {
                         {message.file ? (
                             <div className="chat__image">
                               <div className="chat__imageLink">
-                                    <img
-                                        src={getFileURL(message.file.name)}
-                                        alt=""
-                                    />
+                                <img
+                                    src={getFileURL(message.file.name)}
+                                    alt=""
+                                />
                             </div>
                             </div>
                         ) : (
@@ -234,6 +243,28 @@ function Chat() {
         </div>
     );
 }
+function CarretDownIcon({children, showMore, ...props}) {
+    const [showChildren, setShowChildren] = useState(showMore)
+    return (
+        <div className="carret" {...props}  onClick={() => setShowChildren(true)}>
+            <div className="">
+                <span
+                    data-testid="down-context"
+                    data-icon="down-context"
+                    className=""
+                >
+                    <svg viewBox="0 0 18 18" width="18" height="18">
+                        <path
+                            fill="currentColor"
+                            d="M3.3 4.6 9 10.3l5.7-5.7 1.6 1.6L9 13.4 1.7 6.2l1.6-1.6z"
+                        ></path>
+                    </svg>
+                </span>
+            </div>
+            {showChildren ? children : ""}
+        </div>
+    );
+  }
 
 function getMessageById(listOfMessages, id) {
     const message = listOfMessages.filter(message => message.id === id)
