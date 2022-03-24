@@ -19,7 +19,7 @@ function Chat() {
 
     React.useEffect(() => {
         gotoLastMessageRef.current.scrollIntoView({ behavior: "auto" });
-    });
+    }, [roomInfo]);
     useEffect(() => {
         if (roomId) {
             _fetch(user, "/api/ChatRoom/GetInfo?id=" + roomId)
@@ -205,7 +205,7 @@ function Chat() {
 function CarretDownIcon({message, setLinkedId, ...props}) {
     const [showChildren, setShowChildren] = useState(false)
     return (
-        <div className="carret" {...props}  onClick={()=>setShowChildren(true)} >
+        <div className="carret" {...props}  onClick={()=>setShowChildren(true)}  onMouseLeave={()=>setShowChildren(false)} >
             <div className="">
                 <span
                     data-testid="down-context"

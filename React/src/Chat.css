@@ -77,13 +77,15 @@
     width: inherit;
 }
 .chat__ref {
-    background-color: lightgray;
+    background-color: rgb(240, 232, 232);
     border-radius: 5px;
     padding: 1px 2px;
     border-left: 3px solid darkcyan;
 }
 .chat__refname {
     display: block;
+    font-weight: 800;
+    font-size: xx-small;
 }
 .chat_carretParent {
     position: relative;
