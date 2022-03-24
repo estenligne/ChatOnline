@@ -127,6 +127,7 @@
     position: absolute;
     left: -60px;
     top: -15px;
+    z-index: 100;
 }
 
 .carret .message__options  .list__reply > ul {
