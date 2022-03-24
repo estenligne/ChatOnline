@@ -6,6 +6,18 @@ import './SidebarChat.css';
 
 function SidebarChat({ room, addNewChat }) {
 
+    let checkmark = "";
+
+    if (room) {
+        if (room.latestMessage.notReceivedCount > 0) {
+            checkmark = "✔";
+        }
+        else if (room.latestMessage.notReadCount > 0) {
+            checkmark = "✔✔";
+        }
+        else checkmark = "✔✔✔";
+    }
+
     const createChat = () => {
         alert("Not yet implemented!");
     };
@@ -16,8 +28,13 @@ function SidebarChat({ room, addNewChat }) {
                 <Avatar src={getFileURL(room.photoFileName)} />
 
                 <div className="sidebarChat__info">
-                    <h2>{room.name}</h2>
-                    <p>{room.latestMessage.shortBody}</p>
+                    <div className='chat__messageInfo'>
+                        <h2>{room.name}</h2>
+                        <p>{room.latestMessage.shortBody}</p>
+                    </div>
+                    <div className='chat__readInfo'>
+                        {checkmark}
+                    </div>
                 </div>
             </div>
         </Link>
@@ -25,7 +42,7 @@ function SidebarChat({ room, addNewChat }) {
         <div onClick={createChat} className="sidebarChat">
             <h2>Add New Chat</h2>
         </div>
-    )
+    );
 }
 
 export default SidebarChat;

@@ -43,10 +43,54 @@
     align-items: center;
     justify-content: space-between;
     min-width: 10vw;
+    position: relative;
+}
+.sidebar__headerRight .sidebar__headerOptions {
+    position: absolute;
+    right: 20px;
+    top: 40px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
+    border-radius: 20px;
+    width: fit-content;
+    box-sizing: border-box;
+}
+.sidebar__headerRight .sidebar__headerOptions .options {
+    list-style-type: none;
+    background: white;
+    padding-left: 0;
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 99;
 }
 
+.sidebar__headerRight .overlay {
+    position: fixed;
+    cursor: default;
+    width: 100%;
+    height: 100vh;
+    top: 0;
+    left: 0;
+}
+
+.sidebar__headerRight .MuiSvgIcon-root {
+    z-index: 99;
+}
+
+.sidebar__headerRight .options li {
+    text-align: left;
+    font-size: medium;
+    /* border-bottom: 1px solid lightgray; */
+    padding: 15px 20px;
+    box-sizing: border-box;
+    width: 100%;
+    cursor: pointer;
+}
+.sidebar__headerRight .options li:hover {
+    background: #faf6f6;
+}
 .sidebar__chats {
     flex: 1;
-    overflow: scroll;
+    overflow: auto;
     background-color: white;
 }

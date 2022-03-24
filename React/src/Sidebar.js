@@ -14,6 +14,7 @@ import "./Sidebar.css";
 import { actionTypes } from "./reducer";
 
 function Sidebar() {
+    const [showMore, setShowMore] = React.useState(false)
     const [{ user, rooms }, dispatch] = useStateValue();
     console.log(rooms);
     useEffect(() => {
@@ -36,8 +37,28 @@ function Sidebar() {
                     <IconButton>
                         <ChatIcon />
                     </IconButton>
-                    <IconButton>
+                    <IconButton  onClick={() => setShowMore(!showMore)}>
                         <MoreVertIcon />
+                        {showMore ? (
+                            <div className="sidebar__headerOptions">
+                                <div className="overlay" onClick={() => setShowMore(false)} ></div>
+                                <ul className="options">
+                                    <li>Settings</li>
+                                    <li
+                                        onClick={() => {
+                                            window.localStorage.removeItem(
+                                                "userData"
+                                            );
+                                            window.location.reload();
+                                        }}
+                                    >
+                                        Logout
+                                    </li>
+                                </ul>
+                            </div>
+                        ) : (
+                            ""
+                        )}
                     </IconButton>
                 </div>
             </div>
