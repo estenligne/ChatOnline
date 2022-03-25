@@ -14,16 +14,70 @@ import "./Sidebar.css";
 import { actionTypes } from "./reducer";
 
 function Sidebar() {
-    const [showMore, setShowMore] = React.useState(false)
+    const [showMore, setShowMore] = useState(false)
     const [{ user, rooms }, dispatch] = useStateValue();
-    console.log(rooms);
-    useEffect(() => {
+
+    const fetchRooms = () => {
         _fetch(user, "/api/ChatRoom/GetAll")
             .then((response) => response.json())
             .then((rooms) => {
                 dispatch({ type: actionTypes.SET_ROOMS, rooms });
             });
-    }, [user]);
+    }
+    useEffect(fetchRooms, [user, dispatch]);
+
+    const createNewDiscussion = () => {
+        setShowMore(false);
+        const contactNumber = prompt("Enter account number of contact");
+        if (contactNumber) {
+            const url = `/api/ChatRoom/CreatePrivate?userId=${contactNumber}`;
+            _fetch(user, url, "POST")
+                .then((response) => response.json())
+                .then((response) => {
+                    console.info("Private discussion created", response);
+                    window.alert("Success! Private discussion created.");
+                    fetchRooms();
+                })
+                .catch((err) => console.error(err));
+        }
+    };
+
+    const createNewGroup = async () => {
+        setShowMore(false)
+        const groupName = prompt("Enter name of new group");
+        if (groupName) {
+            const body = {
+                groupName: groupName,
+                joinToken: groupName,
+            }
+            _fetch(user, "/api/GroupProfile", "POST", body)
+                .then((response) => response.json())
+                .then((response) => {
+                    console.info("New group created", response);
+                    const groupToken = response.chatRoomId + ": " + response.chatRoom.groupProfile.joinToken;
+                    window.alert(`Success! The token to join is "${groupToken}"`);
+                    fetchRooms();
+                })
+                .catch((err) => console.error(err));
+        }
+    };
+
+    const joinNewGroup = async () => {
+        setShowMore(false)
+        const groupToken = prompt("Enter token to join a group");
+        if (groupToken) {
+            const [groupId, joinToken] = groupToken.split(': ');
+            const url = `/api/GroupProfile/JoinGroup?id=${groupId}&joinToken=${encodeURIComponent(joinToken)}`;
+            _fetch(user, url, "POST")
+                .then((response) => response.json())
+                .then((response) => {
+                    console.info("Successfully joined group", response);
+                    window.alert("Success! You have joined the group.");
+                    fetchRooms();
+                })
+                .catch((err) => console.error(err));
+        }
+    };
 
     return (
         <div className="sidebar">
@@ -37,13 +91,15 @@ function Sidebar() {
                     <IconButton>
                         <ChatIcon />
                     </IconButton>
-                    <IconButton  onClick={() => setShowMore(!showMore)}>
+                    <IconButton onClick={() => setShowMore(!showMore)}>
                         <MoreVertIcon />
                         {showMore ? (
                             <div className="sidebar__headerOptions">
                                 <div className="overlay" onClick={() => setShowMore(false)} ></div>
                                 <ul className="options">
-                                    <li>Settings</li>
+                                    <li onClick={createNewDiscussion}>New discussion</li>
+                                    <li onClick={createNewGroup}>New group</li>
+                                    <li onClick={joinNewGroup}>Join group</li>
                                     <li
                                         onClick={() => {
                                             window.localStorage.removeItem(
