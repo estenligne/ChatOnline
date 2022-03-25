@@ -58,7 +58,7 @@
     list-style-type: none;
     background: white;
     padding-left: 0;
-    width: 100%;
+    width: max-content;
     box-sizing: border-box;
     position: relative;
     z-index: 99;
