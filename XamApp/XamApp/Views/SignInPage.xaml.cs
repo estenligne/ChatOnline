@@ -1,13 +1,12 @@
-﻿using System;
+﻿using Global.Models;
+using System;
+using System.Globalization;
 using System.Net;
-using System.Threading.Tasks;
-using Global.Enums;
-using Global.Models;
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
-using XamApp.ViewModels;
 using XamApp.Models;
 using XamApp.Services;
+using XamApp.ViewModels;
+using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
 
 namespace XamApp.Views
 {
@@ -35,6 +34,14 @@ namespace XamApp.Views
         {
             IsBusy = busy;
             vm.IsBusy = busy;
+        }
+
+        public static string GetURLtoPutDeviceUsed()
+        {
+            string url = "/api/DeviceUsed?platform=" + Device.RuntimePlatform;
+            url += "&language=" + CultureInfo.CurrentUICulture.Name;
+            url += "&timezone=" + TimeZoneInfo.Local.StandardName;
+            return url;
         }
 
         private async void OnSignInClicked(object sender, EventArgs e)
@@ -67,7 +74,7 @@ namespace XamApp.Views
                     };
                     HTTPClient.SetAuthorization(null, user.Authorization);
 
-                    var url = "/api/DeviceUsed?devicePlatform=" + App.DevicePlatform();
+                    string url = GetURLtoPutDeviceUsed();
                     response = await HTTPClient.PutAsync<string>(null, url, null);
 
                     if (response.IsSuccessStatusCode)

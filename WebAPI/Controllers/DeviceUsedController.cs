@@ -30,7 +30,7 @@ namespace WebAPI.Controllers
         [ProducesResponseType(typeof(DeviceUsedDTO), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [HttpPut]
-        public async Task<ActionResult<DeviceUsedDTO>> PutDeviceUsed([FromQuery] DevicePlatformEnum devicePlatform)
+        public async Task<ActionResult<DeviceUsedDTO>> PutDeviceUsed(DevicePlatformEnum platform, string language, string timezone)
         {
             try
             {
@@ -47,14 +47,14 @@ namespace WebAPI.Controllers
                 var deviceUsed = await dbc.DevicesUsed
                                         .Where(x =>
                                             x.UserProfileId == userProfile.Id &&
-                                            x.DevicePlatform == devicePlatform)
+                                            x.Platform == platform)
                                         .FirstOrDefaultAsync();
                 if (deviceUsed == null)
                 {
                     deviceUsed = new DeviceUsed
                     {
                         UserProfileId = userProfile.Id,
-                        DevicePlatform = devicePlatform,
+                        Platform = platform,
                         DateCreated = utcNow
                     };
                     dbc.DevicesUsed.Add(deviceUsed);
@@ -63,6 +63,8 @@ namespace WebAPI.Controllers
                 {
                     deviceUsed.DateDeleted = null;
                 }
+                deviceUsed.Language = language;
+                deviceUsed.Timezone = timezone;
                 deviceUsed.DateUpdated = utcNow;
                 dbc.SaveChanges();
 

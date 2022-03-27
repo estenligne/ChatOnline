@@ -39,7 +39,12 @@ function Login() {
                 let user = {
                     account: result
                 };
-                _fetch(user, "/api/DeviceUsed?devicePlatform=WebApp", "PUT")
+
+                let args = "?platform=WebApp";
+                args += "&language=" + window.navigator.language;
+                args += "&timezone=" + Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+                _fetch(user, "/api/DeviceUsed" + args, "PUT")
                     .then(response => response.json())
                     .then(deviceUsed => {
                         user = {

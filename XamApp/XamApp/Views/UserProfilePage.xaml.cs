@@ -74,7 +74,7 @@ namespace XamApp.Views
 
         private async Task GotoRoomsPage()
         {
-            var url = "/api/DeviceUsed?devicePlatform=" + App.DevicePlatform();
+            string url = SignInPage.GetURLtoPutDeviceUsed();
             var response = await HTTPClient.PutAsync<string>(null, url, null);
 
             if (response.IsSuccessStatusCode)

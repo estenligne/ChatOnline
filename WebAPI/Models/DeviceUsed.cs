@@ -7,7 +7,7 @@ using Global.Enums;
 namespace WebAPI.Models
 {
     [Table(nameof(ApplicationDbContext.DevicesUsed))]
-    [Index(nameof(UserProfileId), nameof(DevicePlatform), IsUnique = true)]
+    [Index(nameof(UserProfileId), nameof(Platform), IsUnique = true)]
     public class DeviceUsed
     {
         public long Id { get; set; }
@@ -15,7 +15,13 @@ namespace WebAPI.Models
         public long UserProfileId { get; set; }
         public virtual UserProfile UserProfile { get; set; }
 
-        public DevicePlatformEnum DevicePlatform { get; set; }
+        public DevicePlatformEnum Platform { get; set; }
+
+        [MaxLength(63)]
+        public string Language { get; set; }
+
+        [MaxLength(63)]
+        public string Timezone { get; set; }
 
         public DateTimeOffset DateCreated { get; set; }
         public DateTimeOffset DateUpdated { get; set; }

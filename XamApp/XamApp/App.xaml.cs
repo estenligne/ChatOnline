@@ -153,14 +153,5 @@ namespace XamApp
         {
             DependencyService.Get<INotifications>().Toast(message, takeLong);
         }
-
-        public static DevicePlatformEnum DevicePlatform()
-        {
-            var platform =
-                Device.RuntimePlatform == Device.Android ? DevicePlatformEnum.Android :
-                Device.RuntimePlatform == Device.iOS ? DevicePlatformEnum.AppleiOS :
-                DevicePlatformEnum.Unknown;
-            return platform;
-        }
     }
 }

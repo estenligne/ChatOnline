@@ -4,8 +4,8 @@
     {
         Unknown = 0,
         Android = 1,
-        AppleiOS = 2,
-        Desktop = 3,
-        WebApp = 4,
+        iOS = 2,
+        WebApp = 3,
+        Desktop = 4,
     }
 }
