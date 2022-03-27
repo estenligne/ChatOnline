@@ -1,84 +1,48 @@
-import React from "react";
+import React, { useState } from "react";
+import { getFileURL, dateToLocal } from "./global";
 
-function Message({...props}) {
-    const {
-        messages,
-    message,
-    roomInfo,
-    getMessageById,
-    setLinkedId,
-    Link,
-    getFileURL,
-    dateToLocal,
-    } = props
-
-    const [showReply, setShowReply] = React.useState(false)
+function Message({ messages, message, roomInfo, setLinkedId }) {
     return (
         <div
-        onMouseEnter={()=>setShowReply(true)}
-        onMouseLeave={()=>setShowReply(false)}
             key={message.id}
-            className={`chat__message ${
-                message.senderId === roomInfo.userChatRoomId && "chat__receiver"
-            }`}
+            className={`chat__message ${message.senderId === roomInfo.userChatRoomId &&
+                "chat__receiver"
+                }`}
         >
             <div className="chat__name">
                 <span>{message.senderName}</span>
-                {showReply ? (
-                    <ul>
-                        <li onClick={() => setLinkedId(message.id)}>reply</li>
-                    </ul>
-                ) : (
-                    ""
-                )}
-            </div>
-            {message.linkedId ? (
-                <div className="chat__ref">
-                    <span className="chat__refname">
-                        {getMessageById(messages, message.linkedId)?.senderName}
-                    </span>
-                    {getMessageById(messages, message.linkedId)?.file ? (
-                        <p className="chat__image">
-                            <Link
-                                className="chat__imageLink"
-                                to={
-                                    getMessageById(messages, message.linkedId)
-                                        ?.file.name
-                                }
-                                target="_blank"
-                            >
-                                <img
-                                    src={getFileURL(
-                                        getMessageById(
-                                            messages,
-                                            message.linkedId
-                                        )?.file.name
-                                    )}
-                                    alt=""
-                                />
-                            </Link>
-                        </p>
-                    ) : (
-                        ""
-                    )}
-                    {getMessageById(messages, message.linkedId)?.body}
+                <div className="chat_carretParent">
+                    <CarretDownIcon setLinkedId={setLinkedId} message={message} />
                 </div>
-            ) : (
-                ""
-            )}
-            {message.file ? (
-                <p className="chat__image">
-                    <Link
-                        className="chat__imageLink"
-                        to={message.file.name}
-                        target="_blank"
-                    >
-                        <img src={getFileURL(message.file.name)} alt="" />
-                    </Link>
+            </div>
+
+            {message.linkedId ? (
+                <p className="chat__ref">
+                    <span className="chat__refname">
+                        {
+                            getMessageById(
+                                messages,
+                                message.linkedId
+                            )?.senderName
+                        }
+                    </span>
+                    {
+                        getMessageById(messages, message.linkedId)
+                            ?.body
+                    }
                 </p>
-            ) : (
-                ""
-            )}
+            ) : null}
+
+            {message.file ? (
+                <div className="chat__image">
+                    <div className="chat__imageLink">
+                        <img
+                            src={getFileURL(message.file.name)}
+                            alt=""
+                        />
+                    </div>
+                </div>
+            ) : null}
 
             {message.body}
             <span className="chat__timestamp">
@@ -86,6 +50,55 @@ function Message({...props}) {
             </span>
         </div>
     );
+}
+
+function CarretDownIcon({ message, setLinkedId, ...props }) {
+    const [showChildren, setShowChildren] = useState(false)
+    return (
+        <div className="carret" {...props} onClick={() => setShowChildren(true)} onMouseLeave={() => setShowChildren(false)} >
+            <div className="">
+                <span
+                    data-testid="down-context"
+                    data-icon="down-context"
+                    className=""
+                >
+                    <svg viewBox="0 0 18 18" width="18" height="18">
+                        <path
+                            fill="currentColor"
+                            d="M3.3 4.6 9 10.3l5.7-5.7 1.6 1.6L9 13.4 1.7 6.2l1.6-1.6z"
+                        ></path>
+                    </svg>
+                </span>
+            </div>
+
+
+            <div className="message__options">
+                {showChildren ? (
+                    <div className="list__reply">
+                        <ul className="options">
+                            <li
+                                onClick={() => {
+                                    setLinkedId(
+                                        message.id
+                                    )
+                                    setShowChildren(false)
+                                }
+                                }
+                            >
+                                reply
+                            </li>
+                            <li>Delete</li>
+                        </ul>
+                    </div>
+                ) : ""}
+            </div>
+        </div>
+    );
+}
+
+function getMessageById(listOfMessages, id) {
+    const message = listOfMessages.filter(message => message.id === id)
+    return message[0]
 }
 
 export default Message;
