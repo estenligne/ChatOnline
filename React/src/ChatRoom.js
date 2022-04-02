@@ -5,9 +5,9 @@ import { InsertEmoticon, Mic } from "@mui/icons-material/";
 import { useParams } from "react-router-dom";
 import { useStateValue } from "./StateProvider";
 import { _fetch, getFileURL, dateToLocal } from "./global";
-import "./Chat.css";
-import { actionTypes } from "./reducer";
+import "./ChatRoom.css";
 import Message from "./Message";
+import { actionTypes } from "./reducer";
 
 function Chat() {
     const { roomId } = useParams();
@@ -82,11 +82,11 @@ function Chat() {
     }; */
 
     return (
-        <div className="chat">
-            <div className="chat__header">
+        <div className="room">
+            <div className="room__header">
                 <Avatar src={getFileURL(roomInfo.photoFileName)} />
 
-                <div className="chat__headerInfo">
+                <div className="room__headerInfo">
                     <h3>{roomInfo.name}</h3>
                     <p>
                         {dateToLocal(
@@ -97,15 +97,12 @@ function Chat() {
                     </p>
                 </div>
 
-                <div className="chat__headerRight">
+                <div className="room__headerRight">
                     <IconButton>
                         <SearchOutlined />
                     </IconButton>
                     <IconButton>
-                        {/* <input style={{display: "none"}} onChange={fileChangeHandler}  type="file" name="file" id="file" /> */}
-                        <label htmlFor="file">
-                            <AttachFile />
-                        </label>
+                        <AttachFile />
                     </IconButton>
                     <IconButton>
                         <MoreVert />
@@ -113,7 +110,7 @@ function Chat() {
                 </div>
             </div>
 
-            <div className="chat__body">
+            <div className="room__body">
                 {messages.map((message) => (
                     <Message
                         key={message.id}
@@ -141,7 +138,7 @@ function Chat() {
                 ) : null}
             </div>
 
-            <div className="chat__footer">
+            <div className="room__footer">
                 <InsertEmoticon />
                 <form>
                     <input

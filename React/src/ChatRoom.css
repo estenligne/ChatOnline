@@ -1,37 +1,37 @@
-.chat {
+.room {
     flex: 0.65;
     display: flex;
     flex-direction: column;
 }
 
-.chat__header {
+.room__header {
     padding: 20px;
     display: flex;
     align-items: center;
     border-bottom: 1px solid lightgray;
 }
 
-.chat__headerInfo {
+.room__headerInfo {
     flex: 1;
     padding-left: 20px;
 }
 
-    .chat__headerInfo > h3 {
+    .room__headerInfo > h3 {
         margin-bottom: 3px;
         font-weight: 500;
     }
 
-.chat_headerInfo > p {
+.room_headerInfo > p {
     color: gray;
 }
 
-.chat__headerRight {
+.room__headerRight {
     display: flex;
     justify-content: space-between;
     min-width: 100px;
 }
 
-.chat__body {
+.room__body {
     flex: 1;
     background-image: url("https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png");
     background-repeat: repeat;
@@ -39,129 +39,6 @@
     padding: 30px;
     overflow: auto;
 }
-
-.chat__message {
-    position: relative;
-    font-size: 16px;
-    padding: 10px;
-    width: fit-content;
-    border-radius: 10px;
-    background-color: white;
-    margin-bottom: 30px;
-}
-
-.chat__receiver {
-    margin-left: auto;
-    background-color: #dcf8c6;
-}
-
-.chat__timestamp {
-    margin-left: 10px;
-    font-size: xx-small;
-}
-
-.chat__name {
-    position: absolute;
-    top: -15px;
-    font-weight: 800;
-    font-size: xx-small;
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-}
-
-.chat__image .chat__imageLink {
-    width: 400px;
-}
-
-.chat__imageLink > img {
-    width: inherit;
-}
-
-.chat__ref {
-    background-color: rgb(240, 232, 232);
-    border-radius: 5px;
-    padding: 1px 2px;
-    border-left: 3px solid darkcyan;
-}
-
-.chat__refname {
-    display: block;
-    font-weight: 800;
-    font-size: xx-small;
-}
-
-.chat_carretParent {
-    position: relative;
-}
-
-    .chat_carretParent .carret {
-        position: absolute;
-        display: none;
-        left: -32px;
-        /* top: 5px; */
-        width: 25px;
-        transition: all 1s linear;
-        cursor: pointer;
-        background: linear-gradient(15deg,rgba(11,20,26,0),rgba(11,20,26,0) 45%,rgba(168, 181, 190, 0.12) 70%,rgba(190, 202, 211, 0.33));
-    }
-
-        .chat_carretParent .carret svg {
-            fill: rgb(53, 51, 51);
-        }
-
-.chat__message:hover .chat_carretParent .carret {
-    display: block;
-}
-
-.chat_carretParent .carret:hover .message__options {
-    display: block;
-}
-
-
-.carret .message__options .overlay {
-    position: fixed;
-    cursor: default;
-    width: 100%;
-    height: 100vh;
-    top: 0;
-    left: 0;
-}
-
-.carret .message__options {
-    position: relative;
-}
-
-    .carret .message__options .list__reply {
-        position: absolute;
-        left: -60px;
-        top: -15px;
-        z-index: 100;
-    }
-
-        .carret .message__options .list__reply > ul {
-            list-style-type: none;
-            background: white;
-            padding-left: 0;
-            width: 100%;
-            box-sizing: border-box;
-            position: relative;
-            margin-bottom: 10px;
-        }
-
-.message__options .list__reply .options li {
-    text-align: left;
-    font-size: medium;
-    font-weight: 200;
-    padding: 15px 20px;
-    box-sizing: border-box;
-    width: 100%;
-    cursor: pointer;
-}
-
-    .message__options .list__reply .options li:hover {
-        background: #faf6f6;
-    }
 
 .chat__reply {
     display: flex;
@@ -185,7 +62,7 @@
         width: fit-content;
     }
 
-.chat__footer {
+.room__footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -193,23 +70,23 @@
     border-top: 1px solid lightgray;
 }
 
-    .chat__footer > form {
+    .room__footer > form {
         flex: 1;
         display: flex;
     }
 
-        .chat__footer > form > input {
+        .room__footer > form > input {
             flex: 1;
             border-radius: 30px;
             padding: 10px;
             border: none;
         }
 
-        .chat__footer > form > button {
+        .room__footer > form > button {
             display: none;
         }
 
-    .chat__footer > .MuiSvgIcon-root {
+    .room__footer > .MuiSvgIcon-root {
         padding: 10px;
         color: gray;
     }

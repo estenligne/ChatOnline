@@ -1,0 +1,123 @@
+
+.chat__message {
+    position: relative;
+    font-size: 16px;
+    padding: 10px;
+    width: fit-content;
+    border-radius: 10px;
+    background-color: white;
+    margin-bottom: 30px;
+}
+
+.chat__receiver {
+    margin-left: auto;
+    background-color: #dcf8c6;
+}
+
+.chat__timestamp {
+    margin-left: 10px;
+    font-size: xx-small;
+}
+
+.chat__name {
+    position: absolute;
+    top: -15px;
+    font-weight: 800;
+    font-size: xx-small;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.chat__image .chat__imageLink {
+    width: 400px;
+}
+
+.chat__imageLink > img {
+    width: inherit;
+}
+
+.chat_carretParent {
+    position: relative;
+}
+
+    .chat_carretParent .carret {
+        position: absolute;
+        display: none;
+        left: -32px;
+        /* top: 5px; */
+        width: 25px;
+        transition: all 1s linear;
+        cursor: pointer;
+        background: linear-gradient(15deg,rgba(11,20,26,0),rgba(11,20,26,0) 45%,rgba(168, 181, 190, 0.12) 70%,rgba(190, 202, 211, 0.33));
+    }
+
+        .chat_carretParent .carret svg {
+            fill: rgb(53, 51, 51);
+        }
+
+.chat__message:hover .chat_carretParent .carret {
+    display: block;
+}
+
+.chat_carretParent .carret:hover .message__options {
+    display: block;
+}
+
+
+.carret .message__options .overlay {
+    position: fixed;
+    cursor: default;
+    width: 100%;
+    height: 100vh;
+    top: 0;
+    left: 0;
+}
+
+.carret .message__options {
+    position: relative;
+}
+
+    .carret .message__options .list__reply {
+        position: absolute;
+        left: -60px;
+        top: -15px;
+        z-index: 100;
+    }
+
+        .carret .message__options .list__reply > ul {
+            list-style-type: none;
+            background: white;
+            padding-left: 0;
+            width: 100%;
+            box-sizing: border-box;
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+.message__options .list__reply .options li {
+    text-align: left;
+    font-size: medium;
+    font-weight: 200;
+    padding: 15px 20px;
+    box-sizing: border-box;
+    width: 100%;
+    cursor: pointer;
+}
+
+    .message__options .list__reply .options li:hover {
+        background: #faf6f6;
+    }
+
+.chat__ref {
+    background-color: rgb(240, 232, 232);
+    border-radius: 5px;
+    padding: 1px 2px;
+    border-left: 3px solid darkcyan;
+}
+
+.chat__refname {
+    display: block;
+    font-weight: 800;
+    font-size: xx-small;
+}

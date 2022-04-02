@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { getFileURL, dateToLocal } from "./global";
+import "./Message.css";
 
 function Message({ messages, message, roomInfo, setLinkedId }) {
     return (
