@@ -1,0 +1,36 @@
+
+.OptionsButton:focus {
+    background-color: rgba(0, 0, 0, 0.06);
+}
+
+    .OptionsButton:focus .OptionsList {
+        display: block;
+    }
+
+.OptionsList {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 45px;
+    background: white;
+    box-shadow: 0 0 4px grey;
+    border-radius: 4px;
+    padding: 4px 0;
+    width: max-content;
+    list-style-type: none;
+    color: darkblue;
+    z-index: 99;
+}
+
+    .OptionsList li {
+        text-align: left;
+        font-size: medium;
+        padding: 15px 20px;
+        box-sizing: border-box;
+        width: 100%;
+        cursor: pointer;
+    }
+
+        .OptionsList li:hover {
+            background: #faf6f6;
+        }

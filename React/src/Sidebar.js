@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useStateValue } from "./StateProvider";
 
 import { Avatar, IconButton } from "@mui/material";
@@ -9,12 +9,13 @@ import ChatIcon from "@mui/icons-material/Chat";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 import SidebarChat from "./SidebarChat";
+import OptionsButton from "./OptionsButton";
+
 import { _fetch, getFileURL } from "./global";
-import "./Sidebar.css";
 import { actionTypes } from "./reducer";
+import "./Sidebar.css";
 
 function Sidebar() {
-    const [showMore, setShowMore] = useState(false)
     const [{ user, rooms }, dispatch] = useStateValue();
 
     const fetchRooms = () => {
@@ -27,7 +28,6 @@ function Sidebar() {
     useEffect(fetchRooms, [user, dispatch]);
 
     const createNewDiscussion = () => {
-        setShowMore(false);
         const contactNumber = prompt("Enter account number of contact");
         if (contactNumber) {
             const url = `/api/ChatRoom/CreatePrivate?userId=${contactNumber}`;
@@ -42,8 +42,7 @@ function Sidebar() {
         }
     };
 
-    const createNewGroup = async () => {
-        setShowMore(false)
+    const createNewGroup = () => {
         const groupName = prompt("Enter name of new group");
         if (groupName) {
             const body = {
@@ -62,8 +61,7 @@ function Sidebar() {
         }
     };
 
-    const joinNewGroup = async () => {
-        setShowMore(false)
+    const joinNewGroup = () => {
         const groupToken = prompt("Enter token to join a group");
         if (groupToken) {
             const [groupId, joinToken] = groupToken.split(': ');
@@ -79,6 +77,20 @@ function Sidebar() {
         }
     };
 
+    const logout = () => {
+        const url = "/api/DeviceUsed?id=" + user.deviceUsedId;
+        _fetch(user, url, "DELETE");
+        window.localStorage.removeItem("userData");
+        window.location.reload();
+    };
+
+    const settingsOptions = [
+        { name: "New discussion", callback: createNewDiscussion },
+        { name: "New group", callback: createNewGroup },
+        { name: "Join group", callback: joinNewGroup },
+        { name: "Logout", callback: logout }
+    ];
+
     return (
         <div className="sidebar">
             <div className="sidebar__header">
@@ -91,31 +103,9 @@ function Sidebar() {
                     <IconButton>
                         <ChatIcon />
                     </IconButton>
-                    <IconButton onClick={() => setShowMore(!showMore)}>
+                    <OptionsButton options={settingsOptions}>
                         <MoreVertIcon />
-                        {showMore ? (
-                            <div className="sidebar__headerOptions">
-                                <div className="overlay" onClick={() => setShowMore(false)} ></div>
-                                <ul className="options">
-                                    <li onClick={createNewDiscussion}>New discussion</li>
-                                    <li onClick={createNewGroup}>New group</li>
-                                    <li onClick={joinNewGroup}>Join group</li>
-                                    <li
-                                        onClick={() => {
-                                            window.localStorage.removeItem(
-                                                "userData"
-                                            );
-                                            window.location.reload();
-                                        }}
-                                    >
-                                        Logout
-                                    </li>
-                                </ul>
-                            </div>
-                        ) : (
-                            ""
-                        )}
-                    </IconButton>
+                    </OptionsButton>
                 </div>
             </div>
 
