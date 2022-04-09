@@ -9,17 +9,24 @@ import "./ChatRoom.css";
 import Message from "./Message";
 import { actionTypes } from "./reducer";
 
-function Chat() {
+function ChatRoom() {
     const { roomId } = useParams();
     const [input, setInput] = useState("");
     const [roomInfo, setRoomInfo] = useState({});
     const [{ user, messages, rooms }, dispatch] = useStateValue();
     const gotoLastMessageRef = React.useRef(null);
+    const messageInputRef = React.useRef(null);
     const [linkedId, setLinkedId] = useState(null);
 
-    React.useEffect(() => {
+    useEffect(() => {
+        if (linkedId) {
+            messageInputRef.current.focus();
+        }
+    }, [linkedId]);
+
+    useEffect(() => {
         gotoLastMessageRef.current.scrollIntoView({ behavior: "auto" });
-    }, [roomInfo]);
+    }, [messages]);
 
     useEffect(() => {
         if (roomId) {
@@ -76,10 +83,8 @@ function Chat() {
         console.log("after sent, ROOMS", rooms);
         setInput("");
     };
-    /* const fileChangeHandler = (event) => {
-        setSelectedFile(event.target.files[0]);
-        setIsFilePicked(true);
-    }; */
+
+    const linked = linkedId ? messages.find(m => m.id === linkedId) : null;
 
     return (
         <div className="room">
@@ -123,25 +128,23 @@ function Chat() {
                 <div ref={gotoLastMessageRef}></div>
             </div>
 
-            <div>
-                {linkedId ? (
-                    <div className="chat__reply">
-                        <p className="">
-                            <span className="chat__refname">
-                                {getMessageById(messages, linkedId).senderName}
-                            </span>
-                            {getMessageById(messages, linkedId).body}
-                        </p>
-
-                        <Close className="" onClick={() => setLinkedId(null)} />
-                    </div>
-                ) : null}
-            </div>
+            {linked ? (
+                <div className="chat__reply">
+                    <p className="">
+                        <span className="chat__refname">
+                            {linked.senderName}
+                        </span>
+                        {linked.body}
+                    </p>
+                    <Close className="" onClick={() => setLinkedId(null)} />
+                </div>
+            ) : null}
 
             <div className="room__footer">
                 <InsertEmoticon />
                 <form>
                     <input
+                        ref={messageInputRef}
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         type="text"
@@ -157,9 +160,4 @@ function Chat() {
     );
 }
 
-function getMessageById(listOfMessages, id) {
-    const message = listOfMessages.filter(message => message.id === id)
-    return message[0]
-}
-
-export default Chat;
+export default ChatRoom;

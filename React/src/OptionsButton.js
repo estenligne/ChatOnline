@@ -7,7 +7,7 @@ function OptionsButton({ options, children }) {
 
     const mouseDown = () => {
         if (buttonRef.current === document.activeElement)
-            setTimeout(() => buttonRef.current.blur(), 100);
+            setTimeout(() => buttonRef.current.blur(), 200);
     }
 
     return (
