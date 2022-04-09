@@ -1,0 +1,27 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32210.238
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "React", "React.esproj", "{698C8BAC-CB25-4947-BEC7-4F960E6496EB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{698C8BAC-CB25-4947-BEC7-4F960E6496EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{698C8BAC-CB25-4947-BEC7-4F960E6496EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{698C8BAC-CB25-4947-BEC7-4F960E6496EB}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{698C8BAC-CB25-4947-BEC7-4F960E6496EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{698C8BAC-CB25-4947-BEC7-4F960E6496EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{698C8BAC-CB25-4947-BEC7-4F960E6496EB}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D61B35C4-08C7-4C62-AA87-8834C34EE8A8}
+	EndGlobalSection
+EndGlobal
