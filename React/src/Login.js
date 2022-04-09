@@ -2,8 +2,7 @@ import React, { useEffect } from 'react';
 import { Button } from '@mui/material/';
 import { getFcmToken } from './firebase';
 import { _fetch, AccountBaseURL, trimObject, getFormValues } from './global';
-import { useStateValue } from './StateProvider';
-import { actionTypes } from './reducer';
+import { useStateValue, actionTypes } from './store';
 import './Login.css';
 
 function Login() {

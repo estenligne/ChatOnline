@@ -1,6 +1,6 @@
 import './App.css';
 import React from 'react';
-import { useStateValue } from './StateProvider';
+import { useStateValue } from './store';
 import Login from './Login';
 import Sidebar from './Sidebar';
 import ChatRoom from './ChatRoom';

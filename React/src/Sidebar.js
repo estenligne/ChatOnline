@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useStateValue } from "./StateProvider";
+import { useStateValue, actionTypes } from "./store";
 
 import { Avatar, IconButton } from "@mui/material";
 import { SearchOutlined } from "@mui/icons-material/";
@@ -12,7 +12,6 @@ import SidebarChat from "./SidebarChat";
 import OptionsButton from "./OptionsButton";
 
 import { _fetch, getFileURL } from "./global";
-import { actionTypes } from "./reducer";
 import "./Sidebar.css";
 
 function Sidebar() {

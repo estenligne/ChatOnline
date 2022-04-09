@@ -3,8 +3,7 @@
 import { initializeApp } from "firebase/app";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
 
-import { store } from "./StateProvider";
-import { actionTypes } from "./reducer";
+import { store, actionTypes } from "./store";
 
 const firebaseConfig = {
     apiKey: "AIzaSyBZsYMP0JCT5qYXAf-ptlEWnTVXW2CPhv4",

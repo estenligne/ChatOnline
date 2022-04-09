@@ -3,11 +3,10 @@ import { Avatar, IconButton } from "@mui/material";
 import { SearchOutlined, AttachFile, MoreVert, Close } from "@mui/icons-material/";
 import { InsertEmoticon, Mic } from "@mui/icons-material/";
 import { useParams } from "react-router-dom";
-import { useStateValue } from "./StateProvider";
+import { useStateValue, actionTypes } from "./store";
 import { _fetch, getFileURL, dateToLocal } from "./global";
 import "./ChatRoom.css";
 import Message from "./Message";
-import { actionTypes } from "./reducer";
 
 function ChatRoom() {
     const { roomId } = useParams();
