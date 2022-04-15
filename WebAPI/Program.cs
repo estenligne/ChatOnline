@@ -10,14 +10,14 @@ namespace WebAPI
     {
         public static void Main(string[] args)
         {
-            ILogger logger = LoggerProfile.GetLoggerFactory().CreateLogger<Program>();
+            ILogger logger = LoggerProfile.GetLogger<Program>();
             try
             {
-                logger.LogInformation("---------------------------------");
+                logger.LogInformation("--------------------");
 
                 IHost host = CreateHostBuilder(args).Build();
 
-                Models.ApplicationDbSeed.Initialize(host);
+                Models.ApplicationDbSeed.Setup(host, logger);
 
                 host.Run();
             }
@@ -33,10 +33,8 @@ namespace WebAPI
         }
 
         /// <summary>
-        /// Needed by Add-Migration
+        /// This is 'public static' as it is needed by Add-Migration.
         /// </summary>
-        /// <param name="args"></param>
-        /// <returns></returns>
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
             IHostBuilder hostBuilder = Host.CreateDefaultBuilder(args);

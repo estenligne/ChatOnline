@@ -9,7 +9,6 @@ namespace WebAPI.Setup
     {
         public enum Kind
         {
-            Unknown,
             Console,
             NLog,
         }
@@ -17,12 +16,15 @@ namespace WebAPI.Setup
         private static Kind GetKind()
         {
             string value = Environment.GetEnvironmentVariable("ASPNETCORE_LOGGER");
-            Kind kind = Kind.Unknown;
-            Enum.TryParse<Kind>(value, out kind);
-            return kind;
+
+            if (!string.IsNullOrEmpty(value))
+            {
+                return Enum.Parse<Kind>(value);
+            }
+            else return Kind.NLog;
         }
 
-        public static ILoggerFactory GetLoggerFactory()
+        private static ILoggerFactory GetLoggerFactory()
         {
             return LoggerFactory.Create(builder =>
             {
@@ -32,6 +34,11 @@ namespace WebAPI.Setup
                 }
                 else builder.AddConsole();
             });
+        }
+
+        public static ILogger GetLogger<T>()
+        {
+            return GetLoggerFactory().CreateLogger<T>();
         }
 
         public static void ConfigureLogging(IHostBuilder hostBuilder)
