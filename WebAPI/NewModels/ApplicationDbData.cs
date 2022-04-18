@@ -50,6 +50,7 @@ namespace WebAPI.Models
             {
                 var new_userProfile = new NewModels.UserProfile
                 {
+                    OriginalId = old.Id,
                     Name = old.Username,
                     About = old.About,
                     DateCreated = old.DateCreated
@@ -80,7 +81,7 @@ namespace WebAPI.Models
                     new_chatRoom.DateCreated = old.GroupProfile.DateCreated;
 
                     //new_chatRoom.CreatorId = old.GroupProfile.CreatorId;
-                    new_chatRoom.Creator = data.userProfiles.First(u => u.Id == old.GroupProfile.CreatorId);
+                    new_chatRoom.Creator = data.userProfiles.First(u => u.OriginalId == old.GroupProfile.CreatorId);
 
                     new_chatRoom.GroupProfile = new NewModels.GroupProfile
                     {
@@ -97,7 +98,7 @@ namespace WebAPI.Models
                     //Id = old.Id,
 
                     //UserProfileId = old.UserProfileId,
-                    UserProfile = data.userProfiles.First(u => u.Id == old.UserProfileId),
+                    UserProfile = data.userProfiles.First(u => u.OriginalId == old.UserProfileId),
 
                     //ChatRoomId = old.ChatRoomId,
                     ChatRoom = data.chatRooms.First(x => x.Id == old.ChatRoomId),
@@ -105,10 +106,10 @@ namespace WebAPI.Models
                     UserRole = old.UserRole,
 
                     //AdderId = old.AdderId,
-                    Adder = data.userProfiles.First(x => x.Id == old.AdderId),
+                    Adder = data.userProfiles.First(x => x.OriginalId == old.AdderId),
 
                     //BlockerId = old.BlockerId,
-                    Blocker = data.userProfiles.First(x => x.Id == old.BlockerId),
+                    Blocker = data.userProfiles.First(x => x.OriginalId == old.BlockerId),
 
                     DateAdded = old.DateAdded,
                     DateBlocked = old.DateBlocked,

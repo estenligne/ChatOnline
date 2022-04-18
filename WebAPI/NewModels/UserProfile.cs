@@ -12,6 +12,8 @@ namespace WebAPI.NewModels
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long Id { get; set; }
 
+        public long OriginalId { get; set; }
+
         [Required]
         [MaxLength(63)]
         public string Name { get; set; }
