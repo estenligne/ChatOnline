@@ -127,7 +127,7 @@ namespace WebAPI.Models
 
                     ChatRoom = data.chatRooms.First(x => x.Id == old.ChatRoomId),
 
-                    Creator = data.userChatRooms.First(u => u.Id == old.CreatorId),
+                    //Creator = data.userChatRooms.First(u => u.Id == old.CreatorId),
 
                     DateCreated = old.DateCreated,
                 };
