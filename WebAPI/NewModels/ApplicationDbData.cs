@@ -71,14 +71,16 @@ namespace WebAPI.Models
             {
                 var new_chatRoom = new NewModels.ChatRoom
                 {
-                    Id = old.Id,
+                    //Id = old.Id,
                     Type = old.Type,
                 };
 
                 if (new_chatRoom.Type == ChatRoomTypeEnum.Group)
                 {
                     new_chatRoom.DateCreated = old.GroupProfile.DateCreated;
-                    new_chatRoom.CreatorId = old.GroupProfile.CreatorId;
+
+                    //new_chatRoom.CreatorId = old.GroupProfile.CreatorId;
+                    new_chatRoom.Creator = data.userProfiles.First(u => u.Id == old.GroupProfile.CreatorId);
 
                     new_chatRoom.GroupProfile = new NewModels.GroupProfile
                     {
@@ -92,13 +94,22 @@ namespace WebAPI.Models
             {
                 var new_userchatRoom = new NewModels.UserChatRoom
                 {
-                    Id = old.Id,
-                    UserProfileId = old.UserProfileId,
-                    ChatRoomId = old.ChatRoomId,
+                    //Id = old.Id,
+
+                    //UserProfileId = old.UserProfileId,
+                    UserProfile = data.userProfiles.First(u => u.Id == old.UserProfileId),
+
+                    //ChatRoomId = old.ChatRoomId,
+                    ChatRoom = data.chatRooms.First(x => x.Id == old.ChatRoomId),
+
                     UserRole = old.UserRole,
 
-                    AdderId = old.AdderId,
-                    BlockerId = old.BlockerId,
+                    //AdderId = old.AdderId,
+                    Adder = data.userProfiles.First(x => x.Id == old.AdderId),
+
+                    //BlockerId = old.BlockerId,
+                    Blocker = data.userProfiles.First(x => x.Id == old.BlockerId),
+
                     DateAdded = old.DateAdded,
                     DateBlocked = old.DateBlocked,
 
@@ -114,18 +125,61 @@ namespace WebAPI.Models
             {
                 var new_messageTag = new NewModels.MessageTag
                 {
-                    Id = old.Id,
+                    //Id = old.Id,
                     Name = old.Name,
-                    ChatRoomId = old.ChatRoomId,
-                    CreatorId = old.CreatorId,
-                    ParentId = old.ParentId,
+
+                    //ChatRoomId = old.ChatRoomId,
+                    ChatRoom = data.chatRooms.First(x => x.Id == old.ChatRoomId),
+
+                    //CreatorId = old.CreatorId,
+                    Creator = data.userChatRooms.First(u => u.Id == old.CreatorId),
+
                     DateCreated = old.DateCreated,
                 };
                 data.messageTags.Add(new_messageTag);
             }
 
-            data.messagesSent = mapper.Map<List<NewModels.MessageSent>>(old_messagesSent);
-            data.messagesReceived = mapper.Map<List<NewModels.MessageReceived>>(old_messagesReceived);
+            foreach (MessageSent old in old_messagesSent)
+            {
+                var new_messageSent = new NewModels.MessageSent
+                {
+                    Body = old.Body,
+                    MessageType = old.MessageType,
+
+                    Sender = data.userChatRooms.First(x => x.Id == old.SenderId),
+                    MessageTag = data.messageTags.First(x => x.Id == old.MessageTagId),
+                    Linked = data.messagesSent.FirstOrDefault(x => x.Id == old.LinkedId),
+
+                    DateSent = old.DateSent,
+                    DateDeleted = old.DateDeleted,
+                    DateCreated = old.DateCreated,
+                    DateStarred = old.DateStarred,
+                };
+                data.messagesSent.Add(new_messageSent);
+
+                if (new_messageSent.LinkedId == null && old.LinkedId != null)
+                {
+                    logger.LogError($"LinkedId == null for message {old.Id}");
+                }
+            }
+
+
+            foreach (MessageReceived old in old_messagesReceived)
+            {
+                var new_messageReceived = new NewModels.MessageReceived
+                {
+                    Receiver = data.userChatRooms.First(x => x.Id == old.ReceiverId),
+                    MessageSent = data.messagesSent.First(x => x.Id == old.MessageSentId),
+
+                    DateCreated = old.DateCreated,
+                    DateReceived = old.DateReceived,
+                    DateRead = old.DateRead,
+                    DateDeleted = old.DateDeleted,
+                    DateStarred = old.DateStarred,
+                    Reaction = old.Reaction,
+                };
+                data.messagesReceived.Add(new_messageReceived);
+            }
 
             return data;
         }
