@@ -17,6 +17,9 @@ namespace WebAPI.Setup
             CreateMap<MessageTag, MessageTagDTO>().ReverseMap();
             CreateMap<MessageSent, MessageSentDTO>().ReverseMap();
             CreateMap<DeviceUsed, DeviceUsedDTO>();
+
+            CreateMap<MessageSent, NewModels.MessageSent>();
+            CreateMap<MessageReceived, NewModels.MessageReceived>();
         }
     }
 }
