@@ -73,17 +73,17 @@ namespace WebAPI.Models
                 {
                     Id = old.Id,
                     Type = old.Type,
-
-                    GroupProfile = new NewModels.GroupProfile
-                    {
-                        GroupName = old.GroupProfile.GroupName,
-                    }
                 };
 
                 if (new_chatRoom.Type == ChatRoomTypeEnum.Group)
                 {
                     new_chatRoom.DateCreated = old.GroupProfile.DateCreated;
                     new_chatRoom.CreatorId = old.GroupProfile.CreatorId;
+
+                    new_chatRoom.GroupProfile = new NewModels.GroupProfile
+                    {
+                        GroupName = old.GroupProfile.GroupName,
+                    };
                 }
                 data.chatRooms.Add(new_chatRoom);
             }
