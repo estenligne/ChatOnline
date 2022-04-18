@@ -10,11 +10,10 @@
 
             <Label Text="Enter" TextColor="Black" HorizontalOptions="Center" />
 
-            <Entry Text="{Binding AccountId}"
-                    Placeholder="Account number of contact"
-                    Keyboard="Numeric"
+            <Entry Text="{Binding AccountID}"
+                    Placeholder="Account ID of contact"
                     FontSize="Large"
-                    TextColor="{Binding AccountIdColor}" />
+                    TextColor="{Binding AccountIDColor}" />
 
             <Label Text="OR" TextColor="Black" HorizontalOptions="Center" />
 

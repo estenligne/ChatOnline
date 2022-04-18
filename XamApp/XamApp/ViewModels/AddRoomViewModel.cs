@@ -4,19 +4,19 @@ namespace XamApp.ViewModels
 {
     public class AddRoomViewModel : BaseViewModel
     {
-        private string accountId;
+        private string accountID;
         private string groupName;
         private string joinToken;
 
-        public string AccountId
+        public string AccountID
         {
-            get { return accountId; }
+            get { return accountID; }
             set
             {
-                if (SetProperty(ref accountId, value))
+                if (SetProperty(ref accountID, value))
                 {
-                    OnUserEntry(Type.Numeric, value);
-                    OnPropertyChanged(nameof(AccountIdColor));
+                    OnUserEntry(Type.AccountID, value);
+                    OnPropertyChanged(nameof(AccountIDColor));
                 }
             }
         }
@@ -28,7 +28,7 @@ namespace XamApp.ViewModels
             {
                 if (SetProperty(ref groupName, value))
                 {
-                    OnUserEntry(Type.ProfileName, value);
+                    OnUserEntry(Type.GroupName, value);
                     OnPropertyChanged(nameof(GroupNameColor));
                 }
             }
@@ -47,15 +47,15 @@ namespace XamApp.ViewModels
             }
         }
 
-        public Color AccountIdColor => IsValid(Type.Numeric, AccountId) ? Color.Green : Color.Black;
+        public Color AccountIDColor => IsValid(Type.AccountID, AccountID) ? Color.Green : Color.Black;
 
-        public Color GroupNameColor => IsValid(Type.ProfileName, GroupName) ? Color.Green : Color.Black;
+        public Color GroupNameColor => IsValid(Type.GroupName, GroupName) ? Color.Green : Color.Black;
 
         public Color JoinTokenColor => IsValid(Type.JoinToken, JoinToken) ? Color.Green : Color.Black;
 
         public bool CanAdd => !IsBusy && (
-            IsValid(Type.Numeric, AccountId) !=
-            IsValid(Type.ProfileName, GroupName) !=
+            IsValid(Type.AccountID, AccountID) !=
+            IsValid(Type.GroupName, GroupName) !=
             IsValid(Type.JoinToken, JoinToken));
 
         public void UpdateButton()
@@ -67,8 +67,8 @@ namespace XamApp.ViewModels
         {
             if (value != null)
             {
-                if (type != Type.Numeric) AccountId = null;
-                if (type != Type.ProfileName) GroupName = null;
+                if (type != Type.AccountID) AccountID = null;
+                if (type != Type.GroupName) GroupName = null;
                 if (type != Type.JoinToken) JoinToken = null;
             }
             UpdateButton();

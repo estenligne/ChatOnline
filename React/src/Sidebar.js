@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useStateValue, actionTypes } from "./store";
 
 import { Avatar, IconButton } from "@mui/material";
@@ -15,6 +16,7 @@ import { _fetch, getFileURL } from "./global";
 import "./Sidebar.css";
 
 function Sidebar() {
+    const navigate = useNavigate();
     const [{ user, rooms }, dispatch] = useStateValue();
 
     const fetchRooms = () => {
@@ -27,15 +29,15 @@ function Sidebar() {
     useEffect(fetchRooms, [user, dispatch]);
 
     const createNewDiscussion = () => {
-        const contactNumber = prompt("Enter account number of contact");
-        if (contactNumber) {
-            const url = `/api/ChatRoom/CreatePrivate?userId=${contactNumber}`;
+        const accountID = prompt("Enter account ID of contact");
+        if (accountID) {
+            const url = `/api/ChatRoom/CreatePrivate?accountID=${encodeURIComponent(accountID)}`;
             _fetch(user, url, "POST")
                 .then((response) => response.json())
                 .then((response) => {
                     console.info("Private discussion created", response);
                     window.alert("Success! Private discussion created.");
-                    fetchRooms();
+                    navigate(`/rooms/${response.chatRoomId}`);
                 })
                 .catch((err) => console.error(err));
         }
@@ -54,7 +56,7 @@ function Sidebar() {
                     console.info("New group created", response);
                     const groupToken = response.chatRoomId + ": " + response.chatRoom.groupProfile.joinToken;
                     window.alert(`Success! The token to join is "${groupToken}"`);
-                    fetchRooms();
+                    navigate(`/rooms/${response.chatRoomId}`);
                 })
                 .catch((err) => console.error(err));
         }
@@ -70,7 +72,7 @@ function Sidebar() {
                 .then((response) => {
                     console.info("Successfully joined group", response);
                     window.alert("Success! You have joined the group.");
-                    fetchRooms();
+                    navigate(`/rooms/${response.chatRoomId}`);
                 })
                 .catch((err) => console.error(err));
         }

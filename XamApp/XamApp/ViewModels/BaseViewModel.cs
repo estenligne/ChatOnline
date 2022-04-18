@@ -99,8 +99,10 @@ namespace XamApp.ViewModels
             Email,
             PhoneNumber,
             Password,
-            ProfileName,
+            AccountID,
+            GroupName,
             JoinToken,
+            ProfileName,
             Numeric
         }
 
@@ -117,6 +119,11 @@ namespace XamApp.ViewModels
             string regexPattern;
             switch (Type)
             {
+                case Type.AccountID:
+                    if (value[0] == '+')
+                        return IsValid(Type.PhoneNumber, value);
+                    else return IsValid(Type.Email, value);
+
                 case Type.Email:
                     regexPattern =
                         @"^[\w!#$%&'*+\-/=?\^_`{|}~]+(\.[\w!#$%&'*+\-/=?\^_`{|}~]+)*" + "@" +
@@ -134,6 +141,7 @@ namespace XamApp.ViewModels
                     return 6 <= length && length <= 99;
 
                 case Type.ProfileName:
+                case Type.GroupName:
                     return 5 <= length && length <= 63;
 
                 case Type.JoinToken:

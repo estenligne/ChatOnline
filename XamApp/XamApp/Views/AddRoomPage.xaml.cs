@@ -82,7 +82,8 @@ namespace XamApp.Views
                 }
                 else // if creating a private chat room with another user
                 {
-                    url = "/api/ChatRoom/CreatePrivate?userId=" + vm.AccountId;
+                    string accountID = HttpUtility.UrlEncode(vm.AccountID);
+                    url = "/api/ChatRoom/CreatePrivate?accountID=" + accountID;
                 }
 
                 var response = await HTTPClient.PostAsync(null, url, model);

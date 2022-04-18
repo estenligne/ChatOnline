@@ -1,26 +1,34 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Net;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System;
 using System.Collections.Generic;
-using WebAPI.Models;
-using Global.Models;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using System.Web;
+using AutoMapper;
 using Global.Enums;
 using Global.Helpers;
-using AutoMapper;
+using Global.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using WebAPI.Models;
+using WebAPI.Services;
 
 namespace WebAPI.Controllers
 {
     public class ChatRoomController : BaseController<ChatRoomController>
     {
+        private IConfiguration _configuration;
+
         public ChatRoomController(
+            IConfiguration configuration,
             ApplicationDbContext context,
             ILogger<ChatRoomController> logger,
             IMapper mapper) : base(context, logger, mapper)
         {
+            _configuration = configuration;
         }
 
         private async Task<ActionResult> GetUserOrInfo(long charRoomId, long userChatRoomId, bool getInfo)
@@ -178,10 +186,27 @@ namespace WebAPI.Controllers
         [ProducesResponseType((int)HttpStatusCode.Created)]
         [HttpPost]
         [Route(nameof(CreatePrivate))]
-        public async Task<ActionResult<UserChatRoomDTO>> CreatePrivate(long userId)
+        public async Task<ActionResult<UserChatRoomDTO>> CreatePrivate(string accountID)
         {
             try
             {
+                long userId = 0;
+                using (var httpClient = await HTTPClient.GetAuthenticated(_configuration))
+                {
+                    string userName = HttpUtility.UrlEncode(accountID);
+                    string url = "/api/Account/GetUser?userName=" + userName;
+
+                    var response = await httpClient.GetAsync(url);
+                    string content = await response.Content.ReadAsStringAsync();
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var userDto = JsonConvert.DeserializeObject<ApplicationUserDTO>(content);
+                        userId = userDto.Id;
+                    }
+                    else return StatusCode((int)response.StatusCode, content);
+                }
+
                 UserProfile user1 = dbc.UserProfiles.Find(UserId);
 
                 if (user1 == null)
