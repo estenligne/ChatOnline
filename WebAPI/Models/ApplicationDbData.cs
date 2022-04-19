@@ -75,6 +75,9 @@ namespace WebAPI.Models
                 userChatRoom.ChatRoomId = 0;
                 userChatRoom.AdderId = null;
                 userChatRoom.BlockerId = null;
+
+                if (userChatRoom.ChatRoom.Creator == null)
+                    userChatRoom.ChatRoom.Creator = userChatRoom.UserProfile;
             }
 
             foreach (var messageTag in messageTags)
@@ -83,6 +86,9 @@ namespace WebAPI.Models
                 messageTag.ChatRoomId = 0;
                 messageTag.ParentId = null;
                 messageTag.CreatorId = null;
+
+                if (messageTag.Name == null)
+                    messageTag.Name = "";
             }
 
             foreach (var messageSent in messagesSent)
