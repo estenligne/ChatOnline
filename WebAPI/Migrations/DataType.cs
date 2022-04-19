@@ -25,7 +25,7 @@ namespace WebAPI.Migrations
                 Enum.TryParse<DBMS>(value, out dbms);
 
                 if (dbms == DBMS.Unknown)
-                    dbms = DBMS.SQLServer;
+                    dbms = DBMS.MySQL;
             }
             return dbms;
         }
