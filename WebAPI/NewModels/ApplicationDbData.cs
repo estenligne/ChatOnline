@@ -63,7 +63,7 @@ namespace WebAPI.Models
 
                 if (user == null)
                 {
-                    logger.LogCritical($"How comes user {old.Id} {old.Identity} is not found?!");
+                    logger.LogError($"How comes user {old.Id} {old.Identity} is not found?!");
                 }
                 else new_userProfile.Id = user.Id;
             }
@@ -154,7 +154,7 @@ namespace WebAPI.Models
                 };
                 data.messagesSent.Add(new_messageSent);
 
-                if (new_messageSent.LinkedId == null && old.LinkedId != null)
+                if (new_messageSent.Linked == null && old.LinkedId != null)
                 {
                     logger.LogError($"LinkedId == null for message {old.Id}");
                 }
