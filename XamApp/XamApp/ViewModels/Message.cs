@@ -1,9 +1,11 @@
 ﻿using System;
 using System.IO;
+using System.Windows.Input;
 using Global.Enums;
 using Global.Helpers;
 using Global.Models;
 using XamApp.Services;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace XamApp.ViewModels
@@ -100,6 +102,7 @@ namespace XamApp.ViewModels
         public string Sender => _message.SenderName;
 
         public string Body => _message.Body;
+        public FormattedString FormattedBody => ConvertToHtml(Body);
         public string ShortBody => BasicHelpers.GetShortBody(Body, 100);
         public bool HasBody => !string.IsNullOrEmpty(Body);
 
@@ -132,6 +135,29 @@ namespace XamApp.ViewModels
         {
             _message.DateStarred = dateStarred;
             _chatRoom.UpdateMessageView(this);
+        }
+
+        public FormattedString ConvertToHtml(string body)
+        {
+            var result = new FormattedString();
+            Span span = new Span();
+            span.Text = body;
+            span.TextColor = Color.Blue;
+            result.Spans.Add(span);
+            return result;
+
+            /*string finalResult = "";
+            string newString = "";
+            foreach (string sb in body.Split(' '))
+            {
+                if (sb.Contains("http:") || sb.Contains("https:"))
+                    newString = $"<a href=\"{sb}\">{sb}</a>";
+                else
+                    newString = sb;
+
+                finalResult = finalResult + " " + newString;
+            }
+            return finalResult;*/
         }
     }
 }

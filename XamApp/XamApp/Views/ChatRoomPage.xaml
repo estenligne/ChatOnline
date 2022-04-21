@@ -55,9 +55,10 @@
                                 IsVisible="{Binding HasImage}"
                                 BackgroundColor="Transparent" />
 
-                            <Label Text="{Binding Body}"
+                            <Label FormattedText="{Binding FormattedBody}"
                                 IsVisible="{Binding HasBody}"
                                 TextColor="Black"
+                                TextType="Html"
                                 FontSize="Body" />
 
                             <Label Text="{Binding FooterInfo}"
