@@ -9,17 +9,10 @@ namespace XamApp.ViewModels
 {
     public class UserProfileViewModel : BaseViewModel
     {
-        UserProfileDTO user = new UserProfileDTO();
-
-        public readonly long Id;
-        private string name;
-        private string about;
-
-        public UserProfileViewModel(long id)
-        {
-            Id = id;
-        }
+        public UserProfileDTO user = new UserProfileDTO();
+        
         public bool IsCurrentUser { get; set; }
+        public bool IsButtonAtBotton => CanEdit;
 
         public async Task OnAppearing()
         {
@@ -52,6 +45,10 @@ namespace XamApp.ViewModels
                     OnPropertyChanged(nameof(Name));
                     OnPropertyChanged(nameof(About));
                     OnPropertyChanged(nameof(Button2));
+                    OnPropertyChanged(nameof(ImageFile));
+                }else
+                {
+                    await DisplayAlert("ERROR", await HTTPClient.GetResponseError(response), "OK");
                 }
 
             }
@@ -103,7 +100,7 @@ namespace XamApp.ViewModels
                 OnPropertyChanged(nameof(CannotEdit));
                 OnPropertyChanged(nameof(Button1));
                 OnPropertyChanged(nameof(Button2));
-                OnPropertyChanged(nameof(IsCurrentUser));
+                OnPropertyChanged(nameof(IsButtonAtBotton));
 
             }
         }
@@ -112,7 +109,7 @@ namespace XamApp.ViewModels
 
         public string Name
         {
-            get { return name; }
+            get { return user.Name; }
             set
             {
                 if (user.Name != value)
@@ -127,7 +124,7 @@ namespace XamApp.ViewModels
 
         public string About
         {
-            get { return about; }
+            get { return user.About; }
             set
             {
                 if (user.About != value)

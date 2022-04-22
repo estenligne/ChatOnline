@@ -8,24 +8,35 @@ using Xamarin.Forms.Xaml;
 using XamApp.ViewModels;
 using XamApp.Models;
 using XamApp.Services;
+using Xamarin.Essentials;
+using System.IO;
 
 namespace XamApp.Views
 {
+    [QueryProperty(nameof(UserId), "id")]
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class UserProfilePage : ContentPage
     {
         private readonly UserProfileViewModel vm;
+        public long UserId { get; set; }
 
         public UserProfilePage()
         {
             InitializeComponent();
-            vm = new UserProfileViewModel(0);
+            vm = new UserProfileViewModel();
             BindingContext = vm;
         }
 
-        protected override void OnAppearing()
+        protected override async void OnAppearing()
         {
             base.OnAppearing();
+            vm.user.Id = UserId;
+            await vm.OnAppearing();
+
+            if (!vm.IsCurrentUser || vm.user.Id == 0)
+            {
+                ToolbarItems.Clear();
+            }
             SetBusy(false);
         }
 
@@ -38,20 +49,36 @@ namespace XamApp.Views
 
         private async void OnSaveClicked(object sender, EventArgs e)
         {
-            if (vm.CanSave)
+            if (!vm.CanEdit)
+            {
+                vm.CanEdit = true;
+            }
+            else if (vm.CanSave)
             {
                 SetBusy(true);
 
-                var userProfile = new UserProfileDTO()
+                if(vm.ImageChosen != null)
                 {
-                    Id = vm.Id,
-                    Name = vm.Name,
-                    About = vm.About,
-                };
+                    vm.ImageChosen.Position = 0;
 
-                if (vm.Id == 0) // if creating
+                    var response = await HTTPClient.PostFile(null, "file", "profile photo", vm.ImageChosen);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        FileDTO fileDTO = await HTTPClient.ReadAsAsync<FileDTO>(response);
+                        vm.user.PhotoFileId = fileDTO.Id;
+                        vm.user.PhotoFile = fileDTO;
+                    }
+                    else
+                    {
+                        await DisplayAlert("ERROR", await HTTPClient.GetResponseError(response), "OK");
+                        SetBusy(false);
+                        return;
+                    }
+                }
+
+                if (vm.user.Id == 0) // if creating
                 {
-                    var response = await HTTPClient.PostAsync(null, "/api/UserProfile", userProfile);
+                    var response = await HTTPClient.PostAsync(null, "/api/UserProfile", vm.user);
                     if (response.IsSuccessStatusCode)
                     {
                         await GotoRoomsPage();
@@ -60,7 +87,7 @@ namespace XamApp.Views
                 }
                 else // if updating
                 {
-                    var response = await HTTPClient.PutAsync(null, "/api/UserProfile", userProfile);
+                    var response = await HTTPClient.PutAsync(null, "/api/UserProfile", vm.user);
                     if (response.IsSuccessStatusCode)
                     {
                         await DisplayAlert("Success", "Saved!", "Ok");
@@ -92,6 +119,29 @@ namespace XamApp.Views
                 await Shell.Current.GoToAsync($"//{nameof(RoomsPage)}");
             }
             else await DisplayAlert("Failed", await HTTPClient.GetResponseError(response), "Ok");
+        }
+
+        private void OnEditOrOnViewButtonCliked(object sender, EventArgs e)
+        {
+            if (vm.OnbuttonClicked == "Edit")
+                vm.CanEdit = true;
+            else
+                vm.CanEdit = false;
+        }
+
+        private async void OnUserPhotoclicked(object sender, EventArgs e)
+        {
+            if (vm.CanEdit)
+            {
+                var result = await MediaPicker.PickPhotoAsync(new MediaPickerOptions
+                {
+                    Title = "Pick a photo"
+                });
+
+                vm.ImageChosen = new MemoryStream();
+                using (var stream = await result.OpenReadAsync())
+                    stream.CopyTo(vm.ImageChosen);
+            }
         }
     }
 }

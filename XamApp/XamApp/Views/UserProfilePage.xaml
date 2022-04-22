@@ -8,6 +8,7 @@
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="{Binding Button1}"
                      IsDestructive="{Binding IsCurrentUser}"
+                     IsEnabled="{Binding CanSave}"
                      Clicked="OnEditOrOnViewButtonCliked"/>
     </ContentPage.ToolbarItems>
 
@@ -15,7 +16,7 @@
         <ScrollView x:DataType="local:UserProfileViewModel">
             <StackLayout Padding="20,0">
 
-                <ContentView>
+                <ContentView Padding="10">
                     <ImageButton
                         HeightRequest="100"
                         WidthRequest="100"
@@ -24,6 +25,7 @@
                         Source="{Binding ImageFile}"
                         BackgroundColor="Transparent"
                         CornerRadius="20"
+                        Clicked="OnUserPhotoclicked"
                         />
                 </ContentView>
 
@@ -48,7 +50,7 @@
 
                 <Button Text="{Binding Button2}"
                         Clicked="OnSaveClicked"
-                        IsVisible="{Binding IsCurrentUser}"
+                        IsVisible="{Binding IsButtonAtBotton}"
                         IsEnabled="{Binding CanSave}"
                         FontSize="Large"
                         Margin="0,20" />

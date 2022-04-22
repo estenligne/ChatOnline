@@ -4,41 +4,39 @@
              x:Class="XamApp.Views.ChatRoomPage"
              xmlns:local="clr-namespace:XamApp.ViewModels"
              x:DataType="local:ChatRoomViewModel"
-             BackgroundColor="LightYellow"/>
-             
-<ContentPage.ToolbarItems>
-    <ToolbarItem
-            Text="{Binding Title}"
-            Clicked="OnAnotherUserProfileCliked"/>
-</ContentPage.ToolbarItems>
+             BackgroundColor="LightYellow">
 
-<ContentPage.Resources>
-    <ResourceDictionary>
-        <Color x:Key="LinkedMessageBackground">#EEEEEE</Color>
-        <Color x:Key="LinkedMessageSender">Brown</Color>
-        <Color x:Key="LinkedMessageBody">#333333</Color>
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="{Binding Title}"/>
+    </ContentPage.ToolbarItems>
 
-        <DataTemplate x:Key="MessageDataTemplate" x:DataType="local:Message">
-            <SwipeView Padding="6" Threshold="100" BackgroundColor="Transparent">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="LinkedMessageBackground">#EEEEEE</Color>
+            <Color x:Key="LinkedMessageSender">Brown</Color>
+            <Color x:Key="LinkedMessageBody">#333333</Color>
 
-                <SwipeView.LeftItems>
-                    <SwipeItems Mode="Execute">
-                        <SwipeItem Invoked="OnSwipedRight"/>
-                    </SwipeItems>
-                </SwipeView.LeftItems>
+            <DataTemplate x:Key="MessageDataTemplate" x:DataType="local:Message">
+                <SwipeView Padding="6" Threshold="100" BackgroundColor="Transparent">
 
-                <Frame Padding="6"
+                    <SwipeView.LeftItems>
+                        <SwipeItems Mode="Execute">
+                            <SwipeItem Invoked="OnSwipedRight"/>
+                        </SwipeItems>
+                    </SwipeView.LeftItems>
+
+                    <Frame Padding="6"
                         CornerRadius="6"
                         BackgroundColor="{Binding BackgroundColor}"
                         HorizontalOptions="{Binding HorizontalOptions}">
 
-                    <StackLayout Orientation="Vertical">
-                        <Label Text="{Binding Sender}"
+                        <StackLayout Orientation="Vertical">
+                            <Label Text="{Binding Sender}"
                                 TextColor="Black"
                                 FontAttributes="Bold"
                                 IsVisible="{Binding IsGroupChat}" />
 
-                        <StackLayout
+                            <StackLayout
                                 Orientation="Vertical"
                                 BackgroundColor="{StaticResource LinkedMessageBackground}"
                                 Padding="10"
@@ -46,81 +44,81 @@
                                 HorizontalOptions="FillAndExpand"
                                 IsVisible="{Binding HasLinkedMessage}">
 
-                            <Label Text="{Binding LinkedMessageSender}" TextColor="{StaticResource LinkedMessageSender}" />
-                            <Label Text="{Binding LinkedMessageBody}" TextColor="{StaticResource LinkedMessageBody}" />
+                                <Label Text="{Binding LinkedMessageSender}" TextColor="{StaticResource LinkedMessageSender}" />
+                                <Label Text="{Binding LinkedMessageBody}" TextColor="{StaticResource LinkedMessageBody}" />
 
-                            <StackLayout.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnLinkedMessageTapped" />
-                            </StackLayout.GestureRecognizers>
-                        </StackLayout>
+                                <StackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnLinkedMessageTapped" />
+                                </StackLayout.GestureRecognizers>
+                            </StackLayout>
 
-                        <Image
+                            <Image
                                 HeightRequest="300"
                                 Source="{Binding ImageFile}"
                                 IsVisible="{Binding HasImage}"
                                 BackgroundColor="Transparent" />
 
-                        <Label Text="{Binding Body}"
+                            <Label Text="{Binding Body}"
                                 IsVisible="{Binding HasBody}"
                                 TextColor="Black"
                                 FontSize="Body" />
 
-                        <Label Text="{Binding FooterInfo}"
+                            <Label Text="{Binding FooterInfo}"
                                 FontSize="12"
                                 TextType="Html"
                                 LineBreakMode="NoWrap"
                                 HorizontalOptions="End" />
-                    </StackLayout>
-                </Frame>
+                        </StackLayout>
+                    </Frame>
 
-                <SwipeView.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnMessageDoubleTapped" NumberOfTapsRequired="2" />
-                </SwipeView.GestureRecognizers>
-            </SwipeView>
-        </DataTemplate>
+                    <SwipeView.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnMessageDoubleTapped" NumberOfTapsRequired="2" />
+                    </SwipeView.GestureRecognizers>
+                </SwipeView>
+            </DataTemplate>
 
-        <DataTemplate x:Key="EventDataTemplate" x:DataType="local:Message">
-            <ContentView Padding="6,6,6,0">
-                <Frame
+            <DataTemplate x:Key="EventDataTemplate" x:DataType="local:Message">
+                <ContentView Padding="6,6,6,0">
+                    <Frame
                         Padding="6"
                         CornerRadius="6"
                         HorizontalOptions="{Binding HorizontalOptions}"
                         BackgroundColor="{Binding EventBackgroundColor}">
 
-                    <Label TextColor="White" Text="{Binding EventMessage}" />
-                </Frame>
-            </ContentView>
-        </DataTemplate>
+                        <Label TextColor="White" Text="{Binding EventMessage}" />
+                    </Frame>
+                </ContentView>
+            </DataTemplate>
 
-        <local:MessageTemplateSelector x:Key="MessageTemplateSelector"
+            <local:MessageTemplateSelector x:Key="MessageTemplateSelector"
                 EventDataTemplate="{StaticResource EventDataTemplate}"
                 MessageDataTemplate="{StaticResource MessageDataTemplate}"/>
 
-    </ResourceDictionary>
-</ContentPage.Resources>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
-<StackLayout Orientation="Vertical">
+    <StackLayout Orientation="Vertical">
 
-    <CollectionView x:Name="MessagesView"
+        <CollectionView x:Name="MessagesView"
             ItemsSource="{Binding Messages}"
             ItemTemplate="{StaticResource MessageTemplateSelector}"
             VerticalOptions="StartAndExpand"
             VerticalScrollBarVisibility="Always" />
 
-    <AbsoluteLayout
+        <AbsoluteLayout
             BackgroundColor="{StaticResource LinkedMessageBackground}"
             HorizontalOptions="FillAndExpand"
             IsVisible="{Binding HasLinkedMessage}">
 
-        <StackLayout Padding="10"
+            <StackLayout Padding="10"
                 Orientation="Vertical"
                 VerticalOptions="Center">
 
-            <Label Text="{Binding LinkedMessageSender}" TextColor="{StaticResource LinkedMessageSender}" />
-            <Label Text="{Binding LinkedMessageBody}" TextColor="{StaticResource LinkedMessageBody}" />
-        </StackLayout>
+                <Label Text="{Binding LinkedMessageSender}" TextColor="{StaticResource LinkedMessageSender}" />
+                <Label Text="{Binding LinkedMessageBody}" TextColor="{StaticResource LinkedMessageBody}" />
+            </StackLayout>
 
-        <Button Text="X"
+            <Button Text="X"
                     Padding="0"
                     TextColor="Black"
                     BackgroundColor="Transparent"
@@ -129,21 +127,21 @@
                     AbsoluteLayout.LayoutBounds="1,0"
                     AbsoluteLayout.LayoutFlags="PositionProportional"
                     Clicked="OnCloseReplyView" />
-    </AbsoluteLayout>
+        </AbsoluteLayout>
 
-    <StackLayout Orientation="Horizontal" Margin="6,0,6,6">
-        <Button
+        <StackLayout Orientation="Horizontal" Margin="6,0,6,6">
+            <Button
                 Text="File"
                 WidthRequest="60"
                 HeightRequest="65"
                 VerticalOptions="EndAndExpand"
                 Clicked="SendFile" />
 
-        <Frame Padding="3"
+            <Frame Padding="3"
                 CornerRadius="6"
                 HorizontalOptions="FillAndExpand"
                 BorderColor="Magenta">
-            <Editor
+                <Editor
                     x:Name="MessageEditor"
                     Keyboard="Chat"
                     Text="{Binding Body, Mode=TwoWay}"
@@ -151,17 +149,17 @@
                     Placeholder="message"
                     MaxLength="16000"
                     AutoSize="Disabled" />
-        </Frame>
+            </Frame>
 
-        <StackLayout Orientation="Vertical" HorizontalOptions="End">
-            <ActivityIndicator
+            <StackLayout Orientation="Vertical" HorizontalOptions="End">
+                <ActivityIndicator
                     WidthRequest="60"
                     HeightRequest="65"
                     VerticalOptions="EndAndExpand"
                     IsVisible="{Binding IsBusy}"
                     IsRunning="{Binding IsBusy}" />
 
-            <Button
+                <Button
                     Text="Send"
                     WidthRequest="60"
                     HeightRequest="65"
@@ -169,8 +167,8 @@
                     Command="{Binding SendMessageCommand}"
                     IsVisible="{Binding ShowSendButton}"
                     IsEnabled="{Binding CanSendMessage}" />
+            </StackLayout>
         </StackLayout>
+
     </StackLayout>
-
-</StackLayout>
-
+</ContentPage>
