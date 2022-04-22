@@ -1,9 +1,14 @@
-﻿using Xamarin.Forms;
+﻿using Global.Models;
+using System.Threading.Tasks;
+using XamApp.Models;
+using Xamarin.Forms;
 
 namespace XamApp.ViewModels
 {
     public class UserProfileViewModel : BaseViewModel
     {
+        UserProfileDTO user = new UserProfileDTO();
+
         public readonly long Id;
         private string name;
         private string about;
@@ -12,14 +17,61 @@ namespace XamApp.ViewModels
         {
             Id = id;
         }
+        public bool IsCurrentUser { get; set; }
+
+        public async Task OnAppearing()
+        {
+            if (!IsBusy)
+            {
+                IsBusy = true;
+
+                User currentUser = await DataStore.Instance.GetUserAsync();
+
+                if(currentUser != null)
+                {
+                    if (user.Id == 0)
+                    {
+                        user.Id = currentUser.Id;
+                        IsCurrentUser = user.Id == currentUser.Id;
+                    }            
+                }
+                else if(user.Id == 0)
+                {
+                    canEdit = true;
+                    IsCurrentUser = true;
+                }
+                OnPropertyChanged(nameof(IsCurrentUser));
+
+            }
+
+        }
+        public bool canEdit;
+        public bool CanEdit
+        {
+            get { return canEdit; }
+            set
+            {
+                canEdit = value;
+                OnPropertyChanged(nameof(CanEdit));
+                OnPropertyChanged(nameof(CannotEdit));
+                OnPropertyChanged(nameof(Button1));
+                OnPropertyChanged(nameof(Button2));
+                OnPropertyChanged(nameof(IsCurrentUser));
+
+            }
+        }
+
+        public bool CannotEdit => !CanEdit;
 
         public string Name
         {
             get { return name; }
             set
             {
-                if (SetProperty(ref name, value))
+                if (user.Name != value)
                 {
+                    user.Name = value;
+                    OnPropertyChanged(nameof(Name));
                     OnPropertyChanged(nameof(NameColor));
                     UpdateButton();
                 }
@@ -31,14 +83,29 @@ namespace XamApp.ViewModels
             get { return about; }
             set
             {
-                if (SetProperty(ref about, value))
+                if (user.About != value)
                 {
+                    user.About = value;
+                    OnPropertyChanged(nameof(About));
                     UpdateButton();
                 }
             }
         }
 
-        public string ButtonText => Id == 0 ? "Create" : "Save";
+        public string Button1 => ButtonText();
+
+        public string OnbuttonClicked;
+        public string ButtonText()
+        {
+            if (!canEdit)
+                return OnbuttonClicked = "Edit";
+            else if (user.Id == 0)
+                return OnbuttonClicked = "";
+            else
+                return OnbuttonClicked = "View";
+        }
+
+        public string Button2 => CanEdit ? "Save" : user.Id == 0 ? "Create" : "";
 
         public bool CanSave => IsValid(Type.ProfileName, Name);
 

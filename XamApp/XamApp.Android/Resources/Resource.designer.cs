@@ -14,7 +14,7 @@ namespace XamApp.Droid
 {
 	
 	
-	[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Xamarin.Android.Build.Tasks", "1.0.0.0")]
+	[global::System.CodeDom.Compiler.GeneratedCodeAttribute("Xamarin.Android.Build.Tasks", "12.1.0.11")]
 	public partial class Resource
 	{
 		
@@ -12327,6 +12327,9 @@ namespace XamApp.Droid
 			
 			// aapt resource value: 0x7F0700AA
 			public const int tooltip_frame_light = 2131165354;
+			
+			// aapt resource value: 0x7F0700AB
+			public const int userimage = 2131165355;
 			
 			static Drawable()
 			{

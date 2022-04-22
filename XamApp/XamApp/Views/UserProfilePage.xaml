@@ -2,8 +2,14 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="XamApp.Views.UserProfilePage"
-             xmlns:local="clr-namespace:XamApp.ViewModels"
+             xmlns:local="clr-namespace:XamApp.ViewModels" x:DataType="local:UserProfileViewModel"
              Title="Profile">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="{Binding Button1}"
+                     IsDestructive="{Binding IsCurrentUser}"
+                     Clicked="OnEditOrOnViewButtonCliked"/>
+    </ContentPage.ToolbarItems>
 
     <ContentPage.Content>
         <ScrollView x:DataType="local:UserProfileViewModel">
@@ -28,7 +34,7 @@
                             AutoSize="Disabled" />
                 </Frame>
 
-                <Button Text="{Binding ButtonText}"
+                <Button Text="{Binding Button2}"
                         Clicked="OnSaveClicked"
                         IsEnabled="{Binding CanSave}"
                         FontSize="Large"
