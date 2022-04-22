@@ -1,6 +1,8 @@
 ﻿using Global.Models;
+using System.IO;
 using System.Threading.Tasks;
 using XamApp.Models;
+using XamApp.Services;
 using Xamarin.Forms;
 
 namespace XamApp.ViewModels
@@ -42,8 +44,53 @@ namespace XamApp.ViewModels
                 }
                 OnPropertyChanged(nameof(IsCurrentUser));
 
+                var response = await HTTPClient.GetAsync(null, "api/UserProfile?id="+user.Id);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    user = await HTTPClient.ReadAsAsync<UserProfileDTO>(response);
+                    OnPropertyChanged(nameof(Name));
+                    OnPropertyChanged(nameof(About));
+                    OnPropertyChanged(nameof(Button2));
+                }
+
             }
 
+        }
+
+        public MemoryStream imageChosen;
+        public MemoryStream ImageChosen
+        {
+            get { return imageChosen; }
+            set
+            {
+                if(imageChosen != null)
+                
+                    imageChosen.Dispose();
+
+                    imageChosen = value;
+                    OnPropertyChanged(nameof(ImageFile));              
+            }
+        }
+
+        public ImageSource ImageFile
+        {
+            get
+            {
+                if (imageChosen != null)
+                {
+                    Stream stream = new MemoryStream(imageChosen.ToArray());
+                    return ImageSource.FromStream(() => stream);
+                }else if(user.PhotoFile== null)
+                {
+                    return ImageSource.FromFile("userimage.png");
+                }
+                else
+                {
+                    var uri =  HTTPClient.GetFileUri(user.PhotoFile.Name);
+                    return ImageSource.FromUri(uri);
+                }
+            }
         }
         public bool canEdit;
         public bool CanEdit

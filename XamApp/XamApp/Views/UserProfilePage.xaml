@@ -15,6 +15,18 @@
         <ScrollView x:DataType="local:UserProfileViewModel">
             <StackLayout Padding="20,0">
 
+                <ContentView>
+                    <ImageButton
+                        HeightRequest="100"
+                        WidthRequest="100"
+                        HorizontalOptions="Center"
+                        Aspect="Fill"
+                        Source="{Binding ImageFile}"
+                        BackgroundColor="Transparent"
+                        CornerRadius="20"
+                        />
+                </ContentView>
+
                 <Entry Text="{Binding Name, Mode=TwoWay}"
                         Placeholder="name"
                         TextColor="{Binding NameColor}"
@@ -36,6 +48,7 @@
 
                 <Button Text="{Binding Button2}"
                         Clicked="OnSaveClicked"
+                        IsVisible="{Binding IsCurrentUser}"
                         IsEnabled="{Binding CanSave}"
                         FontSize="Large"
                         Margin="0,20" />
