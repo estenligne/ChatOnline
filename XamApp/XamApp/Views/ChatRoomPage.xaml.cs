@@ -9,6 +9,7 @@ using System.Web;
 using System.Diagnostics;
 using Global.Models;
 using Global.Enums;
+using System.Threading.Tasks;
 
 namespace XamApp.Views
 {
@@ -147,6 +148,12 @@ namespace XamApp.Views
             Element element = (Element)sender;
             Message message = (Message)element.BindingContext;
             vm.ScrollToMessage(message.LinkedId);
+        }
+
+        private async void SeeOtherUserProfile(object sender, EventArgs e)
+        {
+            await Shell.Current.GoToAsync(nameof(UserProfilePage) + "?id=" + vm.Room.ProfileId);
+
         }
     }
 }

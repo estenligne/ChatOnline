@@ -7,7 +7,8 @@
              BackgroundColor="LightYellow">
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="{Binding Title}"/>
+        <ToolbarItem Text="{Binding Title}"
+                     Clicked="SeeOtherUserProfile"/>
     </ContentPage.ToolbarItems>
 
     <ContentPage.Resources>
