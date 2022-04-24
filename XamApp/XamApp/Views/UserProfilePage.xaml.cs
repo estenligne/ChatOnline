@@ -138,9 +138,12 @@ namespace XamApp.Views
                     Title = "Pick a photo"
                 });
 
-                vm.ImageChosen = new MemoryStream();
-                using (var stream = await result.OpenReadAsync())
-                    stream.CopyTo(vm.ImageChosen);
+                if(result!= null)
+                {
+                    vm.ImageChosen = new MemoryStream();
+                    using (var stream = await result.OpenReadAsync())
+                        stream.CopyTo(vm.ImageChosen);
+                }               
             }
         }
     }

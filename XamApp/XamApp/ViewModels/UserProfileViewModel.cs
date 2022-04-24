@@ -10,7 +10,7 @@ namespace XamApp.ViewModels
     public class UserProfileViewModel : BaseViewModel
     {
         public UserProfileDTO user = new UserProfileDTO();
-        
+
         public bool IsCurrentUser { get; set; }
         public bool IsButtonAtBotton => CanEdit;
 
@@ -22,22 +22,22 @@ namespace XamApp.ViewModels
 
                 User currentUser = await DataStore.Instance.GetUserAsync();
 
-                if(currentUser != null)
+                if (currentUser != null)
                 {
                     if (user.Id == 0)
                     {
                         user.Id = currentUser.Id;
                         IsCurrentUser = user.Id == currentUser.Id;
-                    }            
+                    }
                 }
-                else if(user.Id == 0)
+                else if (user.Id == 0)
                 {
                     canEdit = true;
                     IsCurrentUser = true;
                 }
                 OnPropertyChanged(nameof(IsCurrentUser));
 
-                var response = await HTTPClient.GetAsync(null, "api/UserProfile?id="+user.Id);
+                var response = await HTTPClient.GetAsync(null, "/api/UserProfile?id=" + user.Id);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -46,11 +46,12 @@ namespace XamApp.ViewModels
                     OnPropertyChanged(nameof(About));
                     OnPropertyChanged(nameof(Button2));
                     OnPropertyChanged(nameof(ImageFile));
-                }else
+                }
+                else
                 {
                     await DisplayAlert("ERROR", await HTTPClient.GetResponseError(response), "OK");
                 }
-
+                IsBusy = false;
             }
 
         }
@@ -61,12 +62,11 @@ namespace XamApp.ViewModels
             get { return imageChosen; }
             set
             {
-                if(imageChosen != null)
-                
+                if (imageChosen != null)
                     imageChosen.Dispose();
 
-                    imageChosen = value;
-                    OnPropertyChanged(nameof(ImageFile));              
+                imageChosen = value;
+                OnPropertyChanged(nameof(ImageFile));
             }
         }
 
@@ -78,13 +78,14 @@ namespace XamApp.ViewModels
                 {
                     Stream stream = new MemoryStream(imageChosen.ToArray());
                     return ImageSource.FromStream(() => stream);
-                }else if(user.PhotoFile== null)
+                }
+                else if (user.PhotoFile == null)
                 {
                     return ImageSource.FromFile("userimage.png");
                 }
                 else
                 {
-                    var uri =  HTTPClient.GetFileUri(user.PhotoFile.Name);
+                    var uri = HTTPClient.GetFileUri(user.PhotoFile.Name);
                     return ImageSource.FromUri(uri);
                 }
             }
