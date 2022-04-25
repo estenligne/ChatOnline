@@ -32,6 +32,7 @@
                 <Entry Text="{Binding Name, Mode=TwoWay}"
                         Placeholder="name"
                         TextColor="{Binding NameColor}"
+                        IsReadOnly="{Binding CannotEdit}"
                         FontSize="Large"
                         Margin="0,20" />
 
@@ -43,6 +44,7 @@
                             Keyboard="Text"
                             Text="{Binding About, Mode=TwoWay}"
                             BackgroundColor="White"
+                            IsReadOnly="{Binding CannotEdit}"
                             Placeholder="about"
                             MaxLength="4000"
                             AutoSize="Disabled" />
