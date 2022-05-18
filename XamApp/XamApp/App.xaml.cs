@@ -33,7 +33,6 @@ namespace XamApp
         {
         }
 
-        private static string SharedText = null;
         private static PushNotificationDTO Notification = null;
 
         private static Page GetMainPage()
@@ -54,11 +53,6 @@ namespace XamApp
                 }
                 Notification = null;
             }
-            else if (SharedText != null)
-            {
-                page += "/" + nameof(ChatRoomPage) + "?id=1&sharedText=" + HttpUtility.UrlEncode(SharedText);
-                SharedText = null;
-            }
 
             var appShell = new AppShell();
             appShell.GoToAsync("//" + page).Wait();
@@ -71,11 +65,6 @@ namespace XamApp
             OnResume,
             OnBackground,
             OnForeground,
-        }
-
-        public static void OnSharedText(string text, NotificationSource source)
-        {
-            SharedText = text;
         }
 
         public static void OnNotificationReceived(string data, NotificationSource source)
