@@ -82,10 +82,11 @@ namespace XamApp.Views
                 var deviceUsedDto = await HTTPClient.ReadAsAsync<DeviceUsedDTO>(response);
 
                 User user = await DataStore.Instance.GetUserAsync();
+
                 user.DeviceUsedId = deviceUsedDto.Id;
                 await DataStore.Instance.UpdateUserAsync(user);
 
-                DependencyService.Get<INotifications>().RegisterFcmToken(deviceUsedDto.Id);
+                App.Notifications.RegisterFcmToken(deviceUsedDto.Id);
 
                 // Prefixing with `//` switches to a different
                 // navigation stack instead of pushing to the active one

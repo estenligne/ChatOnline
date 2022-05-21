@@ -31,6 +31,7 @@ namespace XamApp.Droid.Notifications
                         App.NotificationSource.OnForeground :
                         App.NotificationSource.OnBackground;
 
+                    App.Notifications = new Notifications();
                     string data = message.Data[PushNotificationDTO.Key];
                     App.OnNotificationReceived(data, source);
                 }

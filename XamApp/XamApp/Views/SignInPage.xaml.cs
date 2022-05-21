@@ -84,7 +84,7 @@ namespace XamApp.Views
                         user.DeviceUsedId = deviceUsedDto.Id;
                         await DataStore.Instance.InsertUserAsync(user);
 
-                        DependencyService.Get<INotifications>().RegisterFcmToken(deviceUsedDto.Id);
+                        App.Notifications.RegisterFcmToken(deviceUsedDto.Id);
 
                         // Prefixing with `//` switches to a different
                         // navigation stack instead of pushing to the active one

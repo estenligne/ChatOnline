@@ -118,7 +118,7 @@ namespace XamApp
                             }
                             else
                             {
-                                DependencyService.Get<INotifications>().Notify(notification);
+                                Notifications.Notify(notification);
                             }
                         }
                         else error = await HTTPClient.GetResponseError(response);
@@ -151,7 +151,20 @@ namespace XamApp
 
         public static void Toast(string message, bool takeLong)
         {
-            DependencyService.Get<INotifications>().Toast(message, takeLong);
+            Notifications.Toast(message, takeLong);
+        }
+
+        private static INotifications _notifications;
+        public static INotifications Notifications
+        {
+            get
+            {
+                if (_notifications != null)
+                    return _notifications;
+                else
+                    return DependencyService.Get<INotifications>();
+            }
+            set { _notifications = value; }
         }
     }
 }
