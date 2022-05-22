@@ -23,6 +23,7 @@ namespace WebAPI.Services
             public string Host { get; set; }
             public int Port { get; set; }
             public string Sender { get; set; }
+            public string Username { get; set; }
             public string Password { get; set; }
         }
 
@@ -60,7 +61,7 @@ namespace WebAPI.Services
             using (var smtpClient = new SmtpClient())
             {
                 await smtpClient.ConnectAsync(_settings.Host, _settings.Port, SecureSocketOptions.StartTls);
-                await smtpClient.AuthenticateAsync(_settings.Sender, _settings.Password);
+                await smtpClient.AuthenticateAsync(_settings.Username, _settings.Password);
                 smtpClient.Timeout = 120000;
 
                 await smtpClient.SendAsync(message);
