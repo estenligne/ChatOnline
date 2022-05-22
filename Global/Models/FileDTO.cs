@@ -16,5 +16,7 @@ namespace Global.Models
         public DateTimeOffset DateUploaded { get; set; }
 
         public DateTimeOffset? DateDeleted { get; set; }
+
+        public byte[] Content; // must not serialize
     }
 }

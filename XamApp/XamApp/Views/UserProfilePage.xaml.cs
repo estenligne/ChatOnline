@@ -1,15 +1,13 @@
-﻿using System;
-using System.Net;
+﻿using Global.Models;
+using System;
+using System.IO;
 using System.Threading.Tasks;
-using Global.Enums;
-using Global.Models;
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
-using XamApp.ViewModels;
 using XamApp.Models;
 using XamApp.Services;
+using XamApp.ViewModels;
 using Xamarin.Essentials;
-using System.IO;
+using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
 
 namespace XamApp.Views
 {
@@ -17,7 +15,7 @@ namespace XamApp.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class UserProfilePage : ContentPage
     {
-        private readonly UserProfileViewModel vm;
+        protected readonly UserProfileViewModel vm;
         public long UserId { get; set; }
 
         public UserProfilePage()
@@ -29,15 +27,16 @@ namespace XamApp.Views
 
         protected override async void OnAppearing()
         {
+            if (UserId != 0)
+                vm.user.Id = UserId;
+
             base.OnAppearing();
-            vm.user.Id = UserId;
             await vm.OnAppearing();
 
-            if (!vm.IsCurrentUser || vm.user.Id == 0)
+            if (vm.HideToolbarButton)
             {
                 ToolbarItems.Clear();
             }
-            SetBusy(false);
         }
 
         private void SetBusy(bool busy)
@@ -57,11 +56,10 @@ namespace XamApp.Views
             {
                 SetBusy(true);
 
-                if(vm.ImageChosen != null)
+                if (vm.ImageChosen != null)
                 {
-                    vm.ImageChosen.Position = 0;
-
-                    var response = await HTTPClient.PostFile(null, "file", "profile photo", vm.ImageChosen);
+                    var content = new MemoryStream(vm.ImageChosen.Content, false);
+                    var response = await HTTPClient.PostFile(null, "file", vm.ImageChosen.Name, content);
                     if (response.IsSuccessStatusCode)
                     {
                         FileDTO fileDTO = await HTTPClient.ReadAsAsync<FileDTO>(response);
@@ -74,16 +72,22 @@ namespace XamApp.Views
                         SetBusy(false);
                         return;
                     }
+                    response.Dispose();
+                    content.Dispose();
                 }
 
-                if (vm.user.Id == 0) // if creating
+                if (vm.OnCreate) // if creating
                 {
                     var response = await HTTPClient.PostAsync(null, "/api/UserProfile", vm.user);
                     if (response.IsSuccessStatusCode)
                     {
                         await GotoRoomsPage();
                     }
-                    else await DisplayAlert("Failed to Create", await HTTPClient.GetResponseError(response), "Ok");
+                    else
+                    {
+                        await DisplayAlert("Failed to Create", await HTTPClient.GetResponseError(response), "Ok");
+                    }
+                    response.Dispose();
                 }
                 else // if updating
                 {
@@ -92,7 +96,11 @@ namespace XamApp.Views
                     {
                         await DisplayAlert("Success", "Saved!", "Ok");
                     }
-                    else await DisplayAlert("Failed to Save", await HTTPClient.GetResponseError(response), "Ok");
+                    else
+                    {
+                        await DisplayAlert("Failed to Save", await HTTPClient.GetResponseError(response), "Ok");
+                    }
+                    response.Dispose();
                 }
 
                 SetBusy(false);
@@ -123,10 +131,7 @@ namespace XamApp.Views
 
         private void OnEditOrOnViewButtonCliked(object sender, EventArgs e)
         {
-            if (vm.OnbuttonClicked == "Edit")
-                vm.CanEdit = true;
-            else
-                vm.CanEdit = false;
+            vm.CanEdit = !vm.CanEdit;
         }
 
         private async void OnUserPhotoclicked(object sender, EventArgs e)
@@ -138,13 +143,37 @@ namespace XamApp.Views
                     Title = "Pick a photo"
                 });
 
-                if(result!= null)
+                if (result != null)
                 {
-                    vm.ImageChosen = new MemoryStream();
                     using (var stream = await result.OpenReadAsync())
-                        stream.CopyTo(vm.ImageChosen);
-                }               
+                    {
+                        using (var memStream = new MemoryStream())
+                        {
+                            stream.CopyTo(memStream);
+
+                            var t = new FileDTO();
+                            t.Name = result.FileName;
+                            t.Size = memStream.Length;
+                            t.Content = memStream.ToArray();
+                            vm.ImageChosen = t;
+                        }
+                    }
+                }
             }
+        }
+    }
+
+    public class CurrentUserPage : UserProfilePage
+    {
+        protected override async void OnAppearing()
+        {
+            User currentUser = await DataStore.Instance.GetUserAsync();
+            if (currentUser != null)
+            {
+                vm.user.Id = currentUser.Id;
+                vm.IsCurrentUser = true;
+            }
+            base.OnAppearing();
         }
     }
 }

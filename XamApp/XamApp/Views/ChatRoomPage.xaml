@@ -4,11 +4,11 @@
              x:Class="XamApp.Views.ChatRoomPage"
              xmlns:local="clr-namespace:XamApp.ViewModels"
              x:DataType="local:ChatRoomViewModel"
-             BackgroundColor="LightYellow">
+             BackgroundColor="LightYellow"
+             Title="{Binding Title}">
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="{Binding Title}"
-                     Clicked="SeeOtherUserProfile"/>
+        <ToolbarItem Text="View" Clicked="SeeOtherUserProfile"/>
     </ContentPage.ToolbarItems>
 
     <ContentPage.Resources>

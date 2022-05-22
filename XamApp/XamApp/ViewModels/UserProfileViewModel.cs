@@ -1,4 +1,5 @@
-﻿using Global.Models;
+﻿using Global.Helpers;
+using Global.Models;
 using System.IO;
 using System.Threading.Tasks;
 using XamApp.Models;
@@ -11,60 +12,46 @@ namespace XamApp.ViewModels
     {
         public UserProfileDTO user = new UserProfileDTO();
 
-        public bool IsCurrentUser { get; set; }
-        public bool IsButtonAtBotton => CanEdit;
-
         public async Task OnAppearing()
         {
-            if (!IsBusy)
+            if (!IsBusy && user.Name == null)
             {
                 IsBusy = true;
 
-                User currentUser = await DataStore.Instance.GetUserAsync();
-
-                if (currentUser != null)
+                if (OnCreate)
                 {
-                    if (user.Id == 0)
-                    {
-                        user.Id = currentUser.Id;
-                        IsCurrentUser = user.Id == currentUser.Id;
-                    }
-                }
-                else if (user.Id == 0)
-                {
-                    canEdit = true;
+                    CanEdit = true;
                     IsCurrentUser = true;
-                }
-                OnPropertyChanged(nameof(IsCurrentUser));
-
-                var response = await HTTPClient.GetAsync(null, "/api/UserProfile?id=" + user.Id);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    user = await HTTPClient.ReadAsAsync<UserProfileDTO>(response);
-                    OnPropertyChanged(nameof(Name));
-                    OnPropertyChanged(nameof(About));
-                    OnPropertyChanged(nameof(Button2));
-                    OnPropertyChanged(nameof(ImageFile));
                 }
                 else
                 {
-                    await DisplayAlert("ERROR", await HTTPClient.GetResponseError(response), "OK");
+                    var response = await HTTPClient.GetAsync(null, "/api/UserProfile?id=" + user.Id);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        user = await HTTPClient.ReadAsAsync<UserProfileDTO>(response);
+                        OnPropertyChanged(nameof(Name));
+                        OnPropertyChanged(nameof(About));
+                        OnPropertyChanged(nameof(CanSave));
+                        OnPropertyChanged(nameof(ImageFile));
+                        OnPropertyChanged(nameof(BottomButtonText));
+                    }
+                    else
+                    {
+                        await DisplayAlert("Error", await HTTPClient.GetResponseError(response), "OK");
+                    }
+                    response.Dispose();
                 }
                 IsBusy = false;
             }
-
         }
 
-        public MemoryStream imageChosen;
-        public MemoryStream ImageChosen
+        private FileDTO imageChosen;
+        public FileDTO ImageChosen
         {
             get { return imageChosen; }
             set
             {
-                if (imageChosen != null)
-                    imageChosen.Dispose();
-
                 imageChosen = value;
                 OnPropertyChanged(nameof(ImageFile));
             }
@@ -74,10 +61,9 @@ namespace XamApp.ViewModels
         {
             get
             {
-                if (imageChosen != null)
+                if (ImageChosen != null)
                 {
-                    Stream stream = new MemoryStream(imageChosen.ToArray());
-                    return ImageSource.FromStream(() => stream);
+                    return ImageSource.FromStream(() => new MemoryStream(ImageChosen.Content, false));
                 }
                 else if (user.PhotoFile == null)
                 {
@@ -90,7 +76,20 @@ namespace XamApp.ViewModels
                 }
             }
         }
-        public bool canEdit;
+
+        private bool isCurrentUser;
+        public bool IsCurrentUser
+        {
+            get { return isCurrentUser; }
+            set
+            {
+                isCurrentUser = value;
+                OnPropertyChanged(nameof(IsCurrentUser));
+                OnPropertyChanged(nameof(ToolbarButtonText));
+            }
+        }
+
+        private bool canEdit;
         public bool CanEdit
         {
             get { return canEdit; }
@@ -99,10 +98,8 @@ namespace XamApp.ViewModels
                 canEdit = value;
                 OnPropertyChanged(nameof(CanEdit));
                 OnPropertyChanged(nameof(CannotEdit));
-                OnPropertyChanged(nameof(Button1));
-                OnPropertyChanged(nameof(Button2));
-                OnPropertyChanged(nameof(IsButtonAtBotton));
-
+                OnPropertyChanged(nameof(ToolbarButtonText));
+                OnPropertyChanged(nameof(BottomButtonText));
             }
         }
 
@@ -137,20 +134,13 @@ namespace XamApp.ViewModels
             }
         }
 
-        public string Button1 => ButtonText();
+        public bool OnCreate => user.Id == 0;
 
-        public string OnbuttonClicked;
-        public string ButtonText()
-        {
-            if (!canEdit)
-                return OnbuttonClicked = "Edit";
-            else if (user.Id == 0)
-                return OnbuttonClicked = "";
-            else
-                return OnbuttonClicked = "View";
-        }
+        public bool HideToolbarButton => OnCreate || !IsCurrentUser;
 
-        public string Button2 => CanEdit ? "Save" : user.Id == 0 ? "Create" : "";
+        public string ToolbarButtonText => HideToolbarButton ? "" : CanEdit ? "View" : "Edit";
+
+        public string BottomButtonText => CanEdit ? "Save" : OnCreate ? "Create" : "";
 
         public bool CanSave => IsValid(Type.ProfileName, Name);
 

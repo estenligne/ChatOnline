@@ -152,8 +152,14 @@ namespace XamApp.Views
 
         private async void SeeOtherUserProfile(object sender, EventArgs e)
         {
-            await Shell.Current.GoToAsync(nameof(UserProfilePage) + "?id=" + vm.Room.ProfileId);
-
+            if (vm.Room.ProfileId != 0)
+            {
+                await Shell.Current.GoToAsync(nameof(UserProfilePage) + "?id=" + vm.Room.ProfileId);
+            }
+            else // if a group
+            {
+                App.Toast("Not yet possible!", false);
+            }
         }
     }
 }
