@@ -5,6 +5,12 @@
     border-bottom: 1px solid #f6f6f6;
 }
 
+p {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 20rem;
+}
 a {
     text-decoration: none !important;
     color: black;
