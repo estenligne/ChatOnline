@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Avatar, IconButton } from "@mui/material";
 import { SearchOutlined, AttachFile, MoreVert, Close } from "@mui/icons-material/";
-import { InsertEmoticon, Mic } from "@mui/icons-material/";
+import { InsertEmoticon, Mic, Send } from "@mui/icons-material/";
 import { useParams } from "react-router-dom";
 import { useStateValue, actionTypes } from "./store";
 import { _fetch, getFileURL, dateToLocal } from "./global";
@@ -153,7 +153,8 @@ function ChatRoom() {
                         Send a message
                     </button>
                 </form>
-                <Mic />
+                {input.length>0?<Send onClick={sendMessage}/> : <Mic />}
+                
             </div>
         </div>
     );
