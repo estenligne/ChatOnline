@@ -12,7 +12,7 @@ namespace XamApp.ViewModels
     {
         public UserProfileDTO user = new UserProfileDTO();
 
-        public async Task OnAppearing()
+        public async Task OnAppearing(bool onSaveClicked = false)
         {
             if (!IsBusy && user.Name == null)
             {
@@ -43,6 +43,23 @@ namespace XamApp.ViewModels
                     response.Dispose();
                 }
                 IsBusy = false;
+            }
+            else if (BottomButtonText != "Save")
+            {
+                var response = await HTTPClient.GetAsync(null, "/api/UserProfile?id=" + user.Id);
+                user = await HTTPClient.ReadAsAsync<UserProfileDTO>(response);
+                OnPropertyChanged(nameof(Name));
+                OnPropertyChanged(nameof(About));
+                OnPropertyChanged(nameof(ToolbarButtonText));
+            }
+
+            if (onSaveClicked == true)
+            {
+                CanEdit = false;
+                OnPropertyChanged(nameof(CanEdit));
+                OnPropertyChanged(nameof(CannotEdit));
+                OnPropertyChanged(nameof(ToolbarButtonText));
+                OnPropertyChanged(nameof(BottomButtonText));
             }
         }
 

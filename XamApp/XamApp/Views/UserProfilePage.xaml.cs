@@ -95,6 +95,7 @@ namespace XamApp.Views
                     if (response.IsSuccessStatusCode)
                     {
                         await DisplayAlert("Success", "Saved!", "Ok");
+                        await vm.OnAppearing(true);
                     }
                     else
                     {
@@ -129,9 +130,12 @@ namespace XamApp.Views
             else await DisplayAlert("Failed", await HTTPClient.GetResponseError(response), "Ok");
         }
 
-        private void OnEditOrOnViewButtonCliked(object sender, EventArgs e)
+        private async void OnEditOrOnViewButtonCliked(object sender, EventArgs e)
         {
             vm.CanEdit = !vm.CanEdit;
+
+            if (vm.ToolbarButtonText == "View" || vm.ToolbarButtonText == "Edit")
+                await vm.OnAppearing();
         }
 
         private async void OnUserPhotoclicked(object sender, EventArgs e)
