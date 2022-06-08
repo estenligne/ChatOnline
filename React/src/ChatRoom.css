@@ -94,3 +94,27 @@
 .MuiSvgIcon-root:hover {
     cursor: pointer !important;
 }
+.shareImgContainer{
+    padding: 10px;
+    position: relative;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 10px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12), 0 0px 0px;
+  }
+  
+  .shareImg{
+    width: 100%;
+    object-fit: contain;
+  }
+  
+  .shareCancelImg{
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+    opacity: 0.7;
+    color: rgb(233, 152, 152);
+    background-color: white;
+    border-radius: 50%;
+  }

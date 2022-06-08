@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Avatar, IconButton } from "@mui/material";
-import { SearchOutlined, AttachFile, MoreVert, Close } from "@mui/icons-material/";
-import { InsertEmoticon, Mic, Send } from "@mui/icons-material/";
+import {
+    SearchOutlined,
+    AttachFile,
+    MoreVert,
+    Close,
+} from "@mui/icons-material/";
+import { InsertEmoticon, Mic, Send, Cancel } from "@mui/icons-material/";
 import { useParams } from "react-router-dom";
 import { useStateValue, actionTypes } from "./store";
-import { _fetch, getFileURL, dateToLocal } from "./global";
+import { _fetch, getFileURL, dateToLocal, WebAPIBaseURL } from "./global";
 import "./ChatRoom.css";
 import Message from "./Message";
 
@@ -16,6 +21,7 @@ function ChatRoom() {
     const gotoLastMessageRef = React.useRef(null);
     const messageInputRef = React.useRef(null);
     const [linkedId, setLinkedId] = useState(null);
+    const [file, setFile] = useState(null);
 
     useEffect(() => {
         if (linkedId) {
@@ -44,11 +50,14 @@ function ChatRoom() {
         }
     }, [roomId, user]);
 
-    const sendMessage = (e) => {
+    const uploadFile = () =>{
+        
+    }
+    const sendMessage = async (e) => {
         e.preventDefault();
         console.debug("You typed >>>", input);
 
-        const body = {
+        let body = {
             linkedId: linkedId ?? null,
             senderId: roomInfo.userChatRoomId,
             messageTag: { chatRoomId: roomId },
@@ -56,11 +65,45 @@ function ChatRoom() {
             dateSent: new Date().toJSON(),
         };
 
+        // upload file here. Default fetch api behavior.
+        if (file) {
+            const data = new FormData();
+            const fileName = file.name;
+            data.append("name", fileName);
+            data.append("file", file);
+
+            try {
+                const response = await fetch(`${WebAPIBaseURL}/api/File`, {
+                    method: "POST",
+                    body: data,
+                    headers: {
+                        Authorization: user.account.authorization,
+                    },
+                })
+                    .then((response) => {
+                       setFile(null)
+                       return response.json()
+                    })
+                    .then((response) => {
+                        console.log("In upload file",response)
+                        body.fileId = response.id;
+                        setFile(_=>response);
+                        console.log("File in response now", file)
+                        return response;
+                    })
+                    setFile(response)
+                    console.log("Setting file after response", file)
+            } catch (error) {
+                console.error(new Error(error));
+            }
+
+        }
+      
         _fetch(user, "/api/Message", "POST", body)
             .then((response) => response.json())
             .then((message) => {
                 setLinkedId(null);
-
+                setFile(null);
                 // update messages in the store
                 dispatch({
                     type: actionTypes.FETCH_MESSAGES,
@@ -75,15 +118,24 @@ function ChatRoom() {
                             type: actionTypes.SET_ROOMS,
                             rooms: _rooms,
                         });
-                        setRoomInfo(_rooms.find(room => room.id === parseInt(roomId)))
+                        setRoomInfo(
+                            _rooms.find((room) => room.id === parseInt(roomId))
+                        );  
                     });
+            })
+            .catch((err) => {
+                setFile(null)
+                console.error(new Error(err));
             });
 
         console.log("after sent, ROOMS", rooms);
+    if(file)window.location.reload()
         setInput("");
+        setFile(null)
+        
     };
 
-    const linked = linkedId ? messages.find(m => m.id === linkedId) : null;
+    const linked = linkedId ? messages.find((m) => m.id === linkedId) : null;
 
     return (
         <div className="room">
@@ -106,7 +158,9 @@ function ChatRoom() {
                         <SearchOutlined />
                     </IconButton>
                     <IconButton>
-                        <AttachFile />
+                        <label htmlFor="file">
+                            <AttachFile />
+                        </label>
                     </IconButton>
                     <IconButton>
                         <MoreVert />
@@ -127,6 +181,24 @@ function ChatRoom() {
                 <div ref={gotoLastMessageRef}></div>
             </div>
 
+            {file && (
+                <div className="shareImgContainer">
+                    {/* {file.type == "image/jpeg" || file.type == "image/png"? */}
+                    {/* <img className="shareImg" src={URL.createObjectURL(file)} alt="" /> :  */}
+                    <div>
+                        <AttachFile />
+                        <span>{file.name}</span>
+                    </div>
+                    {/* } */}
+
+                    <Cancel
+                        className="shareCancelImg"
+                        onClick={() => {
+                            setFile(null);
+                        }}
+                    />
+                </div>
+            )}
             {linked ? (
                 <div className="chat__reply">
                     <p className="">
@@ -138,7 +210,6 @@ function ChatRoom() {
                     <Close className="" onClick={() => setLinkedId(null)} />
                 </div>
             ) : null}
-
             <div className="room__footer">
                 <InsertEmoticon />
                 <form>
@@ -149,12 +220,17 @@ function ChatRoom() {
                         type="text"
                         placeholder="Type a message"
                     />
+                    <input
+                        type="file"
+                        id="file"
+                        style={{ display: "none" }}
+                        onChange={(e) => setFile(e.target.files[0])}
+                    />
                     <button onClick={sendMessage} type="submit">
                         Send a message
                     </button>
                 </form>
-                {input.length>0?<Send onClick={sendMessage}/> : <Mic />}
-                
+                {input.length > 0 ? <Send onClick={sendMessage} /> : <Mic />}
             </div>
         </div>
     );
