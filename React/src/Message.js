@@ -14,8 +14,7 @@ function Message({ messages, message, roomInfo, setLinkedId }) {
     ];
 
     const linked = messages.find((m) => m.id === message.linkedId);
-    let extensions =
-        /.png|.jpg|.jpeg|.svg|.jfif|.jpe|.jif|.jfi|.gif|.webp|.bmp|.dib|.heif|.heic?/gi;
+    const extensions = /.png|.jpg|.jpeg|.svg|.jfif|.jpe|.jif|.jfi|.gif|.webp|.bmp|.dib|.heif|.heic?/gi;
 
     return (
         <div
@@ -37,21 +36,21 @@ function Message({ messages, message, roomInfo, setLinkedId }) {
                 </p>
             ) : null}
 
-            {message.file ? (
-                <>
-                    {getFileURL(message.file.name).match(extensions) ? (
-                        <div className="chat__image">
+            {!message.file ? (
+                null
+            ) :
+                message.file.name.match(extensions) ? (
+                    <div className="chat__image">
                         <div className="chat__imageLink">
                             <img src={getFileURL(message.file.name)} alt="" />
                         </div>
-                        </div>
-                    ) : (
-                        <div className="shareImgContainer">
-                            <AttachFileRounded /><span>{getFileURL(message.file.name).split(" ")[3]}</span>
-                        </div>
-                    )}
-                </>
-            ) : null}
+                    </div>
+                ) : (
+                    <div className="shareImgContainer">
+                        <AttachFileRounded /><span>{getFileURL(message.file.name).split(" ")[3]}</span>
+                    </div>
+                )
+            }
 
             {message.body}
 

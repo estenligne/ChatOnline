@@ -5,11 +5,14 @@ import {
     AttachFile,
     MoreVert,
     Close,
+    InsertEmoticon,
+    Mic,
+    Send,
+    Cancel
 } from "@mui/icons-material/";
-import { InsertEmoticon, Mic, Send, Cancel } from "@mui/icons-material/";
 import { useParams } from "react-router-dom";
 import { useStateValue, actionTypes } from "./store";
-import { _fetch, getFileURL, dateToLocal, WebAPIBaseURL } from "./global";
+import { _fetch, getFileURL, dateToLocal } from "./global";
 import "./ChatRoom.css";
 import Message from "./Message";
 
@@ -50,9 +53,6 @@ function ChatRoom() {
         }
     }, [roomId, user]);
 
-    const uploadFile = () =>{
-        
-    }
     const sendMessage = async (e) => {
         e.preventDefault();
         console.debug("You typed >>>", input);
@@ -66,44 +66,38 @@ function ChatRoom() {
         };
 
         // upload file here. Default fetch api behavior.
+        let fileDto = null;
         if (file) {
-            const data = new FormData();
-            const fileName = file.name;
-            data.append("name", fileName);
-            data.append("file", file);
+            const formData = new FormData();
+            formData.append("file", file);
 
-            try {
-                const response = await fetch(`${WebAPIBaseURL}/api/File`, {
-                    method: "POST",
-                    body: data,
-                    headers: {
-                        Authorization: user.account.authorization,
-                    },
+            fileDto = await _fetch(user, "/api/File", "POST", null, formData)
+                .then((response) => {
+                    setFile(null);
+                    return response.json();
                 })
-                    .then((response) => {
-                       setFile(null)
-                       return response.json()
-                    })
-                    .then((response) => {
-                        console.log("In upload file",response)
-                        body.fileId = response.id;
-                        setFile(_=>response);
-                        console.log("File in response now", file)
-                        return response;
-                    })
-                    setFile(response)
-                    console.log("Setting file after response", file)
-            } catch (error) {
-                console.error(new Error(error));
-            }
-
+                .then((response) => {
+                    console.log("In upload file", response)
+                    body.fileId = response.id;
+                    console.log("File in response now", file);
+                    return response;
+                })
+                .catch(error => {
+                    setFile(null);
+                    console.error(new Error(error));
+                    return null;
+                });
         }
-      
+
         _fetch(user, "/api/Message", "POST", body)
             .then((response) => response.json())
             .then((message) => {
+
                 setLinkedId(null);
                 setFile(null);
+                setInput("");
+                message.file = fileDto;
+
                 // update messages in the store
                 dispatch({
                     type: actionTypes.FETCH_MESSAGES,
@@ -120,19 +114,13 @@ function ChatRoom() {
                         });
                         setRoomInfo(
                             _rooms.find((room) => room.id === parseInt(roomId))
-                        );  
+                        );
                     });
             })
             .catch((err) => {
                 setFile(null)
                 console.error(new Error(err));
             });
-
-        console.log("after sent, ROOMS", rooms);
-    if(file)window.location.reload()
-        setInput("");
-        setFile(null)
-        
     };
 
     const linked = linkedId ? messages.find((m) => m.id === linkedId) : null;
@@ -183,22 +171,18 @@ function ChatRoom() {
 
             {file && (
                 <div className="shareImgContainer">
-                    {/* {file.type == "image/jpeg" || file.type == "image/png"? */}
-                    {/* <img className="shareImg" src={URL.createObjectURL(file)} alt="" /> :  */}
                     <div>
                         <AttachFile />
                         <span>{file.name}</span>
                     </div>
-                    {/* } */}
 
                     <Cancel
                         className="shareCancelImg"
-                        onClick={() => {
-                            setFile(null);
-                        }}
+                        onClick={() => setFile(null)}
                     />
                 </div>
             )}
+
             {linked ? (
                 <div className="chat__reply">
                     <p className="">
@@ -210,6 +194,7 @@ function ChatRoom() {
                     <Close className="" onClick={() => setLinkedId(null)} />
                 </div>
             ) : null}
+
             <div className="room__footer">
                 <InsertEmoticon />
                 <form>
