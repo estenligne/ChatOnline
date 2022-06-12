@@ -153,7 +153,7 @@ function ChatRoom() {
                         Send a message
                     </button>
                 </form>
-                {input.length>0?<Send onClick={sendMessage}/> : <Mic />}
+                {input.length > 0 ? <Send onClick={sendMessage}/> : <Mic />}
                 
             </div>
         </div>
