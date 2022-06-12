@@ -22,7 +22,7 @@ namespace Global.Models
         public DateTimeOffset DateCreated { get; set; }
         public DateTimeOffset? DateDeleted { get; set; }
 
-        public string PushNotificationToken { get; set; }
+        //public string PushNotificationToken { get; set; }
         public DateTimeOffset? DateTokenProvided { get; set; }
     }
 }

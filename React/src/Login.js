@@ -41,7 +41,7 @@ function Login() {
 
                 let args = "?platform=WebApp";
                 args += "&language=" + window.navigator.language;
-                args += "&timezone=" + Intl.DateTimeFormat().resolvedOptions().timeZone;
+                args += "&timezone=" + encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone);
 
                 _fetch(user, "/api/DeviceUsed" + args, "PUT")
                     .then(response => response.json())

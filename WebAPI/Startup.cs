@@ -64,15 +64,15 @@ namespace WebAPI
             string secretKey = _configuration["JwtSecurity:SecretKey"];
             string publicKey = _configuration["JwtSecurity:PublicKey"];
 
-            if (!string.IsNullOrEmpty(secretKey))
-            {
-                securityKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(secretKey));
-            }
-            else if (!string.IsNullOrEmpty(publicKey))
+            if (!string.IsNullOrEmpty(publicKey))
             {
                 RSA rsa = RSA.Create(); // note: must not use 'using', must not dispose.
                 rsa.ImportRSAPublicKey(Convert.FromBase64String(publicKey), out _);
                 securityKey = new RsaSecurityKey(rsa);
+            }
+            else if (!string.IsNullOrEmpty(secretKey))
+            {
+                securityKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(secretKey));
             }
             else throw new SystemException("No security key specified!");
 
