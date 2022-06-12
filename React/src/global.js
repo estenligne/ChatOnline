@@ -8,17 +8,26 @@ export const WebAPIBaseURL = process.env.REACT_APP_WebAPIBaseURL;
  * @param {{ account: {}}} user
  * @param {string} url
  * @param {"GET"|"POST"|"PUT"|"DELETE"} method
- * @param {Object} body
+ * @param {Object} jsonBody
+ * @param {FormData} formData
  * @returns {Promise<Response>} Promise of HTTP response
  */
-export function _fetch(user, url, method, body) {
+export function _fetch(user, url, method, jsonBody, formData) {
     const init = { headers: {} };
 
-    if (method) init.method = method;
-    if (body) init.body = JSON.stringify(body);
+    if (method)
+        init.method = method;
 
-    if (body) init.headers['Content-Type'] = 'application/json';
-    if (user) init.headers['Authorization'] = user.account.authorization;
+    if (jsonBody) {
+        init.body = JSON.stringify(jsonBody);
+        init.headers['Content-Type'] = 'application/json';
+    }
+
+    if (formData)
+        init.body = formData;
+
+    if (user)
+        init.headers['Authorization'] = user.account.authorization;
 
     if (url[0] === '/')
         url = WebAPIBaseURL + url;

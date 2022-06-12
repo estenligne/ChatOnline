@@ -1,7 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Avatar, IconButton } from "@mui/material";
-import { SearchOutlined, AttachFile, MoreVert, Close } from "@mui/icons-material/";
-import { InsertEmoticon, Mic } from "@mui/icons-material/";
+import {
+    SearchOutlined,
+    AttachFile,
+    MoreVert,
+    Close,
+    InsertEmoticon,
+    Mic,
+    Send,
+    Cancel
+} from "@mui/icons-material/";
 import { useParams } from "react-router-dom";
 import { useStateValue, actionTypes } from "./store";
 import { _fetch, getFileURL, dateToLocal } from "./global";
@@ -16,6 +24,7 @@ function ChatRoom() {
     const gotoLastMessageRef = React.useRef(null);
     const messageInputRef = React.useRef(null);
     const [linkedId, setLinkedId] = useState(null);
+    const [file, setFile] = useState(null);
 
     useEffect(() => {
         if (linkedId) {
@@ -44,11 +53,11 @@ function ChatRoom() {
         }
     }, [roomId, user]);
 
-    const sendMessage = (e) => {
+    const sendMessage = async (e) => {
         e.preventDefault();
         console.debug("You typed >>>", input);
 
-        const body = {
+        let body = {
             linkedId: linkedId ?? null,
             senderId: roomInfo.userChatRoomId,
             messageTag: { chatRoomId: roomId },
@@ -56,10 +65,38 @@ function ChatRoom() {
             dateSent: new Date().toJSON(),
         };
 
+        // upload file here. Default fetch api behavior.
+        let fileDto = null;
+        if (file) {
+            const formData = new FormData();
+            formData.append("file", file);
+
+            fileDto = await _fetch(user, "/api/File", "POST", null, formData)
+                .then((response) => {
+                    setFile(null);
+                    return response.json();
+                })
+                .then((response) => {
+                    console.log("In upload file", response)
+                    body.fileId = response.id;
+                    console.log("File in response now", file);
+                    return response;
+                })
+                .catch(error => {
+                    setFile(null);
+                    console.error(new Error(error));
+                    return null;
+                });
+        }
+
         _fetch(user, "/api/Message", "POST", body)
             .then((response) => response.json())
             .then((message) => {
+
                 setLinkedId(null);
+                setFile(null);
+                setInput("");
+                message.file = fileDto;
 
                 // update messages in the store
                 dispatch({
@@ -75,15 +112,18 @@ function ChatRoom() {
                             type: actionTypes.SET_ROOMS,
                             rooms: _rooms,
                         });
-                        setRoomInfo(_rooms.find(room => room.id === parseInt(roomId)))
+                        setRoomInfo(
+                            _rooms.find((room) => room.id === parseInt(roomId))
+                        );
                     });
+            })
+            .catch((err) => {
+                setFile(null)
+                console.error(new Error(err));
             });
-
-        console.log("after sent, ROOMS", rooms);
-        setInput("");
     };
 
-    const linked = linkedId ? messages.find(m => m.id === linkedId) : null;
+    const linked = linkedId ? messages.find((m) => m.id === linkedId) : null;
 
     return (
         <div className="room">
@@ -106,7 +146,9 @@ function ChatRoom() {
                         <SearchOutlined />
                     </IconButton>
                     <IconButton>
-                        <AttachFile />
+                        <label htmlFor="file">
+                            <AttachFile />
+                        </label>
                     </IconButton>
                     <IconButton>
                         <MoreVert />
@@ -126,6 +168,20 @@ function ChatRoom() {
                 ))}
                 <div ref={gotoLastMessageRef}></div>
             </div>
+
+            {file && (
+                <div className="shareImgContainer">
+                    <div>
+                        <AttachFile />
+                        <span>{file.name}</span>
+                    </div>
+
+                    <Cancel
+                        className="shareCancelImg"
+                        onClick={() => setFile(null)}
+                    />
+                </div>
+            )}
 
             {linked ? (
                 <div className="chat__reply">
@@ -149,11 +205,17 @@ function ChatRoom() {
                         type="text"
                         placeholder="Type a message"
                     />
+                    <input
+                        type="file"
+                        id="file"
+                        style={{ display: "none" }}
+                        onChange={(e) => setFile(e.target.files[0])}
+                    />
                     <button onClick={sendMessage} type="submit">
                         Send a message
                     </button>
                 </form>
-                <Mic />
+                {input.length > 0 ? <Send onClick={sendMessage} /> : <Mic />}
             </div>
         </div>
     );
