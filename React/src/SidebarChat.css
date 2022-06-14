@@ -5,11 +5,12 @@
     border-bottom: 1px solid #f6f6f6;
 }
 
-p {
+.sidebarChat__info p {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    width: 20rem;
+    width: 25vw; 
+    min-width: 10rem;
 }
 a {
     text-decoration: none !important;
