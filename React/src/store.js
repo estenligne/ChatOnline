@@ -2,14 +2,14 @@ import React, { createContext, useContext, useReducer } from "react";
 
 const StateContext = createContext();
 
-const default_dispatch = () => console.error('Store is NOT ready');
+const default_dispatch = () => console.error("Store is NOT ready");
 
 export const store = {
-    dispatch: default_dispatch
+    dispatch: default_dispatch,
 };
 
 export const StateProvider = ({ children }) => {
-    const [state, dispatch] = useReducer(reducer, initialState)
+    const [state, dispatch] = useReducer(reducer, initialState);
 
     if (store.dispatch !== dispatch) {
         if (store.dispatch !== default_dispatch) {
@@ -23,7 +23,7 @@ export const StateProvider = ({ children }) => {
             {children}
         </StateContext.Provider>
     );
-}
+};
 
 export const useStateValue = () => useContext(StateContext);
 
@@ -38,6 +38,8 @@ export const actionTypes = {
     FETCH_MESSAGES: "FETCH_MESSAGES",
     SET_ROOMS: "SET_ROOMS",
     SET_MESSAGE: "SET_MESSAGE",
+    UPDATE_MESSAGE: "UPDATE_MESSAGE",
+    UPDATE_ROOM: "UPDATE_ROOM",
 };
 
 const reducer = (state, action) => {
@@ -51,7 +53,18 @@ const reducer = (state, action) => {
         case actionTypes.SET_MESSAGE:
             return {
                 ...state,
-                messages: [...state.messages, action.message]
+                messages: [...state.messages, action.message],
+            };
+        case actionTypes.UPDATE_MESSAGE:
+            state.messages.forEach((message) => {
+                if (message.id == action.message.id) {
+                    message = action.message;
+                    return;
+                }
+            });
+            return {
+                ...state,
+                messages: state.messages,
             };
         case actionTypes.FETCH_MESSAGES:
             return {
@@ -68,6 +81,18 @@ const reducer = (state, action) => {
             return {
                 ...state,
                 rooms: action.rooms,
+            };
+        case actionTypes.UPDATE_ROOM:
+            state.rooms.forEach((room) => {
+                if (room.latestMessage.id == action.room.latestMessage.id) {
+                    room.latestMessage.messageType = 49;
+                    room.latestMessage.isDeleted = true;
+                    return;
+                }
+            });
+            return {
+                ...state,
+                rooms: state.rooms,
             };
         default:
             return state;

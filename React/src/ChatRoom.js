@@ -53,6 +53,48 @@ function ChatRoom() {
         }
     }, [roomId, user]);
 
+    const deleteMessage = (MessageSentId) => {
+        const message = messages.find((m) => m.id === MessageSentId);
+        const date = new Date().toJSON();
+
+        let args = `/api/Message?messageSentId=${message.id}&dateDeleted=${date}`;
+        _fetch(user, args, "DELETE")
+            .then(function (response) {
+                console.log(response);
+                if (response.ok) {
+                    message.dateDeleted = date;
+                    dispatch({
+                        type: actionTypes.UPDATE_MESSAGE,
+                        message,
+                    });
+                    // get max id of message
+                    let maxId = messages[0].id;
+                    messages.forEach(m => {
+                        if(m.id>maxId)maxId=m.id
+                    });
+                    let room = rooms.find(r=>r.latestMessage.id==message.id)
+
+                    console.log(maxId, message.id, room.latestMessage)
+                    if(maxId==message.id){
+                        // updateRoom shortbody
+                        room.messageType = 49; //deleted
+                        dispatch({
+                            type: actionTypes.UPDATE_ROOM,
+                            room,
+                        });
+                        console.log("Updated room:", room)
+                    }
+                    
+                    console.debug("After modification.", message);
+                } else {
+                    alert(
+                        `${response.statusText}: Can't delete message at this time.`
+                    );
+                }
+            })
+            .catch((err) => {});
+    };
+
     const sendMessage = async (e) => {
         e.preventDefault();
         console.debug("You typed >>>", input);
@@ -164,6 +206,7 @@ function ChatRoom() {
                         message={message}
                         roomInfo={roomInfo}
                         setLinkedId={setLinkedId}
+                        deleteMessage={deleteMessage}
                     />
                 ))}
                 <div ref={gotoLastMessageRef}></div>

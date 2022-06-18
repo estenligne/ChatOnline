@@ -82,7 +82,7 @@ function Sidebar() {
         const url = "/api/DeviceUsed?id=" + user.deviceUsedId;
         _fetch(user, url, "DELETE");
         window.localStorage.removeItem("userData");
-        window.location.reload();
+        window.location.replace("/");
     };
 
     const settingsOptions = [

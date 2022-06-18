@@ -18,7 +18,7 @@ function SidebarChat({ room }) {
     }
 
     const body = room.latestMessage.id === 0 ?
-        <i>(no message)</i> :
+        <i>(no message)</i> : room.latestMessage.messageType == 49? <i>(deleted)</i> :
         room.latestMessage.shortBody;
 
     return (

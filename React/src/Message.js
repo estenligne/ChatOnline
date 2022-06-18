@@ -4,13 +4,14 @@ import { getFileURL, dateToLocal } from "./global";
 import OptionsButton from "./OptionsButton";
 import "./Message.css";
 
-function Message({ messages, message, roomInfo, setLinkedId }) {
+function Message({ messages, message, roomInfo, setLinkedId, deleteMessage }) {
+
     const isSender = message.senderId === roomInfo.userChatRoomId;
     const showName = !isSender && roomInfo.type === 2; // if a group
 
     const options = [
         { name: "Reply", callback: () => setLinkedId(message.id) },
-        { name: "Delete", callback: () => alert("Not yet implemented!") },
+        { name: "Delete", callback: () => deleteMessage(message.id) }
     ];
 
     const linked = messages.find((m) => m.id === message.linkedId);
@@ -52,7 +53,7 @@ function Message({ messages, message, roomInfo, setLinkedId }) {
                 )
             }
 
-            {message.body}
+            {message.dateDeleted ? <i>(deleted)</i> : message.body}
 
             <span className="chat__timestamp">
                 {dateToLocal(new Date(message.dateSent))}
