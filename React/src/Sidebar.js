@@ -17,7 +17,7 @@ import "./Sidebar.css";
 
 function Sidebar() {
     const navigate = useNavigate();
-    const [{ user, rooms }, dispatch] = useStateValue();
+    const [{ user, rooms, messages }, dispatch] = useStateValue();
 
     const fetchRooms = () => {
         _fetch(user, "/api/ChatRoom/GetAll")
@@ -25,13 +25,14 @@ function Sidebar() {
             .then((rooms) => {
                 dispatch({ type: actionTypes.SET_ROOMS, rooms });
             });
-    }
+    };
     useEffect(fetchRooms, [user, dispatch]);
 
     const createNewDiscussion = () => {
         const accountID = prompt("Enter account ID of contact");
         if (accountID) {
-            const url = `/api/ChatRoom/CreatePrivate?accountID=${encodeURIComponent(accountID)}`;
+            const _accountID = encodeURIComponent(accountID);
+            const url = `/api/ChatRoom/CreatePrivate?accountID=${_accountID}`;
             _fetch(user, url, "POST")
                 .then((response) => response.json())
                 .then((response) => {
@@ -72,7 +73,26 @@ function Sidebar() {
                 .then((response) => {
                     console.info("Successfully joined group", response);
                     window.alert("Success! You have joined the group.");
-                    navigate(`/rooms/${response.chatRoomId}`);
+
+                    const userData = JSON.parse(window.localStorage.getItem("userData"));
+                    const body = {
+                        linkedId: null,
+                        senderId: response.id,
+                        messageTag: { chatRoomId: response.chatRoomId },
+                        body: `${userData.account.phoneNumber} joined the group`,
+                        dateSent: new Date().toJSON(),
+                    };
+
+                    _fetch(user, "/api/Message", "POST", body)
+                        .then((response) => response.json())
+                        .then((message) => {
+                            // update messages in the store
+                            dispatch({
+                                type: actionTypes.FETCH_MESSAGES,
+                                messages: [...messages, message],
+                            });
+                            navigate(`/rooms/${response.chatRoomId}`);
+                        }).catch((err) => new Error(err));
                 })
                 .catch((err) => console.error(err));
         }
