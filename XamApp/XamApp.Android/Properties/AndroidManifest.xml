@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="2" android:versionName="0.4.0" package="com.estenligne.chatonline" android:installLocation="auto">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="8" android:versionName="0.10.1" package="com.estenligne.chatonline" android:installLocation="auto">
 	<uses-sdk android:minSdkVersion="21" android:targetSdkVersion="30" />
-	<application android:label="ChatOnline" android:theme="@style/MainTheme">
+	<application android:label="ChatOnline" android:theme="@style/MainTheme" android:icon="@mipmap/icon">
 		<meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@drawable/icon_logo" />
 		<meta-data android:name="com.google.firebase.messaging.default_notification_channel_id" android:value="default_notification_channel_id" />
 	</application>
