@@ -7,6 +7,10 @@
              BackgroundColor="LightYellow"
              Title="{Binding Title}">
 
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="View" Clicked="SeeOtherUserProfile"/>
+    </ContentPage.ToolbarItems>
+
     <ContentPage.Resources>
         <ResourceDictionary>
             <Color x:Key="LinkedMessageBackground">#EEEEEE</Color>

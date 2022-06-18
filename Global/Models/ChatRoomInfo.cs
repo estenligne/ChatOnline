@@ -22,6 +22,8 @@ namespace Global.Models
         /// </summary>
         public string Name { get; set; }
 
+        public long ProfileId { get; set; }
+
         /// <summary>
         /// The PhotoFile.Name of the UserProfile or GroupProfile
         /// </summary>

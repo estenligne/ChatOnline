@@ -23,6 +23,12 @@ namespace XamApp.Services
         public const string WebAPIBaseURL = "https://api.chatonline.estenligne.com";
 #endif
 
+        public static Uri GetFileUri(string fileName)
+        {
+            string path = "/api/File/Download?fileName=" + fileName;
+            return new Uri(WebAPIBaseURL + path);
+        }
+
         public static async Task<HttpClient> NewClient(bool doSignIn = true, int timeout = 60)
         {
             var client = new HttpClient();

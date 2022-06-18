@@ -108,6 +108,7 @@ namespace WebAPI.Controllers
 
                 chatRoomInfo.Name = otherUser.Name;
                 chatRoomInfo.PhotoFileName = otherUser.PhotoFile?.Name;
+                chatRoomInfo.ProfileId = otherUser.Id;
             }
             else
             {

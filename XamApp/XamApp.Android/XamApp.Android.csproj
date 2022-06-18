@@ -99,6 +99,7 @@
     <AndroidResource Include="Resources\drawable\icon_about.png" />
     <AndroidResource Include="Resources\drawable\icon_group.png" />
     <AndroidResource Include="Resources\drawable\icon_person.png" />
+    <AndroidResource Include="Resources\drawable\userimage.png" />
     <AndroidResource Include="Resources\drawable-mdpi\icon_logo.png" />
     <AndroidResource Include="Resources\drawable-xxxhdpi\icon_logo.png" />
   </ItemGroup>

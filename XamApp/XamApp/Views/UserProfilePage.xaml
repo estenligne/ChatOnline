@@ -3,15 +3,35 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="XamApp.Views.UserProfilePage"
              xmlns:local="clr-namespace:XamApp.ViewModels"
+             x:DataType="local:UserProfileViewModel"
              Title="Profile">
 
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="{Binding ToolbarButtonText}"
+                     Clicked="OnEditOrOnViewButtonCliked"/>
+    </ContentPage.ToolbarItems>
+
     <ContentPage.Content>
-        <ScrollView x:DataType="local:UserProfileViewModel">
+        <ScrollView>
             <StackLayout Padding="20,0">
+
+                <ContentView Padding="10">
+                    <ImageButton
+                        HeightRequest="100"
+                        WidthRequest="100"
+                        HorizontalOptions="Center"
+                        Aspect="Fill"
+                        Source="{Binding ImageFile}"
+                        BackgroundColor="Transparent"
+                        CornerRadius="20"
+                        Clicked="OnUserPhotoclicked"
+                        />
+                </ContentView>
 
                 <Entry Text="{Binding Name, Mode=TwoWay}"
                         Placeholder="name"
                         TextColor="{Binding NameColor}"
+                        IsReadOnly="{Binding CannotEdit}"
                         FontSize="Large"
                         Margin="0,20" />
 
@@ -23,13 +43,15 @@
                             Keyboard="Text"
                             Text="{Binding About, Mode=TwoWay}"
                             BackgroundColor="White"
+                            IsReadOnly="{Binding CannotEdit}"
                             Placeholder="about"
                             MaxLength="4000"
                             AutoSize="Disabled" />
                 </Frame>
 
-                <Button Text="{Binding ButtonText}"
+                <Button Text="{Binding BottomButtonText}"
                         Clicked="OnSaveClicked"
+                        IsVisible="{Binding CanEdit}"
                         IsEnabled="{Binding CanSave}"
                         FontSize="Large"
                         Margin="0,20" />
