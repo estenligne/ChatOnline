@@ -134,7 +134,7 @@ namespace WebAPI.Models
             await dbc.SaveChangesAsync();
         }
 
-        private static async Task SetupUser(
+        public static async Task SetupUser(
             ApplicationDbContext dbc,
             ILogger logger,
             HttpClient httpClient,
