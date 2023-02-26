@@ -12,10 +12,10 @@ using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using WebAPI.Migrations;
 using WebAPI.Models;
-using WebAPI.Setup;
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using WebAPI.Services;
 
 namespace WebAPI
 {
@@ -177,13 +177,11 @@ namespace WebAPI
 
             if (_env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebAPI v1"));
+                app.UseSwaggerUI();
             }
             else
             {
-                app.UseHsts();
                 app.UseHttpsRedirection();
             }
 

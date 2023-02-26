@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace WebAPI.Setup
+namespace WebAPI.Services
 {
     // https://stackoverflow.com/questions/42199757/enable-options-header-for-cors-on-net-core-web-api
     public class OptionsMiddleware
