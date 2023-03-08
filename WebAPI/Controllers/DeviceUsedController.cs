@@ -321,7 +321,7 @@ namespace WebAPI.Controllers
                 }
 
                 byte[] content = System.Text.Encoding.ASCII.GetBytes(sql);
-                return File(content, "application/sql", "alldata.sql");
+                return FileCompressed(content, "application/sql", "alldata.sql");
             }
             catch (Exception ex)
             {
