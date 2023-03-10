@@ -14,14 +14,14 @@ using AutoMapper;
 
 namespace WebAPI.Controllers
 {
-    public class DeviceUsedController : BaseController<DeviceUsedController>
+    public class UserDeviceController : BaseController<UserDeviceController>
     {
         private readonly PushNotificationService _pushNotificationService;
 
-        public DeviceUsedController(
+        public UserDeviceController(
             PushNotificationService pushNotificationService,
             ApplicationDbContext context,
-            ILogger<DeviceUsedController> logger,
+            ILogger<UserDeviceController> logger,
             IMapper mapper) : base(context, logger, mapper)
         {
             _pushNotificationService = pushNotificationService;
