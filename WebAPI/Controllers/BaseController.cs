@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Text;
@@ -11,6 +12,7 @@ using Global.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using WebAPI.Models;
 
 namespace WebAPI.Controllers
@@ -98,6 +100,25 @@ namespace WebAPI.Controllers
             if (isValid)
                 return null;
             else return results;
+        }
+
+        protected FileResult FileCompressed(byte[] content, string contentType, string fileDownloadName)
+        {
+            string acceptEncoding = Request.Headers["Accept-Encoding"];
+            if (acceptEncoding.Contains("gzip"))
+            {
+                using (var compressed = new MemoryStream())
+                {
+                    using (var stream = new GZipStream(compressed, CompressionMode.Compress))
+                    {
+                        stream.Write(content, 0, content.Length);
+                        stream.Close();
+                        Response.Headers.Add("Content-Encoding", "gzip");
+                        content = compressed.ToArray();
+                    }
+                }
+            }
+            return File(content, contentType, fileDownloadName);
         }
     }
 }

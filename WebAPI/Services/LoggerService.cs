@@ -3,11 +3,11 @@ using Microsoft.Extensions.Logging;
 using NLog.Web;
 using System;
 
-namespace WebAPI.Setup
+namespace WebAPI.Services
 {
-    public static class LoggerProfile
+    public static class LoggerService
     {
-        public enum Kind
+        private enum Kind
         {
             Console,
             NLog,
@@ -21,24 +21,30 @@ namespace WebAPI.Setup
             {
                 return Enum.Parse<Kind>(value);
             }
-            else return Kind.NLog;
+            else return Kind.Console;
         }
 
-        private static ILoggerFactory GetLoggerFactory()
+        private static ILoggerFactory loggerFactory = null;
+
+        /// <summary>
+        /// Creates a new <see cref="ILogger"/> instance.
+        /// </summary>
+        /// <param name="categoryName">The category name for messages produced by the logger.</param>
+        /// <returns>The <see cref="ILogger"/>.</returns>
+        public static ILogger CreateLogger(string categoryName)
         {
-            return LoggerFactory.Create(builder =>
+            if (loggerFactory == null)
             {
-                if (GetKind() == Kind.NLog)
+                loggerFactory = LoggerFactory.Create(builder =>
                 {
-                    builder.AddNLog("nlog.config");
-                }
-                else builder.AddConsole();
-            });
-        }
-
-        public static ILogger GetLogger<T>()
-        {
-            return GetLoggerFactory().CreateLogger<T>();
+                    if (GetKind() == Kind.NLog)
+                    {
+                        builder.AddNLog("nlog.config");
+                    }
+                    else builder.AddConsole();
+                });
+            }
+            return loggerFactory.CreateLogger(categoryName);
         }
 
         public static void ConfigureLogging(IHostBuilder hostBuilder)

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using WebAPI.Setup;
+using WebAPI.Services;
 using System;
 
 namespace WebAPI
@@ -10,7 +10,7 @@ namespace WebAPI
     {
         public static void Main(string[] args)
         {
-            ILogger logger = LoggerProfile.GetLogger<Program>();
+            ILogger logger = LoggerService.CreateLogger("Program");
             try
             {
                 logger.LogInformation("--------------------");
@@ -28,7 +28,7 @@ namespace WebAPI
             }
             finally
             {
-                LoggerProfile.Shutdown();
+                LoggerService.Shutdown();
             }
         }
 
@@ -44,7 +44,7 @@ namespace WebAPI
                 webBuilder.UseStartup<Startup>();
             });
 
-            LoggerProfile.ConfigureLogging(hostBuilder);
+            LoggerService.ConfigureLogging(hostBuilder);
 
             return hostBuilder;
         }

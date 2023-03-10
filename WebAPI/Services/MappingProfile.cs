@@ -2,7 +2,7 @@
 using WebAPI.Models;
 using Global.Models;
 
-namespace WebAPI.Setup
+namespace WebAPI.Services
 {
     public class MappingProfile : Profile
     {
