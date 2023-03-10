@@ -164,8 +164,8 @@ namespace WebAPI.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [HttpGet(nameof(GetAllData))]
-        public async Task<ActionResult> GetAllData(long id)
+        [HttpGet(nameof(GetRoomsAsSQL))]
+        public async Task<ActionResult> GetRoomsAsSQL(long id)
         {
             try
             {
@@ -296,7 +296,7 @@ namespace WebAPI.Controllers
                     sql += $"\t({userRoom.Id}, {userRoom.UserProfileId}, {room.Id}, {(int)userRoom.UserRole}, {userRoom.DateAdded.ToUnixTimeMilliseconds()}){comma}";
                 }
 
-                remaining = messagesSent.Count;
+                /*remaining = messagesSent.Count;
                 sql += "INSERT OR REPLACE INTO MessagesSent (Id, Type, RoomId, SenderId, DateDrafted, DateUserSent, Status, Body) VALUES\n";
 
                 foreach (RoomMessageSent ms in messagesSent)
@@ -318,10 +318,10 @@ namespace WebAPI.Controllers
 
                     string comma = GetComma(--remaining);
                     sql += $"\t({mr_hexId}, {ms_hexId}, {mr.ReceiverId}, {mr.DateReceived.ToUnixTimeMilliseconds()}, 0){comma}";
-                }
+                }*/
 
-                byte[] content = System.Text.Encoding.ASCII.GetBytes(sql);
-                return FileCompressed(content, "application/sql", "alldata.sql");
+                byte[] content = System.Text.Encoding.UTF8.GetBytes(sql);
+                return FileCompressed(content, "application/sql", "rooms.sql");
             }
             catch (Exception ex)
             {
