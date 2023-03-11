@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
@@ -76,9 +77,9 @@ namespace WebAPI.Controllers
                     userDevice.DateDeleted = null;
                 }
 
-                if (userDevice.PushNotificationToken != dto.PushNotificationToken && dto.PushNotificationToken != null)
+                if (userDevice.PushNotificationToken != dto.Token && dto.Token != null)
                 {
-                    userDevice.PushNotificationToken = dto.PushNotificationToken;
+                    userDevice.PushNotificationToken = dto.Token;
                     userDevice.DateTokenProvided = utcNow;
                 }
 
@@ -174,10 +175,12 @@ namespace WebAPI.Controllers
         [ProducesResponseType((int)HttpStatusCode.Forbidden)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [HttpGet(nameof(GetRoomsAsSQL))]
-        public async Task<ActionResult> GetRoomsAsSQL(long id)
+        public async Task<ActionResult> GetRoomsAsSQL()
         {
             try
             {
+                long id = CustomAuthenticationHandler.GetUserDeviceId(User);
+
                 var userDevice = await dbc.DevicesUsed
                     .Include(x => x.UserProfile)
                     .Where(x => x.Id == id)
@@ -217,41 +220,6 @@ namespace WebAPI.Controllers
                         Id = x.Id,
                         Name = x.Name,
                         DateCreated = x.DateCreated,
-                    })
-                    .ToListAsync();
-
-                var messagesSent = await dbc.MessagesSent
-                    .Where(x => userRooms.Keys.Contains(x.Sender.ChatRoomId))
-                    .Select(x => new RoomMessageSent()
-                    {
-                        Id = x.Id,
-                        SenderId = x.Sender.UserProfileId,
-                        ChatRoomId = x.Sender.ChatRoomId,
-                        Type = x.MessageType,
-                        DateDrafted = x.DateSent,
-                        DateUserSent = x.DateSent,
-                        DateStarred = x.Sender.UserProfileId == user.Id ? x.DateStarred : null,
-                        Body = x.Body,
-                    })
-                    .ToListAsync();
-
-                var myMessagesIds = messagesSent
-                    .Where(x => x.SenderId == user.Id)
-                    .Select(x => x.Id)
-                    .ToList();
-
-                var messagesReceived = await dbc.MessagesReceived
-                    .Where(x => myMessagesIds.Contains(x.MessageSentId) || x.Receiver.UserProfileId == user.Id)
-                    .Select(x => new RoomMessageReceived()
-                    {
-                        Id = x.Id,
-                        ReceiverId = x.Receiver.UserProfileId,
-                        MessageSentId = x.MessageSentId,
-                        SenderId = x.MessageSent.Sender.UserProfileId,
-                        DateReceived = x.DateReceived,
-                        DateRead = x.DateRead,
-                        Reaction = x.Reaction,
-                        DateStarred = x.Receiver.UserProfileId == user.Id ? x.DateStarred : null,
                     })
                     .ToListAsync();
 
@@ -305,16 +273,72 @@ namespace WebAPI.Controllers
                     sql += $"\t({userRoom.Id}, {userRoom.UserProfileId}, {room.Id}, {(int)userRoom.UserRole}, {userRoom.DateAdded.ToUnixTimeMilliseconds()}){comma}";
                 }
 
-                /*remaining = messagesSent.Count;
-                sql += "INSERT OR REPLACE INTO MessagesSent (Id, Type, RoomId, SenderId, DateDrafted, DateUserSent, Status, Body) VALUES\n";
+                byte[] content = Encoding.UTF8.GetBytes(sql);
+                return FileCompressed(content, "application/sql", "rooms.sql");
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [HttpGet(nameof(GetMessagesAsSQL))]
+        public async Task<ActionResult> GetMessagesAsSQL()
+        {
+            try
+            {
+                long userId = UserId;
+
+                List<long> chatRoomIds = await dbc.UserChatRooms
+                    .Where(x => x.UserProfileId == userId)
+                    .Select(x => x.ChatRoomId)
+                    .ToListAsync();
+
+                List<RoomMessageSent> messagesSent = await dbc.MessagesSent
+                    .Where(x => chatRoomIds.Contains(x.Sender.ChatRoomId))
+                    .Select(x => new RoomMessageSent()
+                    {
+                        Id = x.Id,
+                        SenderId = x.Sender.UserProfileId,
+                        ChatRoomId = x.Sender.ChatRoomId,
+                        Type = x.MessageType,
+                        DateDrafted = x.DateSent,
+                        DateUserSent = x.DateSent,
+                        DateStarred = x.Sender.UserProfileId == userId ? x.DateStarred : null,
+                        Body = x.Body,
+                    })
+                    .ToListAsync();
+
+                var myMessagesIds = messagesSent
+                    .Where(x => x.SenderId == userId)
+                    .Select(x => x.Id)
+                    .ToList();
+
+                List<RoomMessageReceived> messagesReceived = await dbc.MessagesReceived
+                    .Where(x => myMessagesIds.Contains(x.MessageSentId) || x.Receiver.UserProfileId == userId)
+                    .Select(x => new RoomMessageReceived()
+                    {
+                        Id = x.Id,
+                        ReceiverId = x.Receiver.UserProfileId,
+                        MessageSentId = x.MessageSentId,
+                        SenderId = x.MessageSent.Sender.UserProfileId,
+                        DateReceived = x.DateReceived,
+                        DateRead = x.DateRead,
+                        Reaction = x.Reaction,
+                        DateStarred = x.Receiver.UserProfileId == userId ? x.DateStarred : null,
+                    })
+                    .ToListAsync();
+
+                int remaining = messagesSent.Count;
+                string sql = "INSERT OR REPLACE INTO MessagesSent (Id, Type, RoomId, SenderId, DateDrafted, DateUserSent, Status, Body) VALUES\n";
 
                 foreach (RoomMessageSent ms in messagesSent)
                 {
-                    ChatRoom room = userRooms[ms.ChatRoomId].ChatRoom;
                     string ms_hexId = GetHexId(ms.SenderId, ms.Id);
 
                     string comma = GetComma(--remaining);
-                    sql += $"\t({ms_hexId}, {(int)ms.Type}, {room.Id}, {ms.SenderId}, {ms.DateDrafted.ToUnixTimeMilliseconds()}, {ms.DateUserSent.ToUnixTimeMilliseconds()}, 0, {EscapeForSQL(ms.Body)}){comma}";
+                    sql += $"\t({ms_hexId}, {(int)ms.Type}, {ms.ChatRoomId}, {ms.SenderId}, {ms.DateDrafted.ToUnixTimeMilliseconds()}, {ms.DateUserSent.ToUnixTimeMilliseconds()}, 0, {EscapeForSQL(ms.Body)}){comma}";
                 }
 
                 remaining = messagesReceived.Count;
@@ -327,10 +351,10 @@ namespace WebAPI.Controllers
 
                     string comma = GetComma(--remaining);
                     sql += $"\t({mr_hexId}, {ms_hexId}, {mr.ReceiverId}, {mr.DateReceived.ToUnixTimeMilliseconds()}, 0){comma}";
-                }*/
+                }
 
-                byte[] content = System.Text.Encoding.UTF8.GetBytes(sql);
-                return FileCompressed(content, "application/sql", "rooms.sql");
+                byte[] content = Encoding.UTF8.GetBytes(sql);
+                return FileCompressed(content, "application/sql", "messages.sql");
             }
             catch (Exception ex)
             {
@@ -366,7 +390,7 @@ namespace WebAPI.Controllers
             public string LocalIPv4 { get; set; }
             public string RemoteIPv4 { get; set; }
 
-            public string PushNotificationToken { get; set; }
+            public string Token { get; set; }
         }
 
         public class OtherUserRoom

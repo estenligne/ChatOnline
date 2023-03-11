@@ -37,10 +37,10 @@ namespace WebAPI.Services
                 string authorization = Request.Headers["Authorization"];
 
                 if (string.IsNullOrEmpty(authorization))
-                    return AuthenticateResult.Fail("No Authorization header");
+                    return AuthenticateResult.NoResult();
 
                 if (!authorization.StartsWith(Scheme.Name + " "))
-                    return AuthenticateResult.Fail($"Expected '{Scheme.Name}' scheme");
+                    return AuthenticateResult.NoResult();
 
                 string token = authorization.Substring(Scheme.Name.Length + 1);
                 var jwt = new JwtSecurityToken(token);
@@ -113,6 +113,11 @@ namespace WebAPI.Services
         public static long GetUserId(ClaimsPrincipal principal)
         {
             return long.Parse(principal.FindFirstValue(JwtRegisteredClaimNames.Sub));
+        }
+
+        public static long GetUserDeviceId(ClaimsPrincipal principal)
+        {
+            return long.Parse(principal.FindFirstValue(JwtRegisteredClaimNames.Sid));
         }
     }
 
