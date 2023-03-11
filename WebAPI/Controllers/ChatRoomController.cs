@@ -35,28 +35,28 @@ namespace WebAPI.Controllers
         {
             try
             {
-                UserChatRoom userChatRoom;
+                UserRoom userChatRoom;
 
                 if (userChatRoomId == 0)
                 {
-                    userChatRoom = await dbc.UserChatRooms
-                                            .Include(x => x.UserProfile)
-                                            .Include(x => x.ChatRoom.GroupProfile.PhotoFile)
-                                            .Where(x => x.UserProfileId == UserId && x.ChatRoomId == charRoomId)
+                    userChatRoom = await dbc.UserRooms
+                                            .Include(x => x.User)
+                                            .Include(x => x.Room.GroupProfile.File)
+                                            .Where(x => x.UserId == UserId && x.RoomId == charRoomId)
                                             .FirstOrDefaultAsync();
                 }
                 else
                 {
-                    userChatRoom = await dbc.UserChatRooms
-                                            .Include(x => x.UserProfile)
-                                            .Include(x => x.ChatRoom.GroupProfile.PhotoFile)
+                    userChatRoom = await dbc.UserRooms
+                                            .Include(x => x.User)
+                                            .Include(x => x.Room.GroupProfile.File)
                                             .FirstOrDefaultAsync(x => x.Id == userChatRoomId);
                 }
 
                 if (userChatRoom == null)
                     return NotFound("User chat room not found.");
 
-                if (userChatRoom.UserProfileId != UserId)
+                if (userChatRoom.UserId != UserId)
                     return Forbid("Not associated to this user chat room!");
 
                 if (getInfo)
@@ -70,7 +70,7 @@ namespace WebAPI.Controllers
             }
         }
 
-        [ProducesResponseType(typeof(UserChatRoom), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(UserRoom), (int)HttpStatusCode.OK)]
         [HttpGet]
         [Route(nameof(GetUser))]
         public Task<ActionResult> GetUser(long id, long userChatRoomId)
@@ -86,24 +86,24 @@ namespace WebAPI.Controllers
             return GetUserOrInfo(id, userChatRoomId, true);
         }
 
-        private async Task<ChatRoomInfo> GetChatRoomInfo(UserChatRoom userChatRoom)
+        private async Task<ChatRoomInfo> GetChatRoomInfo(UserRoom userChatRoom)
         {
             var chatRoomInfo = new ChatRoomInfo();
-            chatRoomInfo.Id = userChatRoom.ChatRoom.Id;
-            chatRoomInfo.Type = userChatRoom.ChatRoom.Type;
+            chatRoomInfo.Id = userChatRoom.Room.Id;
+            chatRoomInfo.Type = userChatRoom.Room.Type;
             chatRoomInfo.UserChatRoomId = userChatRoom.Id;
             chatRoomInfo.UserBlocked = userChatRoom.DateBlocked != null;
             chatRoomInfo.UserExited = userChatRoom.DateExited != null;
             chatRoomInfo.UserMuted = userChatRoom.DateMuted != null;
             chatRoomInfo.UserPinned = userChatRoom.DatePinned != null;
 
-            if (userChatRoom.ChatRoom.GroupProfile == null)
+            if (userChatRoom.Room.GroupProfile == null)
             {
-                var otherUser = await dbc.UserChatRooms
-                                        .Include(x => x.UserProfile.PhotoFile)
-                                        .Where(x => x.ChatRoomId == userChatRoom.ChatRoomId
-                                            && x.UserProfileId != userChatRoom.UserProfileId)
-                                        .Select(x => x.UserProfile)
+                var otherUser = await dbc.UserRooms
+                                        .Include(x => x.User.PhotoFile)
+                                        .Where(x => x.RoomId == userChatRoom.RoomId
+                                            && x.UserId != userChatRoom.UserId)
+                                        .Select(x => x.User)
                                         .FirstAsync();
 
                 chatRoomInfo.Name = otherUser.Name;
@@ -112,12 +112,12 @@ namespace WebAPI.Controllers
             }
             else
             {
-                chatRoomInfo.Name = userChatRoom.ChatRoom.GroupProfile.GroupName;
-                chatRoomInfo.PhotoFileName = userChatRoom.ChatRoom.GroupProfile.PhotoFile?.Name;
+                chatRoomInfo.Name = userChatRoom.Room.GroupProfile.Name;
+                chatRoomInfo.PhotoFileName = userChatRoom.Room.GroupProfile.File?.Name;
             }
 
             var latestMessage = await dbc.MessagesSent
-                .Where(m => m.Sender.ChatRoomId == userChatRoom.ChatRoomId)
+                .Where(m => m.Sender.RoomId == userChatRoom.RoomId)
                 .OrderByDescending(m => m.Id)
                 .FirstOrDefaultAsync();
 
@@ -132,7 +132,7 @@ namespace WebAPI.Controllers
 
                 lm.ShortBody = BasicHelpers.GetShortBody(latestMessage.Body, 100);
 
-                int totalMembers = dbc.UserChatRooms.Where(x => x.ChatRoomId == userChatRoom.ChatRoomId).Count();
+                int totalMembers = dbc.UserRooms.Where(x => x.RoomId == userChatRoom.RoomId).Count();
                 int receivedCount = dbc.MessagesReceived.Where(x => x.MessageSentId == latestMessage.Id).Count();
                 int readCount = dbc.MessagesReceived.Where(x => x.MessageSentId == latestMessage.Id && x.DateRead != null).Count();
 
@@ -153,12 +153,12 @@ namespace WebAPI.Controllers
         {
             try
             {
-                var userChatRooms = await dbc.UserChatRooms
-                    .Include(x => x.ChatRoom.GroupProfile.PhotoFile)
+                var userChatRooms = await dbc.UserRooms
+                    .Include(x => x.Room.GroupProfile.File)
                     .Where(x =>
-                        x.UserProfileId == UserId &&
+                        x.UserId == UserId &&
                         x.DateDeleted == null &&
-                        x.ChatRoom.DateDeleted == null)
+                        x.Room.DateDeleted == null)
                     .ToListAsync();
 
                 var chatRoomsInfos = new List<ChatRoomInfo>();
@@ -208,12 +208,12 @@ namespace WebAPI.Controllers
                     else return StatusCode((int)response.StatusCode, content);
                 }
 
-                UserProfile user1 = dbc.UserProfiles.Find(UserId);
+                User user1 = dbc.Users.Find(UserId);
 
                 if (user1 == null)
                     return NotFound("User profile not found.");
 
-                UserProfile user2 = dbc.UserProfiles.Find(userId);
+                User user2 = dbc.Users.Find(userId);
 
                 if (user2 == null)
                     return NotFound("Given user was not found.");
@@ -221,65 +221,65 @@ namespace WebAPI.Controllers
                 if (user1.Id == user2.Id)
                     return Forbid("Cannot create a chat room with self!");
 
-                UserChatRoom user1ChatRoom;
-                UserChatRoom user2ChatRoom;
+                UserRoom user1ChatRoom;
+                UserRoom user2ChatRoom;
 
-                var user2ChatRooms = await dbc.UserChatRooms
-                                            .Where(x => x.UserProfileId == user2.Id &&
-                                                (x.ChatRoom.Type & ChatRoomTypeEnum.Private) != 0)
+                var user2ChatRooms = await dbc.UserRooms
+                                            .Where(x => x.UserId == user2.Id &&
+                                                (x.Room.Type & ChatRoomTypeEnum.Private) != 0)
                                             .ToListAsync();
 
-                var user2ChatRoomsIds = user2ChatRooms.Select(x => x.ChatRoomId);
+                var user2ChatRoomsIds = user2ChatRooms.Select(x => x.RoomId);
 
-                var user1ChatRooms = await dbc.UserChatRooms
-                                            .Include(x => x.ChatRoom)
-                                            .Where(x => x.UserProfileId == user1.Id &&
-                                                user2ChatRoomsIds.Contains(x.ChatRoomId))
+                var user1ChatRooms = await dbc.UserRooms
+                                            .Include(x => x.Room)
+                                            .Where(x => x.UserId == user1.Id &&
+                                                user2ChatRoomsIds.Contains(x.RoomId))
                                             .ToListAsync();
 
                 if (user1ChatRooms.Count == 0)
                 {
                     var dateCreated = DateTimeOffset.UtcNow;
 
-                    var chatRoom = new ChatRoom
+                    var chatRoom = new Room
                     {
                         Type = ChatRoomTypeEnum.Private,
                         CreatorId = user1.Id,
                         DateCreated = dateCreated,
                     };
 
-                    user1ChatRoom = new UserChatRoom
+                    user1ChatRoom = new UserRoom
                     {
-                        UserProfileId = user1.Id,
-                        ChatRoom = chatRoom,
-                        UserRole = UserRoleEnum.FullNode,
+                        UserId = user1.Id,
+                        Room = chatRoom,
+                        Role = UserRoleEnum.FullNode,
                         DateAdded = dateCreated,
                     };
-                    dbc.UserChatRooms.Add(user1ChatRoom);
+                    dbc.UserRooms.Add(user1ChatRoom);
 
-                    user2ChatRoom = new UserChatRoom
+                    user2ChatRoom = new UserRoom
                     {
-                        UserProfileId = user2.Id,
-                        ChatRoom = chatRoom,
-                        UserRole = UserRoleEnum.FullNode,
+                        UserId = user2.Id,
+                        Room = chatRoom,
+                        Role = UserRoleEnum.FullNode,
                         DateAdded = dateCreated,
                     };
-                    dbc.UserChatRooms.Add(user2ChatRoom);
+                    dbc.UserRooms.Add(user2ChatRoom);
                 }
                 else
                 {
                     if (user1ChatRooms.Count > 1)
-                        _logger.LogError($"UserProfiles {user1.Id} and {user2.Id} have more than one private chat room.");
+                        _logger.LogError($"Users {user1.Id} and {user2.Id} have more than one private chat room.");
 
                     user1ChatRoom = user1ChatRooms.First();
-                    user2ChatRoom = user2ChatRooms.First(x => x.ChatRoomId == user1ChatRoom.ChatRoomId);
+                    user2ChatRoom = user2ChatRooms.First(x => x.RoomId == user1ChatRoom.RoomId);
 
-                    user1ChatRoom.UserRole |= UserRoleEnum.FullNode;
+                    user1ChatRoom.Role |= UserRoleEnum.FullNode;
                     user1ChatRoom.DateBlocked = null;
                     user1ChatRoom.DateDeleted = null;
                     user1ChatRoom.DateExited = null;
 
-                    user2ChatRoom.UserRole |= UserRoleEnum.FullNode;
+                    user2ChatRoom.Role |= UserRoleEnum.FullNode;
                     user2ChatRoom.DateDeleted = null; // allow user to unblock if blocked
                     user2ChatRoom.DateExited = null;
                     if (user2ChatRoom.DateBlocked != null)

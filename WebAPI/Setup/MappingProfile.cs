@@ -8,14 +8,14 @@ namespace WebAPI.Setup
     {
         public MappingProfile()
         {
-            CreateMap<FileModel, FileDTO>().ReverseMap();
-            CreateMap<UserProfile, UserProfileDTO>().ReverseMap();
-            CreateMap<GroupProfile, GroupProfileDTO>().ReverseMap();
-            CreateMap<ChatRoom, ChatRoomDTO>();
-            CreateMap<UserChatRoom, UserChatRoomDTO>();
+            CreateMap<File, FileDTO>().ReverseMap();
+            CreateMap<User, UserProfileDTO>().ReverseMap();
+            CreateMap<Group, GroupProfileDTO>().ReverseMap();
+            CreateMap<Room, ChatRoomDTO>();
+            CreateMap<UserRoom, UserChatRoomDTO>();
             CreateMap<MessageTag, MessageTagDTO>().ReverseMap();
             CreateMap<MessageSent, MessageSentDTO>().ReverseMap();
-            CreateMap<DeviceUsed, DeviceUsedDTO>();
+            CreateMap<UserDevice, DeviceUsedDTO>();
         }
     }
 }

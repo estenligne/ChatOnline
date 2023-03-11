@@ -5,16 +5,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace WebAPI.Models
 {
-    [Table(nameof(ApplicationDbContext.GroupProfiles))]
-    public class GroupProfile
+    [Index(nameof(PhotoFileId), nameof(WallpaperFileId), IsUnique =true)]
+    public class Group
     {
-        [Key, ForeignKey(nameof(ChatRoom))]
-        public long ChatRoomId { get; set; }
+        [Key, ForeignKey(nameof(Room))]
+        public long RoomId { get; set; }
 
         [Required]
         [MaxLength(63)]
-        public string GroupName { get; set; }
+        public string Name { get; set; }
 
+        [NotMapped]
         [MaxLength(63)]
         public string JoinToken { get; set; }
 
@@ -22,9 +23,9 @@ namespace WebAPI.Models
         public string About { get; set; }
 
         public long? PhotoFileId { get; set; }
-        public virtual FileModel PhotoFile { get; set; }
+        public virtual File File { get; set; }
 
         public long? WallpaperFileId { get; set; }
-        public virtual FileModel WallpaperFile { get; set; }
+        public virtual File WallpaperFile { get; set; }
     }
 }

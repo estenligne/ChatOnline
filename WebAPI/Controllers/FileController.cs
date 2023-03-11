@@ -33,7 +33,7 @@ namespace WebAPI.Controllers
         {
             try
             {
-                FileModel file = dbc.Files.Find(id);
+                var file = dbc.Files.Find(id);
 
                 if (file == null)
                     return NotFound($"File {id} not found");
@@ -69,7 +69,7 @@ namespace WebAPI.Controllers
                     await file.CopyToAsync(fileStream);
                 }
 
-                FileModel _file = new FileModel();
+                var _file = new Models.File();
 
                 _file.Name = fileName;
                 _file.Size = fileSize;
@@ -99,7 +99,7 @@ namespace WebAPI.Controllers
                 if (file == null)
                     return BadRequest("File not provided");
 
-                FileModel _file = dbc.Files.Find(id);
+                var _file = dbc.Files.Find(id);
                 if (_file == null)
                     return NotFound($"File {id} not found");
 
@@ -135,7 +135,7 @@ namespace WebAPI.Controllers
         {
             try
             {
-                FileModel file = await dbc.Files.FindAsync(id);
+                var file = await dbc.Files.FindAsync(id);
 
                 if (file.UploaderId != UserId)
                     return Forbid("This file doesn't belong to you!");

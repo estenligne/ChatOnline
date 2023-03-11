@@ -8,14 +8,15 @@ namespace WebAPI.Models
         {
         }
 
-        public DbSet<FileModel> Files { get; set; }
-        public DbSet<UserProfile> UserProfiles { get; set; }
-        public DbSet<GroupProfile> GroupProfiles { get; set; }
-        public DbSet<ChatRoom> ChatRooms { get; set; }
-        public DbSet<UserChatRoom> UserChatRooms { get; set; }
+        public DbSet<File> Files { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Group> Groups { get; set; }
+        public DbSet<Room> Rooms { get; set; }
+        public DbSet<UserRoom> UserRooms { get; set; }
         public DbSet<MessageTag> MessageTags { get; set; }
         public DbSet<MessageSent> MessagesSent { get; set; }
         public DbSet<MessageReceived> MessagesReceived { get; set; }
-        public DbSet<DeviceUsed> DevicesUsed { get; set; }
+        public DbSet<UserDevice> UserDevices { get; set; }
+        public DbSet<URLPreview> URLPreviews { get; set; }
     }
 }

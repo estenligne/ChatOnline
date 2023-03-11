@@ -6,14 +6,13 @@ using Global.Enums;
 
 namespace WebAPI.Models
 {
-    [Table(nameof(ApplicationDbContext.DevicesUsed))]
-    [Index(nameof(UserProfileId), nameof(Platform), IsUnique = true)]
-    public class DeviceUsed
+    [Index(nameof(UserId))]
+    public class UserDevice
     {
         public long Id { get; set; }
 
-        public long UserProfileId { get; set; }
-        public virtual UserProfile UserProfile { get; set; }
+        public long UserId { get; set; }
+        public virtual User User { get; set; }
 
         public DevicePlatformEnum Platform { get; set; }
 
@@ -23,12 +22,15 @@ namespace WebAPI.Models
         [MaxLength(63)]
         public string Timezone { get; set; }
 
-        public DateTimeOffset DateCreated { get; set; }
-        public DateTimeOffset DateUpdated { get; set; }
-        public DateTimeOffset? DateDeleted { get; set; }
+        public long DateCreated { get; set; }
+        public long DateUpdated { get; set; }
+        public long? DateDeleted { get; set; }
 
         [MaxLength(1023)]
         public string PushNotificationToken { get; set; }
-        public DateTimeOffset? DateTokenProvided { get; set; }
+        public long? DateTokenProvided { get; set; }
+
+        public string LocalIPv4 { get; set; }
+        public string RemoteIPv4 { get; set; }
     }
 }

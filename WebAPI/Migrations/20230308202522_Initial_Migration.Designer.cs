@@ -24,7 +24,7 @@ namespace WebAPI.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("WebAPI.Models.ChatRoom", b =>
+            modelBuilder.Entity("WebAPI.Models.Room", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -35,7 +35,7 @@ namespace WebAPI.Migrations
                     b.Property<long>("CreatorId")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTimeOffset>("DateCreated")
+                    b.Property<DateTimeOffset>("DateServerReceived")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset?>("DateDeleted")
@@ -48,7 +48,7 @@ namespace WebAPI.Migrations
 
                     b.HasIndex("CreatorId", "Type");
 
-                    b.ToTable("ChatRooms");
+                    b.ToTable("Rooms");
                 });
 
             modelBuilder.Entity("WebAPI.Models.DeviceUsed", b =>
@@ -59,7 +59,7 @@ namespace WebAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
 
-                    b.Property<DateTimeOffset>("DateCreated")
+                    b.Property<DateTimeOffset>("DateServerReceived")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset?>("DateDeleted")
@@ -86,18 +86,18 @@ namespace WebAPI.Migrations
                         .HasMaxLength(63)
                         .HasColumnType("nvarchar(63)");
 
-                    b.Property<long>("UserProfileId")
+                    b.Property<long>("UserId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserProfileId", "Platform")
+                    b.HasIndex("UserId", "Platform")
                         .IsUnique();
 
-                    b.ToTable("DevicesUsed");
+                    b.ToTable("UserDevices");
                 });
 
-            modelBuilder.Entity("WebAPI.Models.FileModel", b =>
+            modelBuilder.Entity("WebAPI.Models.Files", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -135,14 +135,14 @@ namespace WebAPI.Migrations
 
             modelBuilder.Entity("WebAPI.Models.GroupProfile", b =>
                 {
-                    b.Property<long>("ChatRoomId")
+                    b.Property<long>("RoomId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("About")
                         .HasMaxLength(4095)
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("GroupName")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(63)
                         .HasColumnType("nvarchar(63)");
@@ -157,13 +157,13 @@ namespace WebAPI.Migrations
                     b.Property<long?>("WallpaperFileId")
                         .HasColumnType("bigint");
 
-                    b.HasKey("ChatRoomId");
+                    b.HasKey("RoomId");
 
                     b.HasIndex("PhotoFileId");
 
                     b.HasIndex("WallpaperFileId");
 
-                    b.ToTable("GroupProfiles");
+                    b.ToTable("Groups");
                 });
 
             modelBuilder.Entity("WebAPI.Models.MessageReceived", b =>
@@ -174,7 +174,7 @@ namespace WebAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
 
-                    b.Property<DateTimeOffset>("DateCreated")
+                    b.Property<DateTimeOffset>("DateServerReceived")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset?>("DateDeleted")
@@ -223,13 +223,13 @@ namespace WebAPI.Migrations
                         .HasMaxLength(16383)
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTimeOffset>("DateCreated")
+                    b.Property<DateTimeOffset>("DateServerReceived")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset?>("DateDeleted")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<DateTimeOffset>("DateSent")
+                    b.Property<DateTimeOffset>("DateServerReceived")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset?>("DateStarred")
@@ -244,7 +244,7 @@ namespace WebAPI.Migrations
                     b.Property<long>("MessageTagId")
                         .HasColumnType("bigint");
 
-                    b.Property<int>("MessageType")
+                    b.Property<int>("Type")
                         .HasColumnType("int");
 
                     b.Property<long?>("SenderId")
@@ -273,13 +273,13 @@ namespace WebAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
 
-                    b.Property<long>("ChatRoomId")
+                    b.Property<long>("RoomId")
                         .HasColumnType("bigint");
 
                     b.Property<long?>("CreatorId")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTimeOffset>("DateCreated")
+                    b.Property<DateTimeOffset>("DateServerReceived")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset?>("DateDeleted")
@@ -299,7 +299,7 @@ namespace WebAPI.Migrations
 
                     b.HasIndex("ParentId");
 
-                    b.HasIndex("ChatRoomId", "Name")
+                    b.HasIndex("RoomId", "Name")
                         .IsUnique();
 
                     b.ToTable("MessageTags");
@@ -319,7 +319,7 @@ namespace WebAPI.Migrations
                     b.Property<long?>("BlockerId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("ChatRoomId")
+                    b.Property<long>("RoomId")
                         .HasColumnType("bigint");
 
                     b.Property<DateTimeOffset>("DateAdded")
@@ -340,10 +340,10 @@ namespace WebAPI.Migrations
                     b.Property<DateTimeOffset?>("DatePinned")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<long>("UserProfileId")
+                    b.Property<long>("UserId")
                         .HasColumnType("bigint");
 
-                    b.Property<int>("UserRole")
+                    b.Property<int>("Role")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -352,15 +352,15 @@ namespace WebAPI.Migrations
 
                     b.HasIndex("BlockerId");
 
-                    b.HasIndex("ChatRoomId");
+                    b.HasIndex("RoomId");
 
-                    b.HasIndex("UserProfileId", "ChatRoomId")
+                    b.HasIndex("UserId", "RoomId")
                         .IsUnique();
 
-                    b.ToTable("UserChatRooms");
+                    b.ToTable("UserRooms");
                 });
 
-            modelBuilder.Entity("WebAPI.Models.UserProfile", b =>
+            modelBuilder.Entity("WebAPI.Models.User", b =>
                 {
                     b.Property<long>("Id")
                         .HasColumnType("bigint");
@@ -372,13 +372,13 @@ namespace WebAPI.Migrations
                     b.Property<int>("Availability")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("DateCreated")
+                    b.Property<DateTimeOffset>("DateServerReceived")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset?>("DateDeleted")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<DateTimeOffset>("LastConnected")
+                    b.Property<DateTimeOffset>("DateLastOnline")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Name")
@@ -400,12 +400,12 @@ namespace WebAPI.Migrations
 
                     b.HasIndex("WallpaperFileId");
 
-                    b.ToTable("UserProfiles");
+                    b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("WebAPI.Models.ChatRoom", b =>
+            modelBuilder.Entity("WebAPI.Models.Room", b =>
                 {
-                    b.HasOne("WebAPI.Models.UserProfile", "Creator")
+                    b.HasOne("WebAPI.Models.User", "Creator")
                         .WithMany()
                         .HasForeignKey("CreatorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -416,32 +416,32 @@ namespace WebAPI.Migrations
 
             modelBuilder.Entity("WebAPI.Models.DeviceUsed", b =>
                 {
-                    b.HasOne("WebAPI.Models.UserProfile", "UserProfile")
+                    b.HasOne("WebAPI.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserProfileId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("UserProfile");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("WebAPI.Models.GroupProfile", b =>
                 {
-                    b.HasOne("WebAPI.Models.ChatRoom", null)
+                    b.HasOne("WebAPI.Models.Room", null)
                         .WithOne("GroupProfile")
-                        .HasForeignKey("WebAPI.Models.GroupProfile", "ChatRoomId")
+                        .HasForeignKey("WebAPI.Models.GroupProfile", "RoomId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebAPI.Models.FileModel", "PhotoFile")
+                    b.HasOne("WebAPI.Models.Files", "File")
                         .WithMany()
                         .HasForeignKey("PhotoFileId");
 
-                    b.HasOne("WebAPI.Models.FileModel", "WallpaperFile")
+                    b.HasOne("WebAPI.Models.Files", "WallpaperFile")
                         .WithMany()
                         .HasForeignKey("WallpaperFileId");
 
-                    b.Navigation("PhotoFile");
+                    b.Navigation("File");
 
                     b.Navigation("WallpaperFile");
                 });
@@ -467,11 +467,11 @@ namespace WebAPI.Migrations
 
             modelBuilder.Entity("WebAPI.Models.MessageSent", b =>
                 {
-                    b.HasOne("WebAPI.Models.UserProfile", "Author")
+                    b.HasOne("WebAPI.Models.User", "Author")
                         .WithMany()
                         .HasForeignKey("AuthorId");
 
-                    b.HasOne("WebAPI.Models.FileModel", "File")
+                    b.HasOne("WebAPI.Models.Files", "File")
                         .WithMany()
                         .HasForeignKey("FileId");
 
@@ -502,9 +502,9 @@ namespace WebAPI.Migrations
 
             modelBuilder.Entity("WebAPI.Models.MessageTag", b =>
                 {
-                    b.HasOne("WebAPI.Models.ChatRoom", "ChatRoom")
+                    b.HasOne("WebAPI.Models.Room", "Room")
                         .WithMany()
-                        .HasForeignKey("ChatRoomId")
+                        .HasForeignKey("RoomId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -516,7 +516,7 @@ namespace WebAPI.Migrations
                         .WithMany()
                         .HasForeignKey("ParentId");
 
-                    b.Navigation("ChatRoom");
+                    b.Navigation("Room");
 
                     b.Navigation("Creator");
 
@@ -525,23 +525,23 @@ namespace WebAPI.Migrations
 
             modelBuilder.Entity("WebAPI.Models.UserChatRoom", b =>
                 {
-                    b.HasOne("WebAPI.Models.UserProfile", "Adder")
+                    b.HasOne("WebAPI.Models.User", "Adder")
                         .WithMany()
                         .HasForeignKey("AdderId");
 
-                    b.HasOne("WebAPI.Models.UserProfile", "Blocker")
+                    b.HasOne("WebAPI.Models.User", "Blocker")
                         .WithMany()
                         .HasForeignKey("BlockerId");
 
-                    b.HasOne("WebAPI.Models.ChatRoom", "ChatRoom")
+                    b.HasOne("WebAPI.Models.Room", "Room")
                         .WithMany()
-                        .HasForeignKey("ChatRoomId")
+                        .HasForeignKey("RoomId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebAPI.Models.UserProfile", "UserProfile")
+                    b.HasOne("WebAPI.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserProfileId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -549,27 +549,27 @@ namespace WebAPI.Migrations
 
                     b.Navigation("Blocker");
 
-                    b.Navigation("ChatRoom");
+                    b.Navigation("Room");
 
-                    b.Navigation("UserProfile");
+                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("WebAPI.Models.UserProfile", b =>
+            modelBuilder.Entity("WebAPI.Models.User", b =>
                 {
-                    b.HasOne("WebAPI.Models.FileModel", "PhotoFile")
+                    b.HasOne("WebAPI.Models.Files", "File")
                         .WithMany()
                         .HasForeignKey("PhotoFileId");
 
-                    b.HasOne("WebAPI.Models.FileModel", "WallpaperFile")
+                    b.HasOne("WebAPI.Models.Files", "WallpaperFile")
                         .WithMany()
                         .HasForeignKey("WallpaperFileId");
 
-                    b.Navigation("PhotoFile");
+                    b.Navigation("File");
 
                     b.Navigation("WallpaperFile");
                 });
 
-            modelBuilder.Entity("WebAPI.Models.ChatRoom", b =>
+            modelBuilder.Entity("WebAPI.Models.Room", b =>
                 {
                     b.Navigation("GroupProfile");
                 });

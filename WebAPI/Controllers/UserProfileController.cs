@@ -27,7 +27,7 @@ namespace WebAPI.Controllers
             {
                 if (id == 0) id = UserId;
 
-                var userProfile = await dbc.UserProfiles
+                var userProfile = await dbc.Users
                                             .Include(u => u.PhotoFile)
                                             .FirstOrDefaultAsync(u => u.Id == id);
 
@@ -58,7 +58,7 @@ namespace WebAPI.Controllers
         {
             try
             {
-                UserProfile userProfile = dbc.UserProfiles.Find(UserId);
+                User userProfile = dbc.Users.Find(UserId);
 
                 if (userProfile == null)
                     return NotFound("User profile not found.");
@@ -101,7 +101,7 @@ namespace WebAPI.Controllers
                 if (userProfileDto.DateDeleted != null)
                     return Forbid("Cannot delete user profile!");
 
-                var userProfile = dbc.UserProfiles.Find(UserId);
+                var userProfile = dbc.Users.Find(UserId);
                 if (userProfile == null || userProfile.DateDeleted != null)
                 {
                     if (onPut) // else onPost
@@ -116,8 +116,8 @@ namespace WebAPI.Controllers
 
                     if (userProfile == null)
                     {
-                        userProfile = _mapper.Map<UserProfile>(userProfileDto);
-                        dbc.UserProfiles.Add(userProfile);
+                        userProfile = _mapper.Map<User>(userProfileDto);
+                        dbc.Users.Add(userProfile);
                     }
                     else _mapper.Map(userProfileDto, userProfile);
 
@@ -134,7 +134,7 @@ namespace WebAPI.Controllers
                         return Forbid("Id does not match!");
 
                     if (userProfileDto.DateCreated != userProfile.DateCreated)
-                        return Forbid("Cannot update DateCreated!");
+                        return Forbid("Cannot update DateServerReceived!");
 
                     userProfile = _mapper.Map(userProfileDto, userProfile);
                     await dbc.SaveChangesAsync();

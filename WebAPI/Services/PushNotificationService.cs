@@ -46,8 +46,8 @@ namespace WebAPI.Services
             if (userProfileIds.Count == 0)
                 return outcomes;
 
-            var devices = await dbc.DevicesUsed
-                                    .Where(x => userProfileIds.Contains(x.UserProfileId) && x.DateDeleted == null)
+            var devices = await dbc.UserDevices
+                                    .Where(x => userProfileIds.Contains(x.UserId) && x.DateDeleted == null)
                                     .ToListAsync();
 
             bool failure = devices.Count == 0;
@@ -55,7 +55,7 @@ namespace WebAPI.Services
             {
                 var outcome = new PushNotificationOutcome();
                 outcome.deviceUsedId = device.Id;
-                outcome.userProfileId = device.UserProfileId;
+                outcome.userProfileId = device.UserId;
 
                 if (string.IsNullOrEmpty(device.PushNotificationToken))
                 {

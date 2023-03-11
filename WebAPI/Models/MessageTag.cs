@@ -16,13 +16,13 @@ namespace WebAPI.Models
         public string Name { get; set; }
 
         public long ChatRoomId { get; set; }
-        public virtual ChatRoom ChatRoom { get; set; }
+        public virtual Room ChatRoom { get; set; }
 
         public long? ParentId { get; set; }
         public virtual MessageTag Parent { get; set; }
 
         public long? CreatorId { get; set; }
-        public virtual UserChatRoom Creator { get; set; }
+        public virtual UserRoom Creator { get; set; }
 
         public DateTimeOffset DateCreated { get; set; }
         public DateTimeOffset? DateDeleted { get; set; }

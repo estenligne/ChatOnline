@@ -21,10 +21,10 @@ namespace WebAPI.Controllers
         {
         }
 
-        private Task<UserChatRoom> GetUserChatRoom(long id)
+        private Task<UserRoom> GetUserChatRoom(long id)
         {
-            return dbc.UserChatRooms
-                    .Where(x => x.UserProfileId == UserId && x.ChatRoomId == id)
+            return dbc.UserRooms
+                    .Where(x => x.UserId == UserId && x.RoomId == id)
                     .FirstOrDefaultAsync();
         }
 
@@ -37,14 +37,14 @@ namespace WebAPI.Controllers
                 if (userChatRoom == null)
                     return NotFound("Group profile not found.");
 
-                var groupProfile = await dbc.GroupProfiles
-                                            .Include(x => x.PhotoFile)
+                var groupProfile = await dbc.Groups
+                                            .Include(x => x.File)
                                             .Include(x => x.WallpaperFile)
-                                            .FirstOrDefaultAsync(x => x.ChatRoomId == id);
+                                            .FirstOrDefaultAsync(x => x.RoomId == id);
 
                 var groupProfileDto = _mapper.Map<GroupProfileDTO>(groupProfile);
 
-                if ((userChatRoom.UserRole & UserRoleEnum.GroupAdmin) == 0)
+                if ((userChatRoom.Role & UserRoleEnum.GroupAdmin) == 0)
                     groupProfileDto.JoinToken = null; // only expose JoinToken to admins
 
                 return groupProfileDto;
@@ -65,8 +65,8 @@ namespace WebAPI.Controllers
                 if (userChatRoom == null)
                     return NotFound("Group profile not found.");
 
-                var chatRoom = dbc.ChatRooms.Find(id);
-                if (chatRoom.CreatorId != userChatRoom.UserProfileId)
+                var chatRoom = dbc.Rooms.Find(id);
+                if (chatRoom.CreatorId != userChatRoom.UserId)
                     return Forbid("Cannot delete group profile!");
 
                 chatRoom.DateDeleted = DateTimeOffset.UtcNow;
@@ -95,15 +95,15 @@ namespace WebAPI.Controllers
                 if (userChatRoom == null)
                     return NotFound("Group profile not found.");
 
-                if ((userChatRoom.UserRole & UserRoleEnum.GroupAdmin) == 0)
+                if ((userChatRoom.Role & UserRoleEnum.GroupAdmin) == 0)
                     return Forbid("Cannot update group profile!");
 
-                var chatRoom = dbc.ChatRooms.Find(id);
+                var chatRoom = dbc.Rooms.Find(id);
 
-                if (chatRoom.CreatorId != userChatRoom.UserProfileId)
+                if (chatRoom.CreatorId != userChatRoom.UserId)
                     return Forbid("CreatorId does not match!");
 
-                var groupProfile = dbc.GroupProfiles.Find(id);
+                var groupProfile = dbc.Groups.Find(id);
 
                 groupProfile = _mapper.Map(groupProfileDto, groupProfile);
                 await dbc.SaveChangesAsync();
@@ -130,20 +130,20 @@ namespace WebAPI.Controllers
                     return BadRequest("Id must be 0!");
 
                 var dateCreated = DateTimeOffset.UtcNow;
-                UserChatRoom userChatRoom = null;
+                UserRoom userChatRoom = null;
 
-                ChatRoom chatRoom = await dbc.ChatRooms
+                Room chatRoom = await dbc.Rooms
                     .Include(c => c.GroupProfile)
                     .Where(c => c.CreatorId == UserId &&
-                        c.GroupProfile.GroupName == groupProfileDto.GroupName)
+                        c.GroupProfile.Name == groupProfileDto.GroupName)
                     .FirstOrDefaultAsync();
 
-                GroupProfile groupProfile = chatRoom?.GroupProfile;
+                Group groupProfile = chatRoom?.GroupProfile;
 
                 if (groupProfile == null)
                 {
-                    groupProfile = _mapper.Map<GroupProfile>(groupProfileDto);
-                    chatRoom = new ChatRoom
+                    groupProfile = _mapper.Map<Group>(groupProfileDto);
+                    chatRoom = new Room
                     {
                         Type = ChatRoomTypeEnum.Group,
                         GroupProfile = groupProfile,
@@ -154,7 +154,7 @@ namespace WebAPI.Controllers
                 else if (chatRoom.DateDeleted != null) // if was deleted
                 {
                     chatRoom.DateDeleted = null;
-                    groupProfileDto.ChatRoomId = groupProfile.ChatRoomId;
+                    groupProfileDto.ChatRoomId = groupProfile.RoomId;
                     _mapper.Map(groupProfileDto, groupProfile);
                     userChatRoom = await GetUserChatRoom(chatRoom.Id);
                 }
@@ -162,14 +162,14 @@ namespace WebAPI.Controllers
 
                 if (userChatRoom == null)
                 {
-                    userChatRoom = new UserChatRoom
+                    userChatRoom = new UserRoom
                     {
-                        UserProfileId = UserId,
-                        ChatRoom = chatRoom,
-                        UserRole = UserRoleEnum.FullNode | UserRoleEnum.GroupAdmin,
+                        UserId = UserId,
+                        Room = chatRoom,
+                        Role = UserRoleEnum.FullNode | UserRoleEnum.GroupAdmin,
                         DateAdded = dateCreated,
                     };
-                    dbc.UserChatRooms.Add(userChatRoom);
+                    dbc.UserRooms.Add(userChatRoom);
                 }
                 else
                 {
@@ -198,7 +198,7 @@ namespace WebAPI.Controllers
                 if (string.IsNullOrEmpty(joinToken) || joinToken.Length > 63)
                     return BadRequest("Invalid token length.");
 
-                var chatRoom = await dbc.ChatRooms
+                var chatRoom = await dbc.Rooms
                                         .Include(x => x.GroupProfile)
                                         .FirstOrDefaultAsync(x => x.Id == id);
 
@@ -212,14 +212,14 @@ namespace WebAPI.Controllers
                 if (userChatRoom != null)
                     return Conflict("User already joined to group.");
 
-                userChatRoom = new UserChatRoom
+                userChatRoom = new UserRoom
                 {
-                    UserProfileId = UserId,
-                    ChatRoomId = id,
+                    UserId = UserId,
+                    RoomId = id,
                     DateAdded = DateTimeOffset.UtcNow,
                 };
 
-                dbc.UserChatRooms.Add(userChatRoom);
+                dbc.UserRooms.Add(userChatRoom);
                 await dbc.SaveChangesAsync();
 
                 var userChatRoomDto = _mapper.Map<UserChatRoomDTO>(userChatRoom);
@@ -227,7 +227,7 @@ namespace WebAPI.Controllers
                 return CreatedAtRoute(
                     new
                     {
-                        controller = "ChatRoom",
+                        controller = "Room",
                         action = nameof(ChatRoomController.GetUser),
                         userChatRoomId = userChatRoomDto.Id
                     },

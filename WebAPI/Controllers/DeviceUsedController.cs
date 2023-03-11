@@ -34,7 +34,7 @@ namespace WebAPI.Controllers
         {
             try
             {
-                var userProfile = await dbc.UserProfiles
+                var userProfile = await dbc.Users
                                         .Include(x => x.PhotoFile)
                                         .Include(x => x.WallpaperFile)
                                         .FirstOrDefaultAsync(x => x.Id == UserId);
@@ -44,20 +44,20 @@ namespace WebAPI.Controllers
 
                 var utcNow = DateTimeOffset.UtcNow;
 
-                var deviceUsed = await dbc.DevicesUsed
+                var deviceUsed = await dbc.UserDevices
                                         .Where(x =>
-                                            x.UserProfileId == userProfile.Id &&
+                                            x.UserId == userProfile.Id &&
                                             x.Platform == platform)
                                         .FirstOrDefaultAsync();
                 if (deviceUsed == null)
                 {
-                    deviceUsed = new DeviceUsed
+                    deviceUsed = new UserDevice
                     {
-                        UserProfileId = userProfile.Id,
+                        UserId = userProfile.Id,
                         Platform = platform,
                         DateCreated = utcNow
                     };
-                    dbc.DevicesUsed.Add(deviceUsed);
+                    dbc.UserDevices.Add(deviceUsed);
                 }
                 else if (deviceUsed.DateDeleted != null)
                 {
@@ -68,7 +68,7 @@ namespace WebAPI.Controllers
                 deviceUsed.DateUpdated = utcNow;
                 dbc.SaveChanges();
 
-                deviceUsed.UserProfile = userProfile;
+                deviceUsed.User = userProfile;
                 var deviceUsedDto = _mapper.Map<DeviceUsedDTO>(deviceUsed);
                 return Ok(deviceUsedDto);
             }
@@ -86,9 +86,9 @@ namespace WebAPI.Controllers
             {
                 string tag = $"User {UserId} {User.Identity.Name} on device {id}";
 
-                DeviceUsed deviceUsed = dbc.DevicesUsed.Find(id);
+                UserDevice deviceUsed = dbc.UserDevices.Find(id);
 
-                if (deviceUsed?.UserProfileId == UserId)
+                if (deviceUsed?.UserId == UserId)
                 {
                     if (deviceUsed.DateDeleted == null)
                     {
@@ -122,12 +122,12 @@ namespace WebAPI.Controllers
                 if (fcmToken.Length > 1023)
                     return BadRequest("FcmToken length must be < 1024.");
 
-                var deviceUsed = dbc.DevicesUsed.Find(deviceUsedId);
+                var deviceUsed = dbc.UserDevices.Find(deviceUsedId);
 
                 if (deviceUsed == null)
                     return NotFound($"DeviceUsed {deviceUsedId} not found.");
 
-                if (deviceUsed.UserProfileId != UserId)
+                if (deviceUsed.UserId != UserId)
                     return Forbid("User profile does not match!");
 
                 if (deviceUsed.DateDeleted != null)

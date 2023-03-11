@@ -6,12 +6,15 @@ using Global.Enums;
 
 namespace WebAPI.Models
 {
-    [Table(nameof(ApplicationDbContext.UserProfiles))]
     [Index(nameof(Name))]
-    public class UserProfile
+    [Index(nameof(AccountId), IsUnique = true)]
+    [Index(nameof(PhotoFileId), IsUnique = true)]
+    [Index(nameof(WallpaperFileId), IsUnique = true)]
+    public class User
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long Id { get; set; }
+
+        public long? AccountId { get; set; }
 
         [Required]
         [MaxLength(63)]
@@ -21,15 +24,16 @@ namespace WebAPI.Models
         public string About { get; set; }
 
         public long? PhotoFileId { get; set; }
-        public virtual FileModel PhotoFile { get; set; }
+        public virtual File PhotoFile { get; set; }
 
         public long? WallpaperFileId { get; set; }
-        public virtual FileModel WallpaperFile { get; set; }
+        public virtual File WallpaperFile { get; set; }
 
-        public DateTimeOffset DateCreated { get; set; }
-        public DateTimeOffset? DateDeleted { get; set; }
+        public long DateCreated { get; set; }
+        public long DateUpdated { get; set; }
+        public long? DateDeleted { get; set; }
 
-        public DateTimeOffset LastConnected { get; set; }
+        public long DateLastOnline { get; set; }
         public AvailabilityEnum Availability { get; set; }
     }
 }

@@ -28,7 +28,7 @@ namespace WebAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserProfiles",
+                name: "Users",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false),
@@ -57,7 +57,7 @@ namespace WebAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ChatRooms",
+                name: "Rooms",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
@@ -73,13 +73,13 @@ namespace WebAPI.Migrations
                     table.ForeignKey(
                         name: "FK_ChatRooms_UserProfiles_CreatorId",
                         column: x => x.CreatorId,
-                        principalTable: "UserProfiles",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "DevicesUsed",
+                name: "UserDevices",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
@@ -100,13 +100,13 @@ namespace WebAPI.Migrations
                     table.ForeignKey(
                         name: "FK_DevicesUsed_UserProfiles_UserProfileId",
                         column: x => x.UserProfileId,
-                        principalTable: "UserProfiles",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "GroupProfiles",
+                name: "Groups",
                 columns: table => new
                 {
                     ChatRoomId = table.Column<long>(type: "bigint", nullable: false),
@@ -122,7 +122,7 @@ namespace WebAPI.Migrations
                     table.ForeignKey(
                         name: "FK_GroupProfiles_ChatRooms_ChatRoomId",
                         column: x => x.ChatRoomId,
-                        principalTable: "ChatRooms",
+                        principalTable: "Rooms",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -138,7 +138,7 @@ namespace WebAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserChatRooms",
+                name: "UserRooms",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
@@ -161,23 +161,23 @@ namespace WebAPI.Migrations
                     table.ForeignKey(
                         name: "FK_UserChatRooms_ChatRooms_ChatRoomId",
                         column: x => x.ChatRoomId,
-                        principalTable: "ChatRooms",
+                        principalTable: "Rooms",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_UserChatRooms_UserProfiles_AdderId",
                         column: x => x.AdderId,
-                        principalTable: "UserProfiles",
+                        principalTable: "Users",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_UserChatRooms_UserProfiles_BlockerId",
                         column: x => x.BlockerId,
-                        principalTable: "UserProfiles",
+                        principalTable: "Users",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_UserChatRooms_UserProfiles_UserProfileId",
                         column: x => x.UserProfileId,
-                        principalTable: "UserProfiles",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -201,7 +201,7 @@ namespace WebAPI.Migrations
                     table.ForeignKey(
                         name: "FK_MessageTags_ChatRooms_ChatRoomId",
                         column: x => x.ChatRoomId,
-                        principalTable: "ChatRooms",
+                        principalTable: "Rooms",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -212,7 +212,7 @@ namespace WebAPI.Migrations
                     table.ForeignKey(
                         name: "FK_MessageTags_UserChatRooms_CreatorId",
                         column: x => x.CreatorId,
-                        principalTable: "UserChatRooms",
+                        principalTable: "UserRooms",
                         principalColumn: "Id");
                 });
 
@@ -256,12 +256,12 @@ namespace WebAPI.Migrations
                     table.ForeignKey(
                         name: "FK_MessagesSent_UserChatRooms_SenderId",
                         column: x => x.SenderId,
-                        principalTable: "UserChatRooms",
+                        principalTable: "UserRooms",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_MessagesSent_UserProfiles_AuthorId",
                         column: x => x.AuthorId,
-                        principalTable: "UserProfiles",
+                        principalTable: "Users",
                         principalColumn: "Id");
                 });
 
@@ -292,20 +292,20 @@ namespace WebAPI.Migrations
                     table.ForeignKey(
                         name: "FK_MessagesReceived_UserChatRooms_ReceiverId",
                         column: x => x.ReceiverId,
-                        principalTable: "UserChatRooms",
+                        principalTable: "UserRooms",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ChatRooms_CreatorId_Type",
-                table: "ChatRooms",
+                table: "Rooms",
                 columns: new[] { "CreatorId", "Type" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_DevicesUsed_UserProfileId_Platform",
-                table: "DevicesUsed",
-                columns: new[] { "UserProfileId", "Platform" },
+                table: "UserDevices",
+                columns: new[] { "UserId", "Platform" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -316,12 +316,12 @@ namespace WebAPI.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_GroupProfiles_PhotoFileId",
-                table: "GroupProfiles",
+                table: "Groups",
                 column: "PhotoFileId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_GroupProfiles_WallpaperFileId",
-                table: "GroupProfiles",
+                table: "Groups",
                 column: "WallpaperFileId");
 
             migrationBuilder.CreateIndex(
@@ -363,7 +363,7 @@ namespace WebAPI.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_MessageTags_ChatRoomId_Name",
                 table: "MessageTags",
-                columns: new[] { "ChatRoomId", "Name" },
+                columns: new[] { "RoomId", "Name" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -378,48 +378,48 @@ namespace WebAPI.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserChatRooms_AdderId",
-                table: "UserChatRooms",
+                table: "UserRooms",
                 column: "AdderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserChatRooms_BlockerId",
-                table: "UserChatRooms",
+                table: "UserRooms",
                 column: "BlockerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserChatRooms_ChatRoomId",
-                table: "UserChatRooms",
-                column: "ChatRoomId");
+                table: "UserRooms",
+                column: "RoomId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserChatRooms_UserProfileId_ChatRoomId",
-                table: "UserChatRooms",
-                columns: new[] { "UserProfileId", "ChatRoomId" },
+                table: "UserRooms",
+                columns: new[] { "UserId", "RoomId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserProfiles_Name",
-                table: "UserProfiles",
+                table: "Users",
                 column: "Name");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserProfiles_PhotoFileId",
-                table: "UserProfiles",
+                table: "Users",
                 column: "PhotoFileId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserProfiles_WallpaperFileId",
-                table: "UserProfiles",
+                table: "Users",
                 column: "WallpaperFileId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "DevicesUsed");
+                name: "UserDevices");
 
             migrationBuilder.DropTable(
-                name: "GroupProfiles");
+                name: "Groups");
 
             migrationBuilder.DropTable(
                 name: "MessagesReceived");
@@ -431,13 +431,13 @@ namespace WebAPI.Migrations
                 name: "MessageTags");
 
             migrationBuilder.DropTable(
-                name: "UserChatRooms");
+                name: "UserRooms");
 
             migrationBuilder.DropTable(
-                name: "ChatRooms");
+                name: "Rooms");
 
             migrationBuilder.DropTable(
-                name: "UserProfiles");
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "Files");

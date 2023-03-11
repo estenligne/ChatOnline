@@ -16,9 +16,9 @@ namespace WebAPI.Models
 {
     public class ApplicationDbData
     {
-        public List<UserProfile> userProfiles;
-        public List<ChatRoom> chatRooms;
-        public List<UserChatRoom> userChatRooms;
+        public List<User> userProfiles;
+        public List<Room> chatRooms;
+        public List<UserRoom> userChatRooms;
         public List<MessageTag> messageTags;
         public List<MessageSent> messagesSent;
         public List<MessageReceived> messagesReceived;
@@ -43,9 +43,9 @@ namespace WebAPI.Models
         public static async Task<ApplicationDbData> GetAll(ApplicationDbContext dbc)
         {
             var data = new ApplicationDbData();
-            data.userProfiles = await dbc.UserProfiles.ToListAsync();
-            data.chatRooms = await dbc.ChatRooms.Include(x => x.GroupProfile).ToListAsync();
-            data.userChatRooms = await dbc.UserChatRooms.ToListAsync();
+            data.userProfiles = await dbc.Users.ToListAsync();
+            data.chatRooms = await dbc.Rooms.Include(x => x.GroupProfile).ToListAsync();
+            data.userChatRooms = await dbc.UserRooms.ToListAsync();
             data.messageTags = await dbc.MessageTags.ToListAsync();
             data.messagesSent = await dbc.MessagesSent.ToListAsync();
             data.messagesReceived = await dbc.MessagesReceived.ToListAsync();
@@ -62,7 +62,7 @@ namespace WebAPI.Models
                 var group = chatRoom.GroupProfile;
                 if (group != null)
                 {
-                    group.ChatRoomId = 0;
+                    group.RoomId = 0;
                     group.PhotoFileId = null;
                     group.WallpaperFileId = null;
                 }
@@ -71,13 +71,13 @@ namespace WebAPI.Models
             foreach (var userChatRoom in userChatRooms)
             {
                 userChatRoom.Id = 0;
-                userChatRoom.UserProfileId = 0;
-                userChatRoom.ChatRoomId = 0;
+                userChatRoom.UserId = 0;
+                userChatRoom.RoomId = 0;
                 userChatRoom.AdderId = null;
                 userChatRoom.BlockerId = null;
 
-                if (userChatRoom.ChatRoom.Creator == null)
-                    userChatRoom.ChatRoom.Creator = userChatRoom.UserProfile;
+                if (userChatRoom.Room.Creator == null)
+                    userChatRoom.Room.Creator = userChatRoom.User;
             }
 
             foreach (var messageTag in messageTags)
@@ -127,7 +127,7 @@ namespace WebAPI.Models
             }
             data.ClearAllIds();
 
-            dbc.UserChatRooms.AddRange(data.userChatRooms);
+            dbc.UserRooms.AddRange(data.userChatRooms);
             dbc.MessagesSent.AddRange(data.messagesSent);
             dbc.MessagesReceived.AddRange(data.messagesReceived);
 
@@ -138,7 +138,7 @@ namespace WebAPI.Models
             ApplicationDbContext dbc,
             ILogger logger,
             HttpClient httpClient,
-            UserProfile userProfile)
+            User userProfile)
         {
             try
             {
@@ -161,14 +161,14 @@ namespace WebAPI.Models
 
                 if (userProfile.Id != 0)
                 {
-                    UserProfile user = dbc.UserProfiles.Find(userProfile.Id);
+                    User user = dbc.Users.Find(userProfile.Id);
                     if (user != null)
                     {
                         CopyProfile(userProfile, user);
                         dbc.Entry(user).State = EntityState.Detached;
                         dbc.Entry(userProfile).State = EntityState.Unchanged;
                     }
-                    else dbc.UserProfiles.Add(userProfile);
+                    else dbc.Users.Add(userProfile);
                 }
             }
             catch (Exception ex)
@@ -177,7 +177,7 @@ namespace WebAPI.Models
             }
         }
 
-        private static void CopyProfile(UserProfile userProfile, UserProfile user)
+        private static void CopyProfile(User userProfile, User user)
         {
             userProfile.Name = user.Name;
             userProfile.About = user.About;
@@ -185,7 +185,7 @@ namespace WebAPI.Models
             userProfile.WallpaperFileId = user.WallpaperFileId;
             userProfile.DateCreated = user.DateCreated;
             userProfile.DateDeleted = user.DateDeleted;
-            userProfile.LastConnected = user.LastConnected;
+            userProfile.DateLastOnline = user.DateLastOnline;
             userProfile.Availability = user.Availability;
         }
     }
