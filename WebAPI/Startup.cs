@@ -76,69 +76,69 @@ namespace WebAPI
             }
             else throw new SystemException("No security key specified!");
 
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-                bool validate = !_configuration.GetValue<bool>("JwtSecurity:Shorten");
-                string[] audiences = _configuration["JwtSecurity:Audiences"].Split(';');
-                string issuer = _configuration["JwtSecurity:Issuer"];
-
-                var tokenValidationParameters = new TokenValidationParameters()
+            services.AddAuthentication(CustomAuthenticationHandler.SchemeName)
+                .AddScheme<CustomAuthenticationSchemeOptions, CustomAuthenticationHandler>(
+                    CustomAuthenticationHandler.SchemeName, options =>
                 {
-                    ValidateIssuer = validate,
-                    ValidateAudience = validate,
-                    ValidAudiences = audiences,
-                    ValidIssuer = issuer,
+                    options.SecretKey = System.Text.Encoding.UTF8.GetBytes(secretKey);
+                    options.TimeToAccess = TimeSpan.FromMinutes(30);
+                    options.TimeToRefresh = TimeSpan.FromDays(7);
+                })
+                .AddJwtBearer(options =>
+                {
+                    bool validate = !_configuration.GetValue<bool>("JwtSecurity:Shorten");
+                    string[] audiences = _configuration["JwtSecurity:Audiences"].Split(';');
+                    string issuer = _configuration["JwtSecurity:Issuer"];
 
-                    ValidateLifetime = true,
-                    RequireExpirationTime = true,
-                    //ClockSkew = TimeSpan.FromMinutes(1),
+                    var tokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidateIssuer = validate,
+                        ValidateAudience = validate,
+                        ValidAudiences = audiences,
+                        ValidIssuer = issuer,
 
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = securityKey
-                };
+                        ValidateLifetime = true,
+                        RequireExpirationTime = true,
+                        //ClockSkew = TimeSpan.FromMinutes(1),
 
-                if (string.IsNullOrEmpty(secretKey)) // if using RSA
-                    tokenValidationParameters.CryptoProviderFactory =
-                        new CryptoProviderFactory() { CacheSignatureProviders = false };
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = securityKey
+                    };
 
-                options.SaveToken = true;
-                options.RequireHttpsMetadata = !_env.IsDevelopment();
-                options.TokenValidationParameters = tokenValidationParameters;
-            });
+                    if (string.IsNullOrEmpty(secretKey)) // if using RSA
+                        tokenValidationParameters.CryptoProviderFactory =
+                            new CryptoProviderFactory() { CacheSignatureProviders = false };
+
+                    options.SaveToken = true;
+                    options.RequireHttpsMetadata = !_env.IsDevelopment();
+                    options.TokenValidationParameters = tokenValidationParameters;
+                });
         }
 
         private void ConfigureSwagger(IServiceCollection services)
         {
-            services.AddSwaggerGen(c =>
+            services.AddSwaggerGen(options =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAPI", Version = "v1" });
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAPI", Version = "v1" });
 
                 var jwtSecurityScheme = new OpenApiSecurityScheme
                 {
-                    Scheme = JwtBearerDefaults.AuthenticationScheme,
+                    Scheme = CustomAuthenticationHandler.SchemeName,
                     BearerFormat = "JWT",
                     Name = "Authorization",
-
                     In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.Http,
-                    Description = "Enter your bearer token below, which you obtain from signing-in",
+                    Type = SecuritySchemeType.ApiKey,
 
                     Reference = new OpenApiReference
                     {
-                        Id = JwtBearerDefaults.AuthenticationScheme,
+                        Id = CustomAuthenticationHandler.SchemeName,
                         Type = ReferenceType.SecurityScheme
                     }
                 };
 
-                c.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
+                options.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
 
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     { jwtSecurityScheme, Array.Empty<string>() }
                 });

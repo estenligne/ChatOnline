@@ -5,7 +5,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
-using System.Security.Claims;
 using System.Text;
 using AutoMapper;
 using Global.Helpers;
@@ -14,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using WebAPI.Models;
+using WebAPI.Services;
 
 namespace WebAPI.Controllers
 {
@@ -39,7 +39,7 @@ namespace WebAPI.Controllers
             _mapper = mapper;
         }
 
-        protected long UserId => long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+        protected long UserId => CustomAuthenticationHandler.GetUserId(User);
 
         protected ActionResult Forbid(string message)
         {
