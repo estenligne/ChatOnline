@@ -1,32 +1,39 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Net;
+﻿using System;
 using System.Linq;
+using System.Net;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using WebAPI.Services;
-using WebAPI.Models;
-using Global.Models;
-using Global.Enums;
 using AutoMapper;
+using Global.Enums;
+using Global.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using WebAPI.Models;
+using WebAPI.Services;
 
 namespace WebAPI.Controllers
 {
     public class DeviceUsedController : BaseController<DeviceUsedController>
     {
+        private readonly IConfiguration _configuration;
         private readonly PushNotificationService _pushNotificationService;
 
         public DeviceUsedController(
+            IConfiguration configuration,
             PushNotificationService pushNotificationService,
             ApplicationDbContext context,
             ILogger<DeviceUsedController> logger,
             IMapper mapper) : base(context, logger, mapper)
         {
+            _configuration = configuration;
             _pushNotificationService = pushNotificationService;
         }
 
+        [Authorize(AuthenticationSchemes = "Bearer")]
         [ProducesResponseType(typeof(DeviceUsedDTO), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [HttpPut]
@@ -34,10 +41,12 @@ namespace WebAPI.Controllers
         {
             try
             {
+                long accountId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
                 var userProfile = await dbc.UserProfiles
                                         .Include(x => x.PhotoFile)
                                         .Include(x => x.WallpaperFile)
-                                        .FirstOrDefaultAsync(x => x.Id == UserId);
+                                        .FirstOrDefaultAsync(x => x.Id == accountId);
 
                 if (userProfile == null)
                     return NotFound("User profile not found.");
@@ -63,10 +72,14 @@ namespace WebAPI.Controllers
                 {
                     deviceUsed.DateDeleted = null;
                 }
+
                 deviceUsed.Language = language;
                 deviceUsed.Timezone = timezone;
                 deviceUsed.DateUpdated = utcNow;
                 dbc.SaveChanges();
+
+                byte[] secretKey = Encoding.UTF8.GetBytes(_configuration["JwtSecurity:SecretKey"]);
+                string token = CustomAuthenticationHandler.BuildJWT(deviceUsed, secretKey, Response);
 
                 deviceUsed.UserProfile = userProfile;
                 var deviceUsedDto = _mapper.Map<DeviceUsedDTO>(deviceUsed);
