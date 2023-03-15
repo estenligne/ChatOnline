@@ -6,7 +6,6 @@ using Global.Enums;
 
 namespace WebAPI.Models
 {
-    [Table(nameof(ApplicationDbContext.Files))]
     [Index(nameof(Name), IsUnique = true)]
     public class File
     {

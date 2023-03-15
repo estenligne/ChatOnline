@@ -19,7 +19,7 @@ namespace WebAPI.Models
         [MaxLength(63)]
         public string JoinToken { get; set; }
 
-        [MaxLength(4095)]
+        [MaxLength(4000)]
         public string About { get; set; }
 
         public long? PhotoFileId { get; set; }

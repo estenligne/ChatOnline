@@ -30,7 +30,10 @@ namespace WebAPI.Models
         public string PushNotificationToken { get; set; }
         public long? DateTokenProvided { get; set; }
 
+        [MaxLength(16)]
         public string LocalIPv4 { get; set; }
+        
+        [MaxLength(16)]
         public string RemoteIPv4 { get; set; }
     }
 }

@@ -43,13 +43,13 @@ namespace WebAPI.Models
         public virtual URLPreview URLPreview { get; set; }
 
         public long DateDrafted { get; set;}
-        public long DateScheduled { get; set; }
+        public long? DateScheduled { get; set; }
 
 
         [MaxLength(16383)]
         public string Body { get; set; }
 
-        public long DateUserSent { get; set; }
+        public long? DateUserSent { get; set; }
         public long? DateServerReceived { get; set; }
         public long? DateServerSent { get; set; }
         public long? DateUpdated { get; set; }

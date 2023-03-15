@@ -25,6 +25,9 @@ namespace WebAPI.Models
         public long? DateStarred { get; set; }
         public long? DateReacted { get; set; }
 
+        public long? DateDownloaded { get; set; }
+        public long? DateFileOpened { get; set; }
+
         public MessageReactionEnum Reaction { get; set; }
         public MessageStatusEnum Status { get; set; }
     }

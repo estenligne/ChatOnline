@@ -20,7 +20,7 @@ namespace WebAPI.Models
         [MaxLength(63)]
         public string Name { get; set; }
 
-        [MaxLength(4095)]
+        [MaxLength(4000)]
         public string About { get; set; }
 
         public long? PhotoFileId { get; set; }
@@ -30,7 +30,7 @@ namespace WebAPI.Models
         public virtual File WallpaperFile { get; set; }
 
         public long DateCreated { get; set; }
-        public long DateUpdated { get; set; }
+        public long? DateUpdated { get; set; }
         public long? DateDeleted { get; set; }
 
         public long DateLastOnline { get; set; }
