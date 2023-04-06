@@ -3,6 +3,7 @@ using Android.Content;
 using Android.Content.PM;
 using Android.Runtime;
 using Android.OS;
+using XamApp.Droid.Notifications;
 
 namespace XamApp.Droid
 {
@@ -25,6 +26,10 @@ namespace XamApp.Droid
 
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             Xamarin.Forms.Forms.Init(this, savedInstanceState);
+
+            // See https://github.com/firebase/quickstart-android/issues/368#issuecomment-683151942
+            ComponentName componentName = new ComponentName(this, Java.Lang.Class.FromType(typeof(MyFirebaseMessagingService)));
+            this.PackageManager.SetComponentEnabledSetting(componentName, ComponentEnabledState.Enabled, ComponentEnableOption.DontKillApp);
 
             Notifications.Notifications.Setup(this);
             Notifications.Notifications.ProcessIntent(Intent, App.NotificationSource.OnLaunch);
