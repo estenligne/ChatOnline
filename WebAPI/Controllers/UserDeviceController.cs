@@ -56,13 +56,27 @@ namespace WebAPI.Controllers
 
                 if (userDevice == null)
                 {
-                    userDevice = new DeviceUsed
+                    userDevice = await dbc.DevicesUsed
+                        .Where(x => x.UserProfileId == userProfile.Id && x.Platform == dto.Platform)
+                        .FirstOrDefaultAsync();
+
+                    if (userDevice == null)
                     {
-                        UserProfileId = userProfile.Id,
-                        Platform = dto.Platform,
-                        DateCreated = utcNow
-                    };
-                    dbc.DevicesUsed.Add(userDevice);
+                        userDevice = new DeviceUsed
+                        {
+                            UserProfileId = userProfile.Id,
+                            Platform = dto.Platform,
+                            DateCreated = utcNow
+                        };
+                        dbc.DevicesUsed.Add(userDevice);
+                    }
+                    else
+                    {
+                        if (userDevice.DateDeleted != null)
+                            _logger.LogError($"Trying to sign-in on another {dto.Platform} device without signing-out of a previous one.");
+
+                        userDevice.DateDeleted = null;
+                    }
                 }
                 else if (userDevice.UserProfileId != userProfile.Id)
                 {
