@@ -253,11 +253,13 @@ namespace WebAPI.Controllers
                 }
 
                 string sql_rooms = "INSERT OR REPLACE INTO Rooms (Id, Type, CreatorId, DateCreated) VALUES\n";
-                string sql_groups = "INSERT OR REPLACE INTO Groups (RoomId, Name) VALUES\n";
+                string sql_groups = null;
                 string sql_userRooms = "INSERT OR REPLACE INTO UserRooms (Id, UserId, RoomId, Role, DateAdded) VALUES\n";
 
                 remaining = userRooms.Count;
                 int remaining_gp = userRooms.Values.Where(ur => ur.ChatRoom.GroupProfile != null).Count();
+                if (remaining_gp > 0)
+                    sql_groups = "INSERT OR REPLACE INTO Groups (RoomId, Name) VALUES\n";
 
                 foreach (UserChatRoom userRoom in userRooms.Values)
                 {
